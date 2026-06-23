@@ -1,0 +1,4 @@
+test,statistic,p_value,interpretation
+"MSBB Hsp60/10 vs mitochondrial background, inverse Braak beta, two-sided Wilcoxon",NA,0.055035596901029896,Borderline two-sided group shift
+"MSBB Hsp60/10 greater than mitochondrial background, inverse Braak beta, directional Wilcoxon",NA,0.027517798450514948,Pre-specified directional validation test
+"ROSMAP-MSBB Hsp60/10 gene-level Spearman correlation, inverse Braak beta",0.07531837477258944,0.20093106101594627,Modest gene-level cross-cohort concordance

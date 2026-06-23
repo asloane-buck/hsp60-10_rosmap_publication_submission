@@ -1,0 +1,2 @@
+n_genes,median_inverse_braak,median_inverse_cerad,mean_inverse_braak,mean_inverse_cerad,median_braak_minus_cerad,mean_braak_minus_cerad,n_braak_gt_cerad,n_equal,n_cerad_gt_braak,p_value,p_label,star
+306,0.08558570814808256,0,0.09701230587216546,0.018663578441315228,0.08271075460379321,0.07834872743085011,233,11,62,9.363400760679703e-25,P = 9.36e-25,***

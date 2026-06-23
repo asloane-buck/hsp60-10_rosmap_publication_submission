@@ -1,0 +1,17 @@
+group,detection_rate_category,n_genes,group_n,fraction,group_label
+Non-client mitochondrial proteins,0%,268,880,0.30454545454545456,"Non-client mitochondrial proteins
+(n = 880)"
+Non-client mitochondrial proteins,>0-50%,6,880,0.006818181818181818,"Non-client mitochondrial proteins
+(n = 880)"
+Non-client mitochondrial proteins,50-95%,606,880,0.6886363636363636,"Non-client mitochondrial proteins
+(n = 880)"
+Non-client mitochondrial proteins,>=95%,0,880,0,"Non-client mitochondrial proteins
+(n = 880)"
+Hsp60/10 clients,0%,18,321,0.056074766355140186,"Hsp60/10 clients
+(n = 321)"
+Hsp60/10 clients,>0-50%,0,321,0,"Hsp60/10 clients
+(n = 321)"
+Hsp60/10 clients,50-95%,303,321,0.9439252336448598,"Hsp60/10 clients
+(n = 321)"
+Hsp60/10 clients,>=95%,0,321,0,"Hsp60/10 clients
+(n = 321)"

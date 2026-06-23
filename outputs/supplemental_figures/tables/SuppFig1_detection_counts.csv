@@ -1,0 +1,5 @@
+detection_group,n_interactors,display_group
+RNA only,12,RNA only
+Protein only,21,Protein only
+Both RNA and protein,282,RNA + protein
+Neither,6,Not detected

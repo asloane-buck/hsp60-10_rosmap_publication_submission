@@ -1,0 +1,5 @@
+n_genes,median_inverse_braak,median_inverse_cerad,mean_inverse_braak,mean_inverse_cerad,median_braak_minus_cerad,mean_braak_minus_cerad,n_braak_gt_cerad,n_equal,n_cerad_gt_braak,p_value,p_label,star,test,spearman_rho,n_top,n_other,median_top,median_other
+306,0.08558570814808256,0,0.09701230587216546,0.018663578441315228,0.08271075460379321,0.07834872743085011,233,11,62,9.363400760679703e-25,P = 9.36e-25,***,paired_inverse_braak_vs_inverse_cerad,NA,NA,NA,NA,NA
+306,NA,NA,NA,NA,NA,NA,NA,NA,NA,4.131740755361168e-18,P = 4.13e-18,***,collapse_vs_inverse_braak_spearman,0.46862139773193195,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,2.6492866359057744e-9,P = 2.65e-09,***,inverse_braak_top_quartile_vs_other,NA,77,229,0.13509868821692564,0.06575195380670304
+306,NA,NA,NA,NA,0.08271075460379321,0.07834872743085011,233,11,62,9.363400760679703e-25,P = 9.36e-25,***,braak_minus_cerad_delta_summary,NA,NA,NA,NA,NA

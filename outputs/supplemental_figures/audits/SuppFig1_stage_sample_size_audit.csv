@@ -1,0 +1,8 @@
+modality,stage_column,stage,n_samples
+RNA,diagnosis_stage,AD,220
+RNA,diagnosis_stage,Control,200
+RNA,diagnosis_stage,Early_AD,158
+Protein,diagnosis_stage,AD,62
+Protein,diagnosis_stage,Control,103
+Protein,diagnosis_stage,Early_AD,62
+Protein,diagnosis_stage,Missing,52

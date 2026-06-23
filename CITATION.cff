@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use this code, please cite the associated manuscript and archived software release."
+title: "Code for Hsp60/10 mitochondrial chaperonin client analyses in ROSMAP"
+authors:
+  - family-names: "Sloane"
+    given-names: "Rebecca"
+version: "0.1.0"
+date-released: "2026-06-23"
+repository-code: "https://github.com/USERNAME/REPOSITORY"
+doi: "10.5281/zenodo.TBD"

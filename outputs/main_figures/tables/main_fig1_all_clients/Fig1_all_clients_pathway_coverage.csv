@@ -1,0 +1,39 @@
+Pathway,pathway,n_total,n_detected,pct_detected,Modality,PathwayLabel
+Hsp60_10_all_clients,Hsp60_10_all_clients,321,306,95.3,Protein,Hsp60/10 clients
+Broad_MitoCarta_non_Hsp60_10,Broad_MitoCarta_non_Hsp60_10,877,609,69.4,Protein,"Broad mitochondrial
+non-Hsp60/10"
+Mito_translation_non_Hsp60_10,Mito_translation_non_Hsp60_10,126,94,74.6,Protein,"Mito translation
+non-Hsp60/10"
+OXPHOS_ETC_non_Hsp60_10,OXPHOS_ETC_non_Hsp60_10,134,92,68.7,Protein,"OXPHOS/ETC
+non-Hsp60/10"
+TCA_pyruvate_metabolism_non_Hsp60_10,TCA_pyruvate_metabolism_non_Hsp60_10,83,66,79.5,Protein,"TCA/pyruvate
+non-Hsp60/10"
+FAO_metabolism_non_Hsp60_10,FAO_metabolism_non_Hsp60_10,103,73,70.9,Protein,"FAO/metabolism
+non-Hsp60/10"
+Mito_protein_quality_control_non_Hsp60_10,Mito_protein_quality_control_non_Hsp60_10,69,52,75.4,Protein,"Mito protein QC
+non-Hsp60/10"
+Proteasome_core_non_Hsp60_10,Proteasome_core_non_Hsp60_10,48,45,93.8,Protein,"Proteasome
+core"
+Lysosome_core_non_Hsp60_10,Lysosome_core_non_Hsp60_10,65,45,69.2,Protein,"Lysosome
+core"
+UPRmt_core_non_Hsp60_10,UPRmt_core_non_Hsp60_10,13,6,46.2,Protein,"UPRmt
+core"
+Hsp60_10_all_clients,Hsp60_10_all_clients,321,297,92.5,RNA,Hsp60/10 clients
+Broad_MitoCarta_non_Hsp60_10,Broad_MitoCarta_non_Hsp60_10,877,825,94.1,RNA,"Broad mitochondrial
+non-Hsp60/10"
+Mito_translation_non_Hsp60_10,Mito_translation_non_Hsp60_10,126,121,96,RNA,"Mito translation
+non-Hsp60/10"
+OXPHOS_ETC_non_Hsp60_10,OXPHOS_ETC_non_Hsp60_10,134,119,88.8,RNA,"OXPHOS/ETC
+non-Hsp60/10"
+TCA_pyruvate_metabolism_non_Hsp60_10,TCA_pyruvate_metabolism_non_Hsp60_10,83,73,88,RNA,"TCA/pyruvate
+non-Hsp60/10"
+FAO_metabolism_non_Hsp60_10,FAO_metabolism_non_Hsp60_10,103,95,92.2,RNA,"FAO/metabolism
+non-Hsp60/10"
+Mito_protein_quality_control_non_Hsp60_10,Mito_protein_quality_control_non_Hsp60_10,69,67,97.1,RNA,"Mito protein QC
+non-Hsp60/10"
+Proteasome_core_non_Hsp60_10,Proteasome_core_non_Hsp60_10,48,45,93.8,RNA,"Proteasome
+core"
+Lysosome_core_non_Hsp60_10,Lysosome_core_non_Hsp60_10,65,64,98.5,RNA,"Lysosome
+core"
+UPRmt_core_non_Hsp60_10,UPRmt_core_non_Hsp60_10,13,13,100,RNA,"UPRmt
+core"

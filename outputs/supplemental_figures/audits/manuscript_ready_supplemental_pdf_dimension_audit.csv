@@ -1,0 +1,7 @@
+pdf_name,width_mm,height_mm,file_size_MB,dimension_method,font_embedding_status,pass_fail
+Supplementary_Figure_1_cohort_detection.pdf,169.6861111111111,138.9944444444444,0.006236076354980469,pdfinfo,font verification unavailable: pdffonts not found,PASS
+Supplementary_Figure_2_matched_individual_sensitivity.pdf,169.6861111111111,84.66666666666667,0.0070323944091796875,pdfinfo,font verification unavailable: pdffonts not found,PASS
+Supplementary_Figure_3_mitochondrial_specificity.pdf,169.6861111111111,139.7,0.007277488708496094,pdfinfo,font verification unavailable: pdffonts not found,PASS
+Supplementary_Figure_4_pathology_model_robustness.pdf,169.6861111111111,118.8861111111111,0.2300739288330078,pdfinfo,font verification unavailable: pdffonts not found,PASS
+Supplementary_Figure_5_msbb_cross_cohort_validation.pdf,169.6861111111111,118.8861111111111,0.1305532455444336,pdfinfo,font verification unavailable: pdffonts not found,PASS
+Supplementary_Figure_6_regional_proteomics_validation.pdf,169.6861111111111,119.94444444444444,0.2538938522338867,pdfinfo,font verification unavailable: pdffonts not found,PASS

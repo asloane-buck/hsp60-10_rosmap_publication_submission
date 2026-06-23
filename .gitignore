@@ -1,0 +1,27 @@
+.DS_Store
+.Rhistory
+.RData
+.Rproj.user/
+*.log
+*.tmp
+Rplots.pdf
+
+# Large/intermediate R objects; exclude from public repo
+*.rds
+*.RDS
+outputs/**/objects/
+
+# Do not publish protected/raw ROSMAP/Synapse-derived data
+data/raw/**
+!data/raw/README.md
+
+# Do not redistribute third-party downloaded resources by default
+data/external/**
+!data/external/README.md
+
+# Potentially sample-level derived/source tables
+outputs/main_figures/tables/cognition_model_df_COVARIATE_ADJUSTED_CLIENT_SCORE.csv
+outputs/main_figures/tables/main_fig4_cognition/Fig4A_network_diagnosis_panel_dataframe.csv
+outputs/main_figures/tables/main_fig4_cognition/Fig4_network_level_cognition_models_source_data.csv
+outputs/supplemental_figures/audits/SuppFig2_matched_individual_long_scores.csv
+outputs/supplemental_figures/audits/SuppFig2_matched_sample_availability_audit.csv

@@ -1,0 +1,9 @@
+# Optional human-readable path template.
+# The current R pipeline uses R/00_config.R and R/supplemental/00_supplemental_config.R directly.
+
+project_dir: "/path/to/repository"
+hsp60_client_file: "data/external/1-s2.0-S1355814523012117-MOESM4_ESM.xlsx"
+mitocarta_xls: "data/external/Human.MitoCarta3.0.xls"
+rosmap_clinical_file: "data/raw/metadata/ROSMAP_clinical.csv"
+agora_target_file: "data/external/AGORA_nominated_targets.csv"
+msbb_validation_file: "data/supplemental_inputs/MSBB_covariate_adjusted_braak_and_collapse.csv"

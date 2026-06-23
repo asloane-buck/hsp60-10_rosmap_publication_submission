@@ -1,0 +1,322 @@
+gene,source_inventory,original_reported_inventory,analyzed_after_gene_symbol_harmonization,rna_input_available,protein_input_available,detected_rna,detected_protein,detection_group
+AARS2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+ABHD10,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+ABHD11,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+ACAA2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+ACAD9,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+ACADVL,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+ACAT1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+ACO2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+ACOT13,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+ACSF3,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+ADCK3,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,FALSE,TRUE,Protein only
+ADCK4,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,FALSE,TRUE,Protein only
+AFG3L2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+AIFM1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+AK2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+AK3,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+AK4,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+AKR7A2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+ALDH18A1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+ALDH1B1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+ALDH2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+ALDH5A1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+ALDH7A1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+ALDH9A1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+ALYREF,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+ARL2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+ATAD3A,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+ATAD3B,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,FALSE,RNA only
+ATP5A1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,FALSE,FALSE,Neither
+ATP5B,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,FALSE,FALSE,Neither
+ATP5C1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,FALSE,FALSE,Neither
+ATP5D,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,FALSE,TRUE,Protein only
+ATP5F1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,FALSE,TRUE,Protein only
+ATP5H,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,FALSE,TRUE,Protein only
+ATP5J2-PTCD1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,FALSE,TRUE,Protein only
+ATP5L,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,FALSE,TRUE,Protein only
+ATP5O,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,FALSE,TRUE,Protein only
+B3GALT5,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,FALSE,RNA only
+BCAT2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+BCKDHA,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,FALSE,RNA only
+BCKDHB,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+BCKDK,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+BCS1L,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+C1QBP,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+C21ORF33,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,FALSE,FALSE,Neither
+CARS2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+CBR4,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+CCDC90B,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+CCT3,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+CCT6A,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+CDK5RAP1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,FALSE,RNA only
+CECR5,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,FALSE,TRUE,Protein only
+CHCHD1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+CLPP,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+CLPX,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+CNP,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+COX4I1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+COX7A2L,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+CPOX,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+CPT2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+CRYZ,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+CS,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+CYC1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+DAP3,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+DARS2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+DCXR,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+DHX30,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+DLAT,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+DLD,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+DLST,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+DNAJA3,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+EARS2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+ECH1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+ECHDC1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+ECHS1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+ECI1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+ECI2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+EEF1A1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+EEF1B2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+ENO1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+ERAL1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+ETFA,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+ETFB,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+FAHD1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+FASTKD5,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+FDXR,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+FECH,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+FH,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+FLAD1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+FOXRED1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+GADD45GIP1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+GAPDH,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+GCAT,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+GFM1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+GFM2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+GLDC,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+GLRX5,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+GLS,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+GLUD1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+GNG12,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+GOT2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+GPT2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+GRPEL1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+GRSF1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+GSR,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+GSTK1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+GUF1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+HADH,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+HADHA,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+HADHB,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+HAGH,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+HARS,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,FALSE,TRUE,Protein only
+HARS2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+HCG_1984214,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,FALSE,FALSE,Neither
+HIBCH,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+HINT2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+HSD17B10,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+HSD17B8,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+HSP90AA1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+HSP90AB1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+HSPA5,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+HSPA9,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+IARS2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+IBA57,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+ICT1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,FALSE,TRUE,Protein only
+IDH2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+IDH3A,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+IDH3G,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+IGHG2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+IMMT,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+KIAA0391,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,FALSE,TRUE,Protein only
+KPNB1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+LAP3,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+LETM1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+LONP1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+LRPPRC,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+LUC7L2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,FALSE,RNA only
+LYRM7,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MARS2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MCCC2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MDH2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+ME2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+METTL17,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MGME1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,FALSE,RNA only
+MIPEP,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MMAB,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MOGS,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MRPL10,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MRPL13,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MRPL14,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MRPL15,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MRPL16,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MRPL19,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MRPL22,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MRPL23,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MRPL3,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MRPL37,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MRPL38,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MRPL39,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MRPL4,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MRPL44,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MRPL45,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,FALSE,TRUE,Protein only
+MRPL47,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MRPL48,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MRPL49,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MRPL53,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MRPL9,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MRPS12,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MRPS15,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MRPS16,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MRPS2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MRPS22,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MRPS23,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MRPS25,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MRPS26,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MRPS27,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MRPS30,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MRPS31,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MRPS33,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MRPS34,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MRPS35,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MRPS36,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,FALSE,TRUE,Protein only
+MRPS5,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MRPS6,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MRPS9,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MT-ATP6,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,FALSE,TRUE,Protein only
+MT-CO2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,FALSE,TRUE,Protein only
+MTG1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MTHFD1L,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MTHFD2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,FALSE,RNA only
+MTO1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MTPAP,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+MTUS1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,FALSE,RNA only
+NADK2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+NARS2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+NDUFA10,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+NDUFA13,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+NDUFA2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+NDUFA4,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,FALSE,TRUE,Protein only
+NDUFA6,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+NDUFA8,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+NDUFA9,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+NDUFAF3,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+NDUFAF7,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+NDUFB1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+NDUFB10,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+NDUFS1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+NDUFS2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+NDUFS3,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+NDUFS4,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+NDUFV1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+NDUFV2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+NFS1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+NFU1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+NIPSNAP1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+NIPSNAP3A,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+NME4,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,FALSE,RNA only
+NSUN2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+NSUN4,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+NT5DC2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+NUDT19,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+OAT,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+OGDH,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+P4HB,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+PC,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+PCCB,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+PCK2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+PCMT1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+PDHA1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+PDHB,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+PDHX,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+PDIA6,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+PDK1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+PDK2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+PDK3,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+PEO1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,FALSE,FALSE,Neither
+PGAM5,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+PHB,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,FALSE,TRUE,Protein only
+PHB2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+PIN4,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+PITRM1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+PMPCA,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+PMPCB,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+PNPT1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+POLDIP2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+POLG,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+POLRMT,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+PPA2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+PPIA,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+PPIF,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+PPOX,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+PRDX3,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+PRDX4,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+PTCD3,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+PTPMT1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+PYCR2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+QRSL1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+RNMTL1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,FALSE,TRUE,Protein only
+RPL11,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+RPL23,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+RPL23A,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+RPL31,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+RPL9,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+RPS10,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+RPS11,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+RPS15A,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+RPS16,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+RPS18,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+RPS3,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+RPS4X,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+RPS6,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+RPS8,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+RPS9,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+RPUSD3,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,FALSE,RNA only
+RSAD1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,FALSE,RNA only
+SAMM50,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+SARS2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+SDHA,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+SDHB,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+SERPINH1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+SHMT2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+SLC25A13,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+SLC25A5,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+SLC25A6,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+SLIRP,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+SOD2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,FALSE,TRUE,Protein only
+SPRYD4,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+SSBP1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+ST13,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+STOML2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+SUCLA2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+SUCLG1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+SUCLG2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+SUPV3L1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+SYNE1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+TACO1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+TAMM41,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+TARS2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+TBRG4,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+TFAM,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+TIMM13,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+TIMM44,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+TIMM8B,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+TRAP1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+TRMU,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+TRUB1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+TRUB2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+TSFM,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+TST,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+TUBA1B,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,FALSE,RNA only
+TUBB,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+TUBB4B,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+TUFM,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+UQCRC1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+UQCRC2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+UQCRFS1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+VARS2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+XPNPEP3,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+YARS2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+YWHAE,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+ZADH2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,FALSE,TRUE,Protein only

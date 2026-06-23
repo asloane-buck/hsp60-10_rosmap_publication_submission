@@ -1,0 +1,12 @@
+pathway,n_total,n_detected_protein,n_detected_rna,n_detected_both
+Hsp60_10_all_clients,321,306,297,285
+Hsp60_10_top19_occupancy,19,19,18,18
+Broad_MitoCarta_non_Hsp60_10,877,609,825,586
+Mito_translation_non_Hsp60_10,126,94,121,91
+OXPHOS_ETC_non_Hsp60_10,134,92,119,81
+TCA_pyruvate_metabolism_non_Hsp60_10,83,66,73,60
+FAO_metabolism_non_Hsp60_10,103,73,95,72
+Mito_protein_quality_control_non_Hsp60_10,69,52,67,50
+Proteasome_core_non_Hsp60_10,48,45,45,44
+Lysosome_core_non_Hsp60_10,65,45,64,45
+UPRmt_core_non_Hsp60_10,13,6,13,6

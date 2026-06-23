@@ -1,0 +1,5 @@
+sheet,n_rows,n_cols,gene_col,pathway_col,score
+B Human All Genes,19247,48,symbol,mitocarta3_0_mitopathways,19.28436304631311
+A Human MitoCarta3.0,1136,48,symbol,mitocarta3_0_mitopathways,18.055378331375
+C MitoPathways,154,4,NA,NA,2.187520720836463
+Description,59,2,NA,NA,1.7708520116421442

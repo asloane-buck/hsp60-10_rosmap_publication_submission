@@ -1,0 +1,18 @@
+Supplementary Figure 1 run summary
+generated at: 2026-06-23 15:25:06 PDT
+source inventory: Bie et al. Hsp60/10 client inventory
+original reported inventory size: 323
+analyzed size after gene-symbol harmonization: 321
+RNA-only count: 12
+protein-only count: 21
+RNA + protein count: 282
+not-detected count: 6
+RNA sample count: 578
+protein sample count: 279
+stage column used for RNA: diagnosis_stage
+stage column used for protein: diagnosis_stage
+covariate columns detected for RNA: age=age, sex=sex, RIN=rin, PMI=pmi, Braak=braak, CERAD=cerad
+covariate columns detected for protein: age=age, sex=sex, RIN=rin, PMI=pmi, Braak=braak, CERAD=cerad
+mitochondrial background source: /Users/ashlynsloane/Buck Institute 25-26/ROSMAP Analysis March 26/hsp60_rosmap_publication_ready_repo/data/supplemental_inputs/Broad_MitoCarta_non_Hsp60_10.csv (880 genes after gene-symbol harmonization)
+panels generated: A Analysis workflow; B Client detection across RNA and proteomics; C Samples by diagnosis/stage; D Covariate availability; E Protein detection-rate categories
+panels skipped: none

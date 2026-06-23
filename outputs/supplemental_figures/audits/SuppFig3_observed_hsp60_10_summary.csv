@@ -1,0 +1,5 @@
+metric,metric_label,metric_type,observed_mean,observed_n
+protein_collapse_magnitude,Late-stage protein collapse,continuous,0.08134115708652923,292
+inverse_braak_magnitude,Inverse Braak association,continuous,0.03558068628900412,292
+cognition_composite_score,Cognition association score,continuous,4.022260273972603,292
+agora_nominated_target,AGORA target fraction,fraction,0.16780821917808222,292

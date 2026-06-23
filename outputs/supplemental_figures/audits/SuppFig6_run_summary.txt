@@ -1,0 +1,22 @@
+Supplementary Figure 6 run summary
+generated at: 2026-06-23 15:26:30 PDT
+figure: regional proteomics validation
+regional protein input: regional_protein_screen
+Braak model input: braak_models
+Hsp60/10 regional comparison input: hsp_region_compare
+background input: background_null_pool
+Hsp60/10 genes in regional comparison table: 299
+background genes available: 609
+AD-associated decline summary:
+  - DLPFC / Non-client mitochondrial proteins: n=610, median=0.07392
+  - DLPFC / Hsp60/10 clients: n=300, median=0.08929
+  - STG / Non-client mitochondrial proteins: n=607, median=0.05082
+  - STG / Hsp60/10 clients: n=300, median=0.07627
+Adjusted Braak decline summary:
+  - DLPFC / Non-client mitochondrial proteins: n=610, median=0.009768
+  - DLPFC / Hsp60/10 clients: n=300, median=0.01122
+  - STG / Non-client mitochondrial proteins: n=607, median=0.01028
+  - STG / Hsp60/10 clients: n=300, median=0.01535
+Regional difference summary:
+  - AD-associated collapse: n=300, median STG-DLPFC=-0.006939, P = 8.48e-05
+  - High-Braak coupling: n=300, median STG-DLPFC=0.003995, P = 7.75e-09

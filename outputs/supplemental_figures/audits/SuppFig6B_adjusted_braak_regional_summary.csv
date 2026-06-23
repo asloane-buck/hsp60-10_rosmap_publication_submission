@@ -1,0 +1,5 @@
+region_short,group,n,median_inverse_braak_beta
+DLPFC,Non-client mitochondrial proteins,610,0.009768229766475324
+DLPFC,Hsp60/10 clients,300,0.011224255160075004
+STG,Non-client mitochondrial proteins,607,0.01027607364428936
+STG,Hsp60/10 clients,300,0.015348743980640574

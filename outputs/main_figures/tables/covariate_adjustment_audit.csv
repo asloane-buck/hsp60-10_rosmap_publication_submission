@@ -1,0 +1,3 @@
+modality,original_matrix,adjusted_matrix,covariates_used,biological_variables_not_adjusted_here,note
+RNA,rna_mat_raw,rna_mat_adj,age_num;sex_factor;pmi_num;rin_num,diagnosis_stage;braak_num;cerad_num,"Stage/pathology variables are tested downstream, not regressed out during nuisance residualization."
+Protein,prot_mat_raw,prot_mat_adj,age_num;sex_factor;pmi_num;batch_factor,EmoryStrictDx.2019;braak_num;cerad_num,"Stage/pathology variables are tested downstream, not regressed out during nuisance residualization."

@@ -1,0 +1,37 @@
+Pathway,facet_label,pathway_color_key,Modality,Stage,mean_score,sem,n,n_genes_detected,x
+Broad mitochondrial background,"Mito
+background",Broad_MitoCarta_non_Hsp60_10,Protein,Control,0.08146586582892737,0.027161153409702817,65,612,1
+Broad mitochondrial background,"Mito
+background",Broad_MitoCarta_non_Hsp60_10,Protein,Intermediate,-0.012563381586129003,0.037547589175406716,41,612,2
+Broad mitochondrial background,"Mito
+background",Broad_MitoCarta_non_Hsp60_10,Protein,AD,-0.06286492316334617,0.0462714238195017,36,612,3
+Broad mitochondrial background,"Mito
+background",Broad_MitoCarta_non_Hsp60_10,RNA,Control,-0.010689178719501886,0.02103483167132288,65,828,1
+Broad mitochondrial background,"Mito
+background",Broad_MitoCarta_non_Hsp60_10,RNA,Intermediate,0.08719300332184363,0.030929898200853925,41,828,2
+Broad mitochondrial background,"Mito
+background",Broad_MitoCarta_non_Hsp60_10,RNA,AD,-0.006664005893494866,0.03569615456271839,36,828,3
+Hsp60/10 client network,"Hsp60/10
+clients",Hsp60_10_all_clients,Protein,Control,0.11481298477386026,0.04201620607245879,65,303,1
+Hsp60/10 client network,"Hsp60/10
+clients",Hsp60_10_all_clients,Protein,Intermediate,-0.016091471536239018,0.05354263850622843,41,303,2
+Hsp60/10 client network,"Hsp60/10
+clients",Hsp60_10_all_clients,Protein,AD,-0.07874937696748113,0.06848601063987629,36,303,3
+Hsp60/10 client network,"Hsp60/10
+clients",Hsp60_10_all_clients,RNA,Control,-0.0034984720254251133,0.03183814150691399,65,294,1
+Hsp60/10 client network,"Hsp60/10
+clients",Hsp60_10_all_clients,RNA,Intermediate,0.13829363727033805,0.04600159971496656,41,294,2
+Hsp60/10 client network,"Hsp60/10
+clients",Hsp60_10_all_clients,RNA,AD,-0.017272784573995503,0.04757146102407404,36,294,3
+TCA/pyruvate metabolism,"TCA/pyruvate
+non-client",TCA_pyruvate_metabolism_non_Hsp60_10,Protein,Control,0.1059723536216636,0.03672731754881072,65,66,1
+TCA/pyruvate metabolism,"TCA/pyruvate
+non-client",TCA_pyruvate_metabolism_non_Hsp60_10,Protein,Intermediate,4.1679598111886527e-4,0.04016944053259172,41,66,2
+TCA/pyruvate metabolism,"TCA/pyruvate
+non-client",TCA_pyruvate_metabolism_non_Hsp60_10,Protein,AD,-0.051770879488749894,0.05483272632240841,36,66,3
+TCA/pyruvate metabolism,"TCA/pyruvate
+non-client",TCA_pyruvate_metabolism_non_Hsp60_10,RNA,Control,-0.03656741688285707,0.03999845008176858,65,73,1
+TCA/pyruvate metabolism,"TCA/pyruvate
+non-client",TCA_pyruvate_metabolism_non_Hsp60_10,RNA,Intermediate,0.1286329920976399,0.03808116925217631,41,73,2
+TCA/pyruvate metabolism,"TCA/pyruvate
+non-client",TCA_pyruvate_metabolism_non_Hsp60_10,RNA,AD,0.07322785393342639,0.0568160655220159,36,73,3

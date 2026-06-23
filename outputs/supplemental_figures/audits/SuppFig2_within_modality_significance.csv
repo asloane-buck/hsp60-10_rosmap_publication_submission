@@ -1,0 +1,11 @@
+Pathway,facet_label,Modality,comparison,x1,x2,y,p_value_raw,label
+Broad mitochondrial background,"Mito
+background",RNA,Control_vs_Intermediate,1.1,2.1,0.1470098526789015,0.01821090005286934,*
+Broad mitochondrial background,"Mito
+background",RNA,Intermediate_vs_AD,2.1,3.1,0.13417120772058863,0.02502847799189944,*
+Hsp60/10 client network,"Hsp60/10
+clients",RNA,Control_vs_Intermediate,1.1,2.1,0.22914034385031196,0.01445976723025405,*
+Hsp60/10 client network,"Hsp60/10
+clients",RNA,Intermediate_vs_AD,2.1,3.1,0.20920918524364204,0.00965118786102586,**
+TCA/pyruvate metabolism,"TCA/pyruvate
+non-client",RNA,Control_vs_Intermediate,1.1,2.1,0.21050456644641574,0.012055861116500458,*

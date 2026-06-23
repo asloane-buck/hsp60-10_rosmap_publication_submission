@@ -1,0 +1,115 @@
+Pathway,PathwayLabel,PathwayShort,PathwayStrip,Modality,Stage,n,mean_score,sem
+Hsp60_10_all_clients,Hsp60/10 clients,Hsp60/10 clients,<span style='color:#B23A48'><b>Hsp60/10<br>clients</b></span>,Protein,NCI,65,0.03970859367298129,0.045030756579541156
+Hsp60_10_all_clients,Hsp60/10 clients,Hsp60/10 clients,<span style='color:#B23A48'><b>Hsp60/10<br>clients</b></span>,Protein,MCI,98,0.09917256814262058,0.036570300363664855
+Hsp60_10_all_clients,Hsp60/10 clients,Hsp60/10 clients,<span style='color:#B23A48'><b>Hsp60/10<br>clients</b></span>,Protein,AD,73,-0.16849274337973463,0.043774534960761544
+Hsp60_10_all_clients,Hsp60/10 clients,Hsp60/10 clients,<span style='color:#B23A48'><b>Hsp60/10<br>clients</b></span>,RNA,NCI,200,-0.001450005988414691,0.020044062604626506
+Hsp60_10_all_clients,Hsp60/10 clients,Hsp60/10 clients,<span style='color:#B23A48'><b>Hsp60/10<br>clients</b></span>,RNA,MCI,158,0.057578215063430596,0.0235947585351354
+Hsp60_10_all_clients,Hsp60/10 clients,Hsp60/10 clients,<span style='color:#B23A48'><b>Hsp60/10<br>clients</b></span>,RNA,AD,220,-0.04003343991971834,0.017975155069567716
+Broad_MitoCarta_non_Hsp60_10,"Broad mitochondrial
+non-Hsp60/10",Broad mito,<span style='color:#4C78A8'><b>Broad<br>mitochondrial<br>non-Hsp60/10</b></span>,Protein,NCI,65,0.02202957573350637,0.029174601226220113
+Broad_MitoCarta_non_Hsp60_10,"Broad mitochondrial
+non-Hsp60/10",Broad mito,<span style='color:#4C78A8'><b>Broad<br>mitochondrial<br>non-Hsp60/10</b></span>,Protein,MCI,98,0.06976656483953544,0.024140901308896696
+Broad_MitoCarta_non_Hsp60_10,"Broad mitochondrial
+non-Hsp60/10",Broad mito,<span style='color:#4C78A8'><b>Broad<br>mitochondrial<br>non-Hsp60/10</b></span>,Protein,AD,73,-0.11324869781494369,0.030249288919981136
+Broad_MitoCarta_non_Hsp60_10,"Broad mitochondrial
+non-Hsp60/10",Broad mito,<span style='color:#4C78A8'><b>Broad<br>mitochondrial<br>non-Hsp60/10</b></span>,RNA,NCI,200,0.0036438054173474135,0.013182175662984857
+Broad_MitoCarta_non_Hsp60_10,"Broad mitochondrial
+non-Hsp60/10",Broad mito,<span style='color:#4C78A8'><b>Broad<br>mitochondrial<br>non-Hsp60/10</b></span>,RNA,MCI,158,0.039115724860061464,0.015188341971797545
+Broad_MitoCarta_non_Hsp60_10,"Broad mitochondrial
+non-Hsp60/10",Broad mito,<span style='color:#4C78A8'><b>Broad<br>mitochondrial<br>non-Hsp60/10</b></span>,RNA,AD,220,-0.03140475277890482,0.012760607180211447
+Mito_translation_non_Hsp60_10,"Mito translation
+non-Hsp60/10",Mito translation,<span style='color:#7A3E9D'>Mito<br>translation<br>non-Hsp60/10</span>,Protein,NCI,65,0.05601770591857098,0.05309128094546115
+Mito_translation_non_Hsp60_10,"Mito translation
+non-Hsp60/10",Mito translation,<span style='color:#7A3E9D'>Mito<br>translation<br>non-Hsp60/10</span>,Protein,MCI,98,0.08389961525031794,0.04457681966859402
+Mito_translation_non_Hsp60_10,"Mito translation
+non-Hsp60/10",Mito translation,<span style='color:#7A3E9D'>Mito<br>translation<br>non-Hsp60/10</span>,Protein,AD,73,-0.1625111394416202,0.052885431768683246
+Mito_translation_non_Hsp60_10,"Mito translation
+non-Hsp60/10",Mito translation,<span style='color:#7A3E9D'>Mito<br>translation<br>non-Hsp60/10</span>,RNA,NCI,200,0.013594975544472317,0.017960021213071234
+Mito_translation_non_Hsp60_10,"Mito translation
+non-Hsp60/10",Mito translation,<span style='color:#7A3E9D'>Mito<br>translation<br>non-Hsp60/10</span>,RNA,MCI,158,0.05261108298632478,0.02163203223913574
+Mito_translation_non_Hsp60_10,"Mito translation
+non-Hsp60/10",Mito translation,<span style='color:#7A3E9D'>Mito<br>translation<br>non-Hsp60/10</span>,RNA,AD,220,-0.05014339191241685,0.01850781247520648
+OXPHOS_ETC_non_Hsp60_10,"OXPHOS/ETC
+non-Hsp60/10",OXPHOS/ETC,<span style='color:#2E86DE'>OXPHOS/ETC<br>non-Hsp60/10</span>,Protein,NCI,65,0.006020823446917076,0.05234004295471456
+OXPHOS_ETC_non_Hsp60_10,"OXPHOS/ETC
+non-Hsp60/10",OXPHOS/ETC,<span style='color:#2E86DE'>OXPHOS/ETC<br>non-Hsp60/10</span>,Protein,MCI,98,0.10992076556929758,0.04047750046849288
+OXPHOS_ETC_non_Hsp60_10,"OXPHOS/ETC
+non-Hsp60/10",OXPHOS/ETC,<span style='color:#2E86DE'>OXPHOS/ETC<br>non-Hsp60/10</span>,Protein,AD,73,-0.15268456798748997,0.05482922230856347
+OXPHOS_ETC_non_Hsp60_10,"OXPHOS/ETC
+non-Hsp60/10",OXPHOS/ETC,<span style='color:#2E86DE'>OXPHOS/ETC<br>non-Hsp60/10</span>,RNA,NCI,200,0.011311751584522307,0.027145493774003618
+OXPHOS_ETC_non_Hsp60_10,"OXPHOS/ETC
+non-Hsp60/10",OXPHOS/ETC,<span style='color:#2E86DE'>OXPHOS/ETC<br>non-Hsp60/10</span>,RNA,MCI,158,0.06951926229213944,0.03208735504822257
+OXPHOS_ETC_non_Hsp60_10,"OXPHOS/ETC
+non-Hsp60/10",OXPHOS/ETC,<span style='color:#2E86DE'>OXPHOS/ETC<br>non-Hsp60/10</span>,RNA,AD,220,-0.060210880723007024,0.02596952069858235
+TCA_pyruvate_metabolism_non_Hsp60_10,"TCA/pyruvate
+non-Hsp60/10",TCA/pyruvate,<span style='color:#2CA02C'>TCA/<br>pyruvate<br>non-Hsp60/10</span>,Protein,NCI,65,0.03022841252680037,0.03535679554932376
+TCA_pyruvate_metabolism_non_Hsp60_10,"TCA/pyruvate
+non-Hsp60/10",TCA/pyruvate,<span style='color:#2CA02C'>TCA/<br>pyruvate<br>non-Hsp60/10</span>,Protein,MCI,98,0.07845433380298696,0.028507468869178768
+TCA_pyruvate_metabolism_non_Hsp60_10,"TCA/pyruvate
+non-Hsp60/10",TCA/pyruvate,<span style='color:#2CA02C'>TCA/<br>pyruvate<br>non-Hsp60/10</span>,Protein,AD,73,-0.13223796612239355,0.03579265131980059
+TCA_pyruvate_metabolism_non_Hsp60_10,"TCA/pyruvate
+non-Hsp60/10",TCA/pyruvate,<span style='color:#2CA02C'>TCA/<br>pyruvate<br>non-Hsp60/10</span>,RNA,NCI,200,-0.010450415864867333,0.021684525440655397
+TCA_pyruvate_metabolism_non_Hsp60_10,"TCA/pyruvate
+non-Hsp60/10",TCA/pyruvate,<span style='color:#2CA02C'>TCA/<br>pyruvate<br>non-Hsp60/10</span>,RNA,MCI,158,0.032662304643453155,0.02207885334245992
+TCA_pyruvate_metabolism_non_Hsp60_10,"TCA/pyruvate
+non-Hsp60/10",TCA/pyruvate,<span style='color:#2CA02C'>TCA/<br>pyruvate<br>non-Hsp60/10</span>,RNA,AD,220,-0.013957095275880436,0.020017525326374633
+FAO_metabolism_non_Hsp60_10,"FAO/metabolism
+non-Hsp60/10",FAO/metabolism,<span style='color:#E67E22'>FAO/<br>metabolism<br>non-Hsp60/10</span>,Protein,NCI,65,0.003411817401653535,0.025798430689386698
+FAO_metabolism_non_Hsp60_10,"FAO/metabolism
+non-Hsp60/10",FAO/metabolism,<span style='color:#E67E22'>FAO/<br>metabolism<br>non-Hsp60/10</span>,Protein,MCI,98,0.07242760245271423,0.02345660764438828
+FAO_metabolism_non_Hsp60_10,"FAO/metabolism
+non-Hsp60/10",FAO/metabolism,<span style='color:#E67E22'>FAO/<br>metabolism<br>non-Hsp60/10</span>,Protein,AD,73,-0.10026949549963629,0.02985124439623493
+FAO_metabolism_non_Hsp60_10,"FAO/metabolism
+non-Hsp60/10",FAO/metabolism,<span style='color:#E67E22'>FAO/<br>metabolism<br>non-Hsp60/10</span>,RNA,NCI,200,-0.011771286125702338,0.016199095559812218
+FAO_metabolism_non_Hsp60_10,"FAO/metabolism
+non-Hsp60/10",FAO/metabolism,<span style='color:#E67E22'>FAO/<br>metabolism<br>non-Hsp60/10</span>,RNA,MCI,158,0.030241910787874735,0.017915557348218963
+FAO_metabolism_non_Hsp60_10,"FAO/metabolism
+non-Hsp60/10",FAO/metabolism,<span style='color:#E67E22'>FAO/<br>metabolism<br>non-Hsp60/10</span>,RNA,AD,220,-0.011018021269749923,0.01504468906758544
+Mito_protein_quality_control_non_Hsp60_10,"Mito protein QC
+non-Hsp60/10",Mito protein QC,<span style='color:#A65E2E'>Mito protein<br>QC<br>non-Hsp60/10</span>,Protein,NCI,65,0.018923564631432604,0.042061355980102084
+Mito_protein_quality_control_non_Hsp60_10,"Mito protein QC
+non-Hsp60/10",Mito protein QC,<span style='color:#A65E2E'>Mito protein<br>QC<br>non-Hsp60/10</span>,Protein,MCI,98,0.09221947952848991,0.03128649336569795
+Mito_protein_quality_control_non_Hsp60_10,"Mito protein QC
+non-Hsp60/10",Mito protein QC,<span style='color:#A65E2E'>Mito protein<br>QC<br>non-Hsp60/10</span>,Protein,AD,73,-0.14065124239500149,0.04292914410141447
+Mito_protein_quality_control_non_Hsp60_10,"Mito protein QC
+non-Hsp60/10",Mito protein QC,<span style='color:#A65E2E'>Mito protein<br>QC<br>non-Hsp60/10</span>,RNA,NCI,200,0.014835956172830223,0.018540523948229307
+Mito_protein_quality_control_non_Hsp60_10,"Mito protein QC
+non-Hsp60/10",Mito protein QC,<span style='color:#A65E2E'>Mito protein<br>QC<br>non-Hsp60/10</span>,RNA,MCI,158,0.04185285962769963,0.022126469031625094
+Mito_protein_quality_control_non_Hsp60_10,"Mito protein QC
+non-Hsp60/10",Mito protein QC,<span style='color:#A65E2E'>Mito protein<br>QC<br>non-Hsp60/10</span>,RNA,AD,220,-0.04354519570790635,0.019258578716338248
+Proteasome_core_non_Hsp60_10,"Proteasome
+core",Proteasome,<span style='color:#7D3C98'>Proteasome<br>core</span>,Protein,NCI,65,-0.058422074226820185,0.0713544170110773
+Proteasome_core_non_Hsp60_10,"Proteasome
+core",Proteasome,<span style='color:#7D3C98'>Proteasome<br>core</span>,Protein,MCI,98,0.013403753278640807,0.047290515379519386
+Proteasome_core_non_Hsp60_10,"Proteasome
+core",Proteasome,<span style='color:#7D3C98'>Proteasome<br>core</span>,Protein,AD,73,0.03402557538954082,0.0507239733956674
+Proteasome_core_non_Hsp60_10,"Proteasome
+core",Proteasome,<span style='color:#7D3C98'>Proteasome<br>core</span>,RNA,NCI,200,0.010915283561630547,0.03280225737901207
+Proteasome_core_non_Hsp60_10,"Proteasome
+core",Proteasome,<span style='color:#7D3C98'>Proteasome<br>core</span>,RNA,MCI,158,0.08650292977302056,0.038652254085131156
+Proteasome_core_non_Hsp60_10,"Proteasome
+core",Proteasome,<span style='color:#7D3C98'>Proteasome<br>core</span>,RNA,AD,220,-0.0720478164384705,0.02960274704181155
+Lysosome_core_non_Hsp60_10,"Lysosome
+core",Lysosome,<span style='color:#1E8449'>Lysosome<br>core</span>,Protein,NCI,65,0.019940840050844743,0.03639964737763033
+Lysosome_core_non_Hsp60_10,"Lysosome
+core",Lysosome,<span style='color:#1E8449'>Lysosome<br>core</span>,Protein,MCI,98,0.013640349553305302,0.023767278764873903
+Lysosome_core_non_Hsp60_10,"Lysosome
+core",Lysosome,<span style='color:#1E8449'>Lysosome<br>core</span>,Protein,AD,73,-0.03606724465107988,0.03632708610584193
+Lysosome_core_non_Hsp60_10,"Lysosome
+core",Lysosome,<span style='color:#1E8449'>Lysosome<br>core</span>,RNA,NCI,200,-0.0074506811195130425,0.017024454372565206
+Lysosome_core_non_Hsp60_10,"Lysosome
+core",Lysosome,<span style='color:#1E8449'>Lysosome<br>core</span>,RNA,MCI,158,0.02132574132977806,0.020452115133347645
+Lysosome_core_non_Hsp60_10,"Lysosome
+core",Lysosome,<span style='color:#1E8449'>Lysosome<br>core</span>,RNA,AD,220,-0.008542413210007566,0.015452148708089326
+UPRmt_core_non_Hsp60_10,"UPRmt
+core",UPRmt,<span style='color:#F39C12'>UPRmt<br>core</span>,Protein,NCI,65,-0.013379973755071875,0.06264754875797675
+UPRmt_core_non_Hsp60_10,"UPRmt
+core",UPRmt,<span style='color:#F39C12'>UPRmt<br>core</span>,Protein,MCI,98,0.07638432769253349,0.05012780706924728
+UPRmt_core_non_Hsp60_10,"UPRmt
+core",UPRmt,<span style='color:#F39C12'>UPRmt<br>core</span>,Protein,AD,73,-0.09062966876422979,0.06618146133337627
+UPRmt_core_non_Hsp60_10,"UPRmt
+core",UPRmt,<span style='color:#F39C12'>UPRmt<br>core</span>,RNA,NCI,200,-0.008758711628599935,0.0248528164793584
+UPRmt_core_non_Hsp60_10,"UPRmt
+core",UPRmt,<span style='color:#F39C12'>UPRmt<br>core</span>,RNA,MCI,158,0.036068107719395004,0.026149744639794248
+UPRmt_core_non_Hsp60_10,"UPRmt
+core",UPRmt,<span style='color:#F39C12'>UPRmt<br>core</span>,RNA,AD,220,-0.01794099406335278,0.026652038290641056
