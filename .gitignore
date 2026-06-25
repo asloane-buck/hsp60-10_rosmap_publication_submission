@@ -25,3 +25,10 @@ outputs/main_figures/tables/main_fig4_cognition/Fig4A_network_diagnosis_panel_da
 outputs/main_figures/tables/main_fig4_cognition/Fig4_network_level_cognition_models_source_data.csv
 outputs/supplemental_figures/audits/SuppFig2_matched_individual_long_scores.csv
 outputs/supplemental_figures/audits/SuppFig2_matched_sample_availability_audit.csv
+
+# Local supplemental inputs; do not archive
+data/supplemental_inputs/**
+!data/supplemental_inputs/README.md
+
+# Sample-level derived source data; keep local only
+outputs/main_figures/tables/main_fig1_all_clients/Fig1A_all_clients_overlay_long.csv

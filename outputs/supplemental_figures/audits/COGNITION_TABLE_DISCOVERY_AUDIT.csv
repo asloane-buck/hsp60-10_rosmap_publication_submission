@@ -1,6 +1,6 @@
 source,n_rows,n_overlap_regional_or_background,n_overlap_hsp,n_overlap_background
-/Users/ashlynsloane/Buck Institute 25-26/ROSMAP Analysis March 26/hsp60_rosmap_publication_ready_repo/outputs/supplemental_figures/audits/COGNITION_LOOKUP_SELECTED_FOR_SUPPLEMENTAL_NULL.csv,915,915,303,612
-/Users/ashlynsloane/Buck Institute 25-26/ROSMAP Analysis March 26/hsp60_rosmap_publication_ready_repo/outputs/main_figures/tables/main_fig5_matched_null_specificity/Fig5_gene_universe_cognition_summary_by_gene.csv,915,915,303,612
-/Users/ashlynsloane/Buck Institute 25-26/ROSMAP Analysis March 26/hsp60_rosmap_publication_ready_repo/outputs/main_figures/tables/main_fig4_cognition/Fig4_client_level_cognition_summary_by_gene.csv,306,306,303,3
-/Users/ashlynsloane/Buck Institute 25-26/ROSMAP Analysis March 26/hsp60_rosmap_publication_ready_repo/outputs/main_figures/tables/main_fig4_cognition/Fig4_client_level_cognition_summary_with_MitoCarta_classes.csv,306,306,303,3
-/Users/ashlynsloane/Buck Institute 25-26/ROSMAP Analysis March 26/hsp60_rosmap_publication_ready_repo/outputs/main_figures/tables/main_fig4_cognition/Fig4B_client_level_dotplot_source_data.csv,25,25,25,0
+outputs/supplemental_figures/audits/COGNITION_LOOKUP_SELECTED_FOR_SUPPLEMENTAL_NULL.csv,915,915,303,612
+outputs/main_figures/tables/main_fig5_matched_null_specificity/Fig5_gene_universe_cognition_summary_by_gene.csv,915,915,303,612
+outputs/main_figures/tables/main_fig4_cognition/Fig4_client_level_cognition_summary_by_gene.csv,306,306,303,3
+outputs/main_figures/tables/main_fig4_cognition/Fig4_client_level_cognition_summary_with_MitoCarta_classes.csv,306,306,303,3
+outputs/main_figures/tables/main_fig4_cognition/Fig4B_client_level_dotplot_source_data.csv,25,25,25,0

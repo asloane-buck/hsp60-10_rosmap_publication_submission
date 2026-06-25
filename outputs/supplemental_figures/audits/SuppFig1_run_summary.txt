@@ -13,6 +13,6 @@ stage column used for RNA: diagnosis_stage
 stage column used for protein: diagnosis_stage
 covariate columns detected for RNA: age=age, sex=sex, RIN=rin, PMI=pmi, Braak=braak, CERAD=cerad
 covariate columns detected for protein: age=age, sex=sex, RIN=rin, PMI=pmi, Braak=braak, CERAD=cerad
-mitochondrial background source: /Users/ashlynsloane/Buck Institute 25-26/ROSMAP Analysis March 26/hsp60_rosmap_publication_ready_repo/data/supplemental_inputs/Broad_MitoCarta_non_Hsp60_10.csv (880 genes after gene-symbol harmonization)
+mitochondrial background source: data/supplemental_inputs/Broad_MitoCarta_non_Hsp60_10.csv (880 genes after gene-symbol harmonization)
 panels generated: A Analysis workflow; B Client detection across RNA and proteomics; C Samples by diagnosis/stage; D Covariate availability; E Protein detection-rate categories
 panels skipped: none
