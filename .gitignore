@@ -32,3 +32,6 @@ data/supplemental_inputs/**
 
 # Sample-level derived source data; keep local only
 outputs/main_figures/tables/main_fig1_all_clients/Fig1A_all_clients_overlay_long.csv
+
+# Local PDF backup before font embedding
+_font_embed_backup/
