@@ -67,7 +67,7 @@ For final publication, add either:
 
 ## Code availability statement draft
 
-Custom R analysis code used to generate the manuscript analyses and figures is available at [GitHub repository URL] and archived at [Zenodo DOI]. Controlled-access ROSMAP transcriptomic, proteomic, clinical, neuropathological, and metadata files are available through the applicable AD Knowledge Portal/Synapse access procedures and are not redistributed with the code repository.
+Custom R analysis code used to generate the manuscript analyses and figures is available at this GitHub repository: https://github.com/asloane-buck/hsp60-10_rosmap_publication. A versioned archival copy will be deposited on Zenodo for the manuscript submission/preprint version. Controlled-access ROSMAP transcriptomic, proteomic, clinical, neuropathological, and metadata files are available through the applicable AD Knowledge Portal/Synapse access procedures and are not redistributed with this code repository.
 
 ## License
 
