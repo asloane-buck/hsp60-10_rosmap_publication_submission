@@ -131,7 +131,7 @@ sf5_fmt_p <- function(p) {
 sf5_wilcox_p <- function(df, value_col) {
   df2 <- df |>
     dplyr::filter(.data$group %in% names(sf5_group_colors)) |>
-    dplyr::select(.data$group, value = dplyr::all_of(value_col)) |>
+    dplyr::select("group", value = dplyr::all_of(value_col)) |>
     tidyr::drop_na()
 
   if (dplyr::n_distinct(df2$group) < 2) return(NA_real_)
@@ -366,7 +366,7 @@ sf5_standardize_msbb_inputs <- function(msbb_combined) {
 sf5_prepare_rosmap_tbl <- function(hsp_tbl, background_tbl) {
   hsp_tbl <- hsp_tbl |>
     sf5_validate_tbl(
-      required_cols = c("gene", "inverse_braak_magnitude", "protein_collapse_magnitude"),
+      required_cols = c("gene", "inverse_braak_magnitude", "protein_late_decline_magnitude"),
       label = "hsp_null_tbl"
     ) |>
     dplyr::mutate(
@@ -376,7 +376,7 @@ sf5_prepare_rosmap_tbl <- function(hsp_tbl, background_tbl) {
 
   background_tbl <- background_tbl |>
     sf5_validate_tbl(
-      required_cols = c("gene", "inverse_braak_magnitude", "protein_collapse_magnitude"),
+      required_cols = c("gene", "inverse_braak_magnitude", "protein_late_decline_magnitude"),
       label = "background_null_pool"
     ) |>
     dplyr::mutate(
@@ -390,7 +390,7 @@ sf5_prepare_rosmap_tbl <- function(hsp_tbl, background_tbl) {
       gene = .data$gene,
       group = factor(.data$group, levels = names(sf5_group_colors)),
       rosmap_inverse_braak = suppressWarnings(as.numeric(.data$inverse_braak_magnitude)),
-      rosmap_collapse = suppressWarnings(as.numeric(.data$protein_collapse_magnitude))
+      rosmap_late_decline = suppressWarnings(as.numeric(.data$protein_late_decline_magnitude))
     ) |>
     dplyr::filter(!is.na(.data$gene), nzchar(.data$gene))
 }
@@ -420,10 +420,11 @@ sf5_prepare_msbb_tbl <- function(msbb_braak_effects, msbb_collapse, hsp_genes, b
     dplyr::transmute(
       gene = .data$gene,
       msbb_high_minus_low = suppressWarnings(as.numeric(.data$high_minus_low)),
-      msbb_collapse = dplyr::case_when(
-        "collapse_magnitude_positive" %in% colnames(msbb_collapse) ~ suppressWarnings(as.numeric(.data$collapse_magnitude_positive)),
-        TRUE ~ -suppressWarnings(as.numeric(.data$high_minus_low))
-      ),
+      msbb_late_decline = if ("collapse_magnitude_positive" %in% colnames(msbb_collapse)) {
+        suppressWarnings(as.numeric(.data$collapse_magnitude_positive))
+      } else {
+        -suppressWarnings(as.numeric(.data$high_minus_low))
+      },
       msbb_collapse_n_low = if ("collapse_n_low" %in% colnames(msbb_collapse)) suppressWarnings(as.numeric(.data$collapse_n_low)) else NA_real_,
       msbb_collapse_n_high = if ("collapse_n_high" %in% colnames(msbb_collapse)) suppressWarnings(as.numeric(.data$collapse_n_high)) else NA_real_
     )
@@ -443,16 +444,16 @@ sf5_prepare_msbb_tbl <- function(msbb_braak_effects, msbb_collapse, hsp_genes, b
 
 sf5_prepare_cross_tbl <- function(rosmap_tbl, msbb_tbl) {
   rosmap_tbl |>
-    dplyr::select(.data$gene, .data$group, .data$rosmap_inverse_braak, .data$rosmap_collapse) |>
+    dplyr::select("gene", "group", "rosmap_inverse_braak", "rosmap_late_decline") |>
     dplyr::inner_join(
       msbb_tbl |>
         dplyr::select(
-          .data$gene,
-          .data$msbb_inverse_braak_beta,
-          .data$msbb_inverse_braak_rho,
-          .data$msbb_braak_p,
-          .data$msbb_braak_n,
-          .data$msbb_collapse
+          "gene",
+          "msbb_inverse_braak_beta",
+          "msbb_inverse_braak_rho",
+          "msbb_braak_p",
+          "msbb_braak_n",
+          "msbb_late_decline"
         ),
       by = "gene"
     ) |>
@@ -617,7 +618,6 @@ sf5_cross_cohort_scatter <- function(cross_tbl) {
       vjust = -0.35,
       label = paste0("Spearman rho = ", signif(rho, 3), "\n", sf5_fmt_p(p_cor)),
       size = 2.85,
-      label.size = 0.25,
       fill = "white",
       color = "grey20"
     ) +
@@ -774,7 +774,7 @@ make_supfig5_msbb_cross_cohort_validation <- function(inputs) {
     dplyr::summarise(
       n = dplyr::n(),
       median_inverse_braak = stats::median(.data$rosmap_inverse_braak, na.rm = TRUE),
-      median_collapse = stats::median(.data$rosmap_collapse, na.rm = TRUE),
+      median_late_decline = stats::median(.data$rosmap_late_decline, na.rm = TRUE),
       .groups = "drop"
     )
 
@@ -784,7 +784,7 @@ make_supfig5_msbb_cross_cohort_validation <- function(inputs) {
       n = dplyr::n(),
       median_inverse_braak_beta = stats::median(.data$msbb_inverse_braak_beta, na.rm = TRUE),
       median_inverse_braak_rho = stats::median(.data$msbb_inverse_braak_rho, na.rm = TRUE),
-      median_collapse = stats::median(.data$msbb_collapse, na.rm = TRUE),
+      median_late_decline = stats::median(.data$msbb_late_decline, na.rm = TRUE),
       .groups = "drop"
     )
 
@@ -899,7 +899,7 @@ make_supfig5_msbb_cross_cohort_validation <- function(inputs) {
     paste0("ROSMAP Hsp60/10 input: ", hsp_input$name),
     paste0("ROSMAP background input: ", background_input$name),
     paste0("MSBB Braak input: ", msbb_braak_input$name),
-    paste0("MSBB collapse input: ", msbb_collapse_input$name),
+    paste0("MSBB late-decline input: ", msbb_collapse_input$name),
     paste0("ROSMAP genes: ", nrow(rosmap_tbl)),
     paste0("MSBB matched genes: ", nrow(msbb_tbl)),
     paste0("Cross-cohort genes: ", nrow(cross_tbl)),
@@ -908,7 +908,7 @@ make_supfig5_msbb_cross_cohort_validation <- function(inputs) {
       "  - ", rosmap_summary$group,
       ": n=", rosmap_summary$n,
       ", median inverse Braak=", signif(rosmap_summary$median_inverse_braak, 4),
-      ", median collapse=", signif(rosmap_summary$median_collapse, 4),
+      ", median late decline=", signif(rosmap_summary$median_late_decline, 4),
       collapse = "
 "
     ),
@@ -918,7 +918,7 @@ make_supfig5_msbb_cross_cohort_validation <- function(inputs) {
       ": n=", msbb_summary$n,
       ", median inverse Braak beta=", signif(msbb_summary$median_inverse_braak_beta, 4),
       ", median inverse Braak rho=", signif(msbb_summary$median_inverse_braak_rho, 4),
-      ", median collapse=", signif(msbb_summary$median_collapse, 4),
+      ", median late decline=", signif(msbb_summary$median_late_decline, 4),
       collapse = "
 "
     ),

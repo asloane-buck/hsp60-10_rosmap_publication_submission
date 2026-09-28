@@ -3,7 +3,7 @@
 # ============================================================
 
 # Purpose:
-# Test whether Hsp60/10 clients show stronger collapse, inverse Braak coupling,
+# Test whether Hsp60/10 clients show stronger late-stage decline, inverse Braak coupling,
 # cognition association, and AGORA support than abundance-matched
 # non-Hsp60/10 mitochondrial background proteins.
 
@@ -85,9 +85,9 @@ sf3_get_input <- function(candidate_names, required = TRUE, label = "input") {
 sf3_validate_tbl <- function(tbl, label) {
   required_cols <- c(
     "gene",
-    "protein_collapse_magnitude",
+    "protein_late_decline_magnitude",
     "inverse_braak_magnitude",
-    "cognition_composite_score",
+    "cognition_priority_score",
     "agora_nominated_target",
     "abundance_bin"
   )
@@ -107,10 +107,11 @@ sf3_validate_tbl <- function(tbl, label) {
     dplyr::mutate(
       gene = clean_gene(.data$gene),
       abundance_bin = as.character(.data$abundance_bin),
-      agora_nominated_target = dplyr::case_when(
-        is.logical(.data$agora_nominated_target) ~ as.numeric(.data$agora_nominated_target),
-        TRUE ~ suppressWarnings(as.numeric(.data$agora_nominated_target))
-      )
+      agora_nominated_target = if (is.logical(.data$agora_nominated_target)) {
+        as.numeric(.data$agora_nominated_target)
+      } else {
+        suppressWarnings(as.numeric(.data$agora_nominated_target))
+      }
     ) |>
     dplyr::filter(!is.na(.data$gene), nzchar(.data$gene))
 }
@@ -280,7 +281,7 @@ sf3_reannotate_agora <- function(tbl, inputs) {
       agora_nominated_target = dplyr::coalesce(.data$agora_nominated_target_new, 0),
       agora_nominated_target = as.numeric(.data$agora_nominated_target)
     ) |>
-    dplyr::select(-.data$agora_nominated_target_new)
+    dplyr::select(-"agora_nominated_target_new")
   
   message(
     "Re-annotated AGORA targets using ", agora_obj_name,
@@ -297,13 +298,13 @@ sf3_reannotate_agora <- function(tbl, inputs) {
 
 sf3_metric_tbl <- tibble::tibble(
   metric = c(
-    "protein_collapse_magnitude",
+    "protein_late_decline_magnitude",
     "inverse_braak_magnitude",
-    "cognition_composite_score",
+    "cognition_priority_score",
     "agora_nominated_target"
   ),
   metric_label = c(
-    "Late-stage protein collapse",
+    "Late-stage protein decline",
     "Inverse Braak association",
     "Cognition association score",
     "AGORA target fraction"
@@ -444,7 +445,7 @@ sf3_observed_summary <- function(hsp_tbl) {
 
 sf3_null_summary <- function(null_tbl, observed_tbl) {
   null_tbl2 <- null_tbl |>
-    dplyr::rename(null_perm_mean = .data$null_mean)
+    dplyr::rename(null_perm_mean = "null_mean")
   
   null_tbl2 |>
     dplyr::group_by(.data$metric, .data$metric_label, .data$metric_type) |>
@@ -598,7 +599,6 @@ sf3_make_null_hist <- function(null_tbl, summary_tbl, metric_name, title, xlab) 
       hjust = ifelse(obs > null_mean, 1, 0),
       vjust = 1.22,
       size = 3.1,
-      label.size = 0.25,
       fill = "white",
       color = "grey10"
     ) +
@@ -617,7 +617,7 @@ sf3_make_ratio_summary <- function(summary_tbl) {
       metric_label = factor(
         .data$metric_label,
         levels = rev(c(
-          "Late-stage protein collapse",
+          "Late-stage protein decline",
           "Inverse Braak association",
           "Cognition association score",
           "AGORA target fraction"
@@ -712,9 +712,9 @@ make_supfig3_mitochondrial_specificity <- function(inputs, n_perm = 10000, seed 
     sf3_make_null_hist(
       null_tbl,
       summary_tbl,
-      metric_name = "protein_collapse_magnitude",
-      title = "Late-stage collapse specificity",
-      xlab = "Mean collapse magnitude"
+      metric_name = "protein_late_decline_magnitude",
+      title = "Late-stage decline specificity",
+      xlab = "Mean late-stage decline magnitude"
     ),
     "B"
   )
@@ -732,7 +732,7 @@ make_supfig3_mitochondrial_specificity <- function(inputs, n_perm = 10000, seed 
 
   panel_paths <- c(
     save_panel_set(panel_a, "SuppFig3A_matched_null_design", width = 7.2, height = 2.4, output_dir = panels_dir),
-    save_panel_set(panel_b, "SuppFig3B_collapse_null", width = 5.9, height = 4.0, output_dir = panels_dir),
+    save_panel_set(panel_b, "SuppFig3B_late_decline_null", width = 5.9, height = 4.0, output_dir = panels_dir),
     save_panel_set(panel_c, "SuppFig3C_inverse_braak_null", width = 5.9, height = 4.0, output_dir = panels_dir),
     save_panel_set(panel_d, "SuppFig3D_specificity_summary", width = 6.3, height = 4.0, output_dir = panels_dir)
   )

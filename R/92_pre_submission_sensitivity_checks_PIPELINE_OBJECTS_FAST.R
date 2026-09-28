@@ -32,7 +32,8 @@ suppressPackageStartupMessages({
   library(broom)
 })
 
-set.seed(1300)
+sensitivity_seed <- 1300L
+set.seed(sensitivity_seed)
 options(stringsAsFactors = FALSE)
 
 `%||%` <- function(x, y) {
@@ -55,7 +56,43 @@ if (is.na(this_file) && requireNamespace("rstudioapi", quietly = TRUE)) {
   )
 }
 
-script_dir <- if (!is.na(this_file)) dirname(this_file) else getwd()
+## Resolve the R pipeline directory deterministically.
+##
+## When R/92 is sourced from a validator, sys.frame(1)$ofile can refer to
+## the caller rather than this script. Therefore do not use `ofile` to choose
+## the working directory. Prefer the repository root/current R directory,
+## then fall back to cfg$project_dir if cfg is already loaded.
+
+wd_now <- normalizePath(getwd(), mustWork = TRUE)
+
+if (
+  file.exists(file.path(wd_now, "R", "00_config.R")) &&
+  file.exists(file.path(wd_now, "R", "01_utils.R"))
+) {
+  script_dir <- normalizePath(file.path(wd_now, "R"), mustWork = TRUE)
+} else if (
+  file.exists(file.path(wd_now, "00_config.R")) &&
+  file.exists(file.path(wd_now, "01_utils.R"))
+) {
+  script_dir <- wd_now
+} else if (
+  exists("cfg", envir = .GlobalEnv, inherits = FALSE) &&
+  !is.null(cfg$project_dir) &&
+  file.exists(file.path(cfg$project_dir, "R", "00_config.R")) &&
+  file.exists(file.path(cfg$project_dir, "R", "01_utils.R"))
+) {
+  script_dir <- normalizePath(
+    file.path(cfg$project_dir, "R"),
+    mustWork = TRUE
+  )
+} else {
+  stop(
+    "Could not locate the R pipeline directory. ",
+    "Run this from the repository root or from the R/ directory.",
+    call. = FALSE
+  )
+}
+
 old_wd <- getwd()
 setwd(script_dir)
 on.exit(setwd(old_wd), add = TRUE)
@@ -63,10 +100,17 @@ on.exit(setwd(old_wd), add = TRUE)
 message("Script directory: ", getwd())
 
 for (script in c("00_config.R", "01_utils.R")) {
-  if (!file.exists(script)) {
-    stop("Missing required script in current directory: ", script, call. = FALSE)
+  script_path <- file.path(script_dir, script)
+
+  if (!file.exists(script_path)) {
+    stop(
+      "Missing required pipeline script: ",
+      script_path,
+      call. = FALSE
+    )
   }
-  source(script, local = .GlobalEnv)
+
+  source(script_path, local = .GlobalEnv)
 }
 
 sens_bool <- function(name, default = "TRUE") {
@@ -88,7 +132,7 @@ sens_cfg <- list(
   n_perm = sens_int("SENSITIVITY_N_PERM", 1000),
   n_perm_check1 = sens_int("SENSITIVITY_N_PERM_CHECK1", sens_int("SENSITIVITY_N_PERM", 1000)),
   n_perm_check2 = sens_int("SENSITIVITY_N_PERM_CHECK2", sens_int("SENSITIVITY_N_PERM", 1000)),
-  top_n_collapse = sens_int("SENSITIVITY_TOP_N_COLLAPSE", 40),
+  top_n_late_decline = sens_int("SENSITIVITY_TOP_N_LATE_DECLINE", 40),
   min_selected_genes = sens_int("SENSITIVITY_MIN_SELECTED_GENES", 8),
   min_clients_per_module = sens_int("SENSITIVITY_MIN_CLIENTS_PER_MODULE", 3),
   min_nonclients_per_module = sens_int("SENSITIVITY_MIN_NONCLIENTS_PER_MODULE", 3),
@@ -223,14 +267,10 @@ safe_wilcox_greater <- function(x, y) {
 }
 
 normalize_stage <- function(x) {
-  dplyr::recode(
-    as.character(x),
-    "Control" = "Control",
-    "AsymAD" = "Early AD",
-    "Early_AD" = "Early AD",
-    "Early AD" = "Early AD",
-    "AD" = "AD",
-    .default = as.character(x)
+  x <- as.character(x)
+  dplyr::case_when(
+    x %in% c("NCI", "MCI", "AD") ~ x,
+    TRUE ~ NA_character_
   )
 }
 
@@ -383,14 +423,14 @@ write_null_outputs <- function(null_tbl, full_file, summary_file) {
     dplyr::group_by(dplyr::across(dplyr::any_of(c("context", "selection", "group", "metric")))) |>
     dplyr::summarise(
       n_iter = dplyr::n(),
-      mean_abs_r_mean = if ("mean_abs_r" %in% names(dplyr::cur_data())) mean(mean_abs_r, na.rm = TRUE) else NA_real_,
-      mean_abs_r_q025 = if ("mean_abs_r" %in% names(dplyr::cur_data())) stats::quantile(mean_abs_r, 0.025, na.rm = TRUE) else NA_real_,
-      mean_abs_r_q500 = if ("mean_abs_r" %in% names(dplyr::cur_data())) stats::quantile(mean_abs_r, 0.500, na.rm = TRUE) else NA_real_,
-      mean_abs_r_q975 = if ("mean_abs_r" %in% names(dplyr::cur_data())) stats::quantile(mean_abs_r, 0.975, na.rm = TRUE) else NA_real_,
-      null_mean_value = if ("null_value" %in% names(dplyr::cur_data())) mean(null_value, na.rm = TRUE) else NA_real_,
-      null_q025 = if ("null_value" %in% names(dplyr::cur_data())) stats::quantile(null_value, 0.025, na.rm = TRUE) else NA_real_,
-      null_q500 = if ("null_value" %in% names(dplyr::cur_data())) stats::quantile(null_value, 0.500, na.rm = TRUE) else NA_real_,
-      null_q975 = if ("null_value" %in% names(dplyr::cur_data())) stats::quantile(null_value, 0.975, na.rm = TRUE) else NA_real_,
+      mean_abs_r_mean = if ("mean_abs_r" %in% names(dplyr::pick(dplyr::everything()))) mean(mean_abs_r, na.rm = TRUE) else NA_real_,
+      mean_abs_r_q025 = if ("mean_abs_r" %in% names(dplyr::pick(dplyr::everything()))) stats::quantile(mean_abs_r, 0.025, na.rm = TRUE) else NA_real_,
+      mean_abs_r_q500 = if ("mean_abs_r" %in% names(dplyr::pick(dplyr::everything()))) stats::quantile(mean_abs_r, 0.500, na.rm = TRUE) else NA_real_,
+      mean_abs_r_q975 = if ("mean_abs_r" %in% names(dplyr::pick(dplyr::everything()))) stats::quantile(mean_abs_r, 0.975, na.rm = TRUE) else NA_real_,
+      null_mean_value = if ("null_value" %in% names(dplyr::pick(dplyr::everything()))) mean(null_value, na.rm = TRUE) else NA_real_,
+      null_q025 = if ("null_value" %in% names(dplyr::pick(dplyr::everything()))) stats::quantile(null_value, 0.025, na.rm = TRUE) else NA_real_,
+      null_q500 = if ("null_value" %in% names(dplyr::pick(dplyr::everything()))) stats::quantile(null_value, 0.500, na.rm = TRUE) else NA_real_,
+      null_q975 = if ("null_value" %in% names(dplyr::pick(dplyr::everything()))) stats::quantile(null_value, 0.975, na.rm = TRUE) else NA_real_,
       .groups = "drop"
     )
   readr::write_csv(null_summary, summary_file)
@@ -521,8 +561,8 @@ client_metrics <- all_hsp60_10_client_tbl |>
     display_gene = as.character(display_gene),
     functional_class = as.character(functional_class),
     protein_late_effect = safe_num2(protein_late_effect),
-    protein_collapse_magnitude = safe_num2(protein_collapse_magnitude),
-    collapse_percentile = safe_num2(collapse_percentile),
+    protein_late_decline_magnitude = safe_num2(protein_late_decline_magnitude),
+    late_decline_percentile = safe_num2(late_decline_percentile),
     hub_mean_abs_cor = safe_num2(hub_mean_abs_cor),
     hub_degree = safe_num2(hub_degree),
     centrality_percentile = safe_num2(centrality_percentile),
@@ -557,14 +597,66 @@ message("Detected Hsp60/10 client proteins available for sensitivity checks: ", 
 ############################################################
 
 make_protein_stage_meta <- function() {
-  prot_meta_adj |>
+  if (!"clinical_stage" %in% colnames(prot_meta_adj)) {
+    stop(
+      "prot_meta_adj is missing canonical clinical_stage. ",
+      "Run the corrected production pipeline before R/92.",
+      call. = FALSE
+    )
+  }
+
+  out <- prot_meta_adj |>
     dplyr::transmute(
-      SampleID = as.character(SampleID),
-      stage = normalize_stage(EmoryStrictDx.2019),
-      stage = factor(stage, levels = c("Control", "Early AD", "AD"))
+      SampleID = as.character(.data$SampleID),
+      stage = normalize_stage(.data$clinical_stage),
+      stage = factor(stage, levels = c("NCI", "MCI", "AD"))
     ) |>
-    dplyr::filter(!is.na(SampleID), !is.na(stage), SampleID %in% colnames(prot_mat)) |>
-    dplyr::distinct(SampleID, .keep_all = TRUE)
+    dplyr::filter(
+      !is.na(.data$SampleID),
+      !is.na(.data$stage),
+      .data$SampleID %in% colnames(prot_mat)
+    ) |>
+    dplyr::distinct(.data$SampleID, .keep_all = TRUE)
+
+  stage_counts <- out |>
+    dplyr::count(.data$stage, name = "n_samples") |>
+    tidyr::complete(
+      stage = factor(c("NCI", "MCI", "AD"), levels = c("NCI", "MCI", "AD")),
+      fill = list(n_samples = 0L)
+    )
+
+  expected_counts <- c(NCI = 168L, MCI = 97L, AD = 109L)
+  observed_counts <- stats::setNames(
+    stage_counts$n_samples,
+    as.character(stage_counts$stage)
+  )
+
+  if (!identical(
+    as.integer(observed_counts[names(expected_counts)]),
+    as.integer(expected_counts)
+  )) {
+    stop(
+      "Unexpected primary-stage protein sample counts in R/92. Observed: ",
+      paste(
+        names(observed_counts),
+        observed_counts,
+        sep = "=",
+        collapse = ", "
+      ),
+      "; expected NCI=168, MCI=97, AD=109.",
+      call. = FALSE
+    )
+  }
+
+  readr::write_csv(
+    stage_counts,
+    file.path(
+      sens_cfg$output_dir,
+      "check1_primary_clinical_stage_sample_counts.csv"
+    )
+  )
+
+  out
 }
 
 residualize_matrix_on_stage <- function(mat, stage_meta) {
@@ -595,33 +687,33 @@ make_cor_mat <- function(mat, method = sens_cfg$corr_method) {
 
 select_check1_sets <- function(client_metrics) {
   cm <- client_metrics |>
-    dplyr::filter(is.finite(protein_collapse_magnitude), gene %in% rownames(prot_mat)) |>
-    dplyr::arrange(dplyr::desc(protein_collapse_magnitude))
+    dplyr::filter(is.finite(protein_late_decline_magnitude), gene %in% rownames(prot_mat)) |>
+    dplyr::arrange(dplyr::desc(protein_late_decline_magnitude))
 
-  n_top <- min(sens_cfg$top_n_collapse, nrow(cm))
-  top_collapse <- cm |>
+  n_top <- min(sens_cfg$top_n_late_decline, nrow(cm))
+  top_late_decline <- cm |>
     dplyr::slice_head(n = n_top) |>
-    dplyr::mutate(selection = "top_late_collapse_clients")
+    dplyr::mutate(selection = "top_late_decline_clients")
 
   high_both <- cm |>
-    dplyr::filter(collapse_percentile >= 75, centrality_percentile >= 75)
+    dplyr::filter(late_decline_percentile >= 75, centrality_percentile >= 75)
 
   if (nrow(high_both) >= sens_cfg$min_selected_genes) {
-    collapse_central <- high_both |>
-      dplyr::arrange(dplyr::desc(collapse_percentile + centrality_percentile)) |>
-      dplyr::mutate(selection = "collapse_top_quartile_and_centrality_top_quartile")
+    late_decline_central <- high_both |>
+      dplyr::arrange(dplyr::desc(late_decline_percentile + centrality_percentile)) |>
+      dplyr::mutate(selection = "late_decline_top_quartile_and_centrality_top_quartile")
   } else {
-    collapse_central <- cm |>
+    late_decline_central <- cm |>
       dplyr::filter(is.finite(centrality_percentile)) |>
-      dplyr::mutate(rank_sum = collapse_percentile + centrality_percentile) |>
+      dplyr::mutate(rank_sum = late_decline_percentile + centrality_percentile) |>
       dplyr::arrange(dplyr::desc(rank_sum)) |>
       dplyr::slice_head(n = n_top) |>
-      dplyr::mutate(selection = "top_combined_collapse_and_centrality_rank")
+      dplyr::mutate(selection = "top_combined_late_decline_and_centrality_rank")
   }
 
   list(
-    top_late_collapse_clients = top_collapse,
-    collapse_central_clients = collapse_central
+    top_late_decline_clients = top_late_decline,
+    late_decline_central_clients = late_decline_central
   )
 }
 
@@ -761,7 +853,7 @@ run_check1 <- function() {
     dplyr::left_join(client_metrics, by = "gene")
 
   residual_centrality_tests <- tibble::tibble(
-    predictor = c("protein_collapse_magnitude", "collapse_percentile", "hub_mean_abs_cor", "centrality_percentile"),
+    predictor = c("protein_late_decline_magnitude", "late_decline_percentile", "hub_mean_abs_cor", "centrality_percentile"),
     outcome = "residual_mean_abs_r_to_other_clients"
   ) |>
     dplyr::mutate(
@@ -812,19 +904,19 @@ run_check1 <- function() {
 
   if (isTRUE(sens_cfg$save_plots)) {
     p_resid <- residual_degree |>
-      dplyr::filter(is.finite(protein_collapse_magnitude), is.finite(residual_mean_abs_r_to_other_clients)) |>
-      ggplot2::ggplot(ggplot2::aes(x = protein_collapse_magnitude, y = residual_mean_abs_r_to_other_clients)) +
+      dplyr::filter(is.finite(protein_late_decline_magnitude), is.finite(residual_mean_abs_r_to_other_clients)) |>
+      ggplot2::ggplot(ggplot2::aes(x = protein_late_decline_magnitude, y = residual_mean_abs_r_to_other_clients)) +
       ggplot2::geom_point(alpha = 0.75) +
       ggplot2::geom_smooth(method = "lm", se = TRUE, linewidth = 0.7) +
       ggplot2::labs(
-        title = "Late collapse versus stage-residualized co-movement",
-        x = "Protein late-collapse magnitude",
+        title = "Late-stage decline versus stage-residualized co-movement",
+        x = "Protein late-stage decline magnitude",
         y = "Mean absolute residual correlation to other clients"
       ) +
       ggplot2::theme_classic(base_size = 10)
 
     ggplot2::ggsave(
-      file.path(sens_cfg$output_dir, "check1_collapse_vs_stage_residualized_comovement.pdf"),
+      file.path(sens_cfg$output_dir, "check1_late_decline_vs_stage_residualized_comovement.pdf"),
       p_resid,
       width = 5.5,
       height = 4.0,
@@ -954,7 +1046,7 @@ run_check2 <- function() {
     dplyr::transmute(
       gene = as.character(gene),
       is_client = as.logical(is_hsp60_10_client),
-      protein_collapse_magnitude = safe_num2(protein_collapse_magnitude),
+      protein_late_decline_magnitude = safe_num2(protein_late_decline_magnitude),
       inverse_braak_magnitude = safe_num2(inverse_braak_magnitude),
       pathology_vulnerability_score = safe_num2(pathology_vulnerability_score),
       matching_abundance = safe_num2(matching_abundance),
@@ -991,7 +1083,7 @@ run_check2 <- function() {
   eligible <- metrics_for_function |>
     dplyr::filter(functional_module %in% eligible_modules)
 
-  metric_cols <- c("protein_collapse_magnitude", "inverse_braak_magnitude", "pathology_vulnerability_score")
+  metric_cols <- c("protein_late_decline_magnitude", "inverse_braak_magnitude", "pathology_vulnerability_score")
 
   direct_tests <- purrr::map_dfr(metric_cols, function(metric_col) {
     eligible |>
@@ -1068,20 +1160,20 @@ run_check2 <- function() {
 
   if (isTRUE(sens_cfg$save_plots)) {
     p_module <- direct_tests |>
-      dplyr::filter(metric == "protein_collapse_magnitude") |>
+      dplyr::filter(metric == "protein_late_decline_magnitude") |>
       dplyr::mutate(functional_module = forcats::fct_reorder(functional_module, delta_median_client_minus_nonclient)) |>
       ggplot2::ggplot(ggplot2::aes(x = delta_median_client_minus_nonclient, y = functional_module)) +
       ggplot2::geom_vline(xintercept = 0, linewidth = 0.4) +
       ggplot2::geom_point(size = 2) +
       ggplot2::labs(
         title = "Client decline within matched mitochondrial functional modules",
-        x = "Median collapse magnitude: client minus non-client",
+        x = "Median late-stage decline magnitude: client minus non-client",
         y = NULL
       ) +
       ggplot2::theme_classic(base_size = 10)
 
     ggplot2::ggsave(
-      file.path(sens_cfg$output_dir, "check2_function_matched_late_collapse_effects.pdf"),
+      file.path(sens_cfg$output_dir, "check2_function_matched_late_decline_effects.pdf"),
       p_module,
       width = 6.5,
       height = max(3.5, 0.35 * max(1, length(eligible_modules))),
@@ -1105,28 +1197,14 @@ run_check2 <- function() {
 results <- list()
 
 results$check1 <- if (isTRUE(sens_cfg$run_check1)) {
-  tryCatch(
-    run_check1(),
-    error = function(e) {
-      message("CHECK 1 failed/skipped: ", conditionMessage(e))
-      readr::write_lines(conditionMessage(e), file.path(sens_cfg$output_dir, "check1_error.txt"))
-      NULL
-    }
-  )
+  run_check1()
 } else {
   message("CHECK 1 skipped because SENSITIVITY_RUN_CHECK1=FALSE")
   NULL
 }
 
 results$check2 <- if (isTRUE(sens_cfg$run_check2)) {
-  tryCatch(
-    run_check2(),
-    error = function(e) {
-      message("CHECK 2 failed/skipped: ", conditionMessage(e))
-      readr::write_lines(conditionMessage(e), file.path(sens_cfg$output_dir, "check2_error.txt"))
-      NULL
-    }
-  )
+  run_check2()
 } else {
   message("CHECK 2 skipped because SENSITIVITY_RUN_CHECK2=FALSE")
   NULL
@@ -1139,10 +1217,10 @@ interpretation <- c(
   "",
   "CHECK 1: stage-residualized / within-stage Hsp60/10 client co-movement",
   "Positive result:",
-  "  Selected late-collapsing clients retain higher residual co-movement than matched client sets after disease stage is regressed out, and/or within individual disease stages.",
+  "  Selected strongly late-declining clients retain higher residual co-movement than matched client sets after disease stage is regressed out, and/or within individual disease stages.",
   "  This supports wording that the vulnerable subset is coordinated beyond a simple shared stage effect.",
   "Negative result:",
-  "  The late-collapse result remains intact, but centrality should be framed as a contextual feature of disease-responsive clients rather than independent evidence for a tightly coordinated subnetwork.",
+  "  The late-stage decline result remains intact, but centrality should be framed as a contextual feature of disease-responsive clients rather than independent evidence for a tightly coordinated subnetwork.",
   "",
   "CHECK 2: function-matched client vs non-client mitochondrial vulnerability",
   "Positive result:",
@@ -1158,7 +1236,81 @@ interpretation <- c(
   "  This script only writes local aggregated outputs. The GitHub repository changes only if you intentionally copy/add/commit/push this script or its outputs."
 )
 
-readr::write_lines(interpretation, file.path(sens_cfg$output_dir, "interpretation_guide.txt"))
+readr::write_lines(
+  interpretation,
+  file.path(sens_cfg$output_dir, "interpretation_guide.txt")
+)
+
+git_branch <- tryCatch(
+  system2(
+    "git",
+    c("branch", "--show-current"),
+    stdout = TRUE,
+    stderr = TRUE
+  ),
+  error = function(e) NA_character_
+)
+
+git_sha <- tryCatch(
+  system2(
+    "git",
+    c("rev-parse", "HEAD"),
+    stdout = TRUE,
+    stderr = TRUE
+  ),
+  error = function(e) NA_character_
+)
+
+git_status <- tryCatch(
+  system2(
+    "git",
+    c("status", "--short"),
+    stdout = TRUE,
+    stderr = TRUE
+  ),
+  error = function(e) NA_character_
+)
+
+provenance <- c(
+  "R/92 pre-submission sensitivity provenance",
+  paste0("generated_at: ", format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z")),
+  paste0("git_branch: ", paste(git_branch, collapse = " ")),
+  paste0("git_sha: ", paste(git_sha, collapse = " ")),
+  paste0(
+    "working_tree_dirty: ",
+    ifelse(
+      length(git_status) > 0 && any(nzchar(git_status)),
+      "TRUE",
+      "FALSE"
+    )
+  ),
+  "primary_stage_source: prot_meta_adj$clinical_stage",
+  "primary_stage_definition: NCI / MCI / AD = cogdx 1 / 2 / 4",
+  paste0("random_seed: ", sensitivity_seed),
+  paste0("check1_permutations: ", sens_cfg$n_perm_check1),
+  paste0("check2_permutations: ", sens_cfg$n_perm_check2),
+  paste0(
+    "within_stage_nulls: ",
+    sens_cfg$run_within_stage_nulls
+  ),
+  "late_decline_metric: protein_late_decline_magnitude"
+)
+
+writeLines(
+  provenance,
+  file.path(
+    sens_cfg$output_dir,
+    "sensitivity_provenance.txt"
+  )
+)
+
+capture.output(
+  sessionInfo(),
+  file = file.path(
+    sens_cfg$output_dir,
+    "sensitivity_sessionInfo.txt"
+  )
+)
 
 message("\nDone. Sensitivity outputs written to: ", sens_cfg$output_dir)
 message("Review interpretation_guide.txt before deciding whether to include these results in the manuscript.")

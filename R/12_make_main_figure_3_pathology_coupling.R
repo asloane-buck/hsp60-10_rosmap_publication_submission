@@ -4,7 +4,7 @@
 ##
 ## Reframed pathology-coupling figure:
 ##   A. Paired inverse Braak/tau vs inverse CERAD/amyloid coupling
-##   B. Late-stage collapse vs inverse Braak/tau coupling
+##   B. Late-stage decline vs inverse Braak/tau coupling
 ##   C. Distribution of Braak-minus-CERAD pathology-coupling bias
 ##
 ## Key interpretation:
@@ -202,7 +202,7 @@ require_columns(
   c(
     "gene",
     "detected_in_protein",
-    "protein_collapse_magnitude",
+    "protein_late_decline_magnitude",
     "braak_rho",
     "cerad_rho"
   ),
@@ -214,9 +214,9 @@ fig3_tbl <- all_hsp60_10_client_tbl %>%
     gene = clean_gene(gene),
     detected_in_protein = as.logical(detected_in_protein),
     
-    ## Late-stage protein collapse:
+    ## Late-stage protein decline:
     ## more positive = stronger MCI-to-AD protein decline.
-    collapse_value = suppressWarnings(as.numeric(protein_collapse_magnitude)),
+    late_decline_value = suppressWarnings(as.numeric(protein_late_decline_magnitude)),
     
     ## Direct inverse Braak/tau association:
     ## more positive = stronger negative protein-Braak association.
@@ -245,24 +245,24 @@ fig3_tbl <- all_hsp60_10_client_tbl %>%
   ) %>%
   filter(
     detected_in_protein == TRUE,
-    is.finite(collapse_value),
+    is.finite(late_decline_value),
     is.finite(braak_axis),
     is.finite(cerad_axis),
     is.finite(braak_minus_cerad_inverse)
   ) %>%
-  arrange(desc(collapse_value)) %>%
+  arrange(desc(late_decline_value)) %>%
   mutate(
-    collapse_rank = row_number(),
+    late_decline_rank = row_number(),
     n_detected_clients = n(),
-    collapse_group = if_else(
-      collapse_rank <= ceiling(0.25 * n_detected_clients),
-      "Top-quartile collapse",
+    late_decline_group = if_else(
+      late_decline_rank <= ceiling(0.25 * n_detected_clients),
+      "Top-quartile late decline",
       "Other detected Hsp60/10 clients"
     ),
-    collapse_group = factor(
-      collapse_group,
+    late_decline_group = factor(
+      late_decline_group,
       levels = c(
-        "Top-quartile collapse",
+        "Top-quartile late decline",
         "Other detected Hsp60/10 clients"
       )
     )
@@ -273,8 +273,8 @@ write_fig3_all_table(fig3_tbl, "Fig3_all_clients_pathology_table")
 cat("\nFigure 3 table dimensions:\n")
 print(dim(fig3_tbl))
 
-cat("\nFigure 3 collapse group counts:\n")
-print(table(fig3_tbl$collapse_group))
+cat("\nFigure 3 late-decline group counts:\n")
+print(table(fig3_tbl$late_decline_group))
 
 ############################################################
 ## 3. Statistics
@@ -304,25 +304,25 @@ pathology_axis_stats <- pathology_pair_tbl %>%
     star = star_label(p_value)
   )
 
-collapse_braak_tbl <- fig3_tbl %>%
+late_decline_braak_tbl <- fig3_tbl %>%
   filter(
-    is.finite(collapse_value),
+    is.finite(late_decline_value),
     is.finite(braak_axis)
   )
 
-collapse_braak_cor <- suppressWarnings(
+late_decline_braak_cor <- suppressWarnings(
   cor.test(
-    collapse_braak_tbl$collapse_value,
-    collapse_braak_tbl$braak_axis,
+    late_decline_braak_tbl$late_decline_value,
+    late_decline_braak_tbl$braak_axis,
     method = "spearman",
     exact = FALSE
   )
 )
 
-collapse_braak_stats <- tibble(
-  n_genes = nrow(collapse_braak_tbl),
-  spearman_rho = unname(collapse_braak_cor$estimate),
-  p_value = collapse_braak_cor$p.value,
+late_decline_braak_stats <- tibble(
+  n_genes = nrow(late_decline_braak_tbl),
+  spearman_rho = unname(late_decline_braak_cor$estimate),
+  p_value = late_decline_braak_cor$p.value,
   p_label = p_to_label(p_value),
   star = star_label(p_value)
 )
@@ -330,13 +330,13 @@ collapse_braak_stats <- tibble(
 braak_group_stats <- fig3_tbl %>%
   filter(is.finite(braak_axis)) %>%
   summarise(
-    n_top = sum(collapse_group == "Top-quartile collapse"),
-    n_other = sum(collapse_group == "Other detected Hsp60/10 clients"),
-    median_top = median(braak_axis[collapse_group == "Top-quartile collapse"], na.rm = TRUE),
-    median_other = median(braak_axis[collapse_group == "Other detected Hsp60/10 clients"], na.rm = TRUE),
+    n_top = sum(late_decline_group == "Top-quartile late decline"),
+    n_other = sum(late_decline_group == "Other detected Hsp60/10 clients"),
+    median_top = median(braak_axis[late_decline_group == "Top-quartile late decline"], na.rm = TRUE),
+    median_other = median(braak_axis[late_decline_group == "Other detected Hsp60/10 clients"], na.rm = TRUE),
     p_value = safe_wilcox_unpaired(
-      braak_axis[collapse_group == "Top-quartile collapse"],
-      braak_axis[collapse_group == "Other detected Hsp60/10 clients"]
+      braak_axis[late_decline_group == "Top-quartile late decline"],
+      braak_axis[late_decline_group == "Other detected Hsp60/10 clients"]
     ),
     p_label = p_to_label(p_value),
     star = star_label(p_value)
@@ -358,8 +358,8 @@ delta_summary_tbl <- pathology_pair_tbl %>%
 fig3_stats_tbl <- bind_rows(
   pathology_axis_stats %>%
     mutate(test = "paired_inverse_braak_vs_inverse_cerad"),
-  collapse_braak_stats %>%
-    mutate(test = "collapse_vs_inverse_braak_spearman"),
+  late_decline_braak_stats %>%
+    mutate(test = "late_decline_vs_inverse_braak_spearman"),
   braak_group_stats %>%
     mutate(test = "inverse_braak_top_quartile_vs_other"),
   delta_summary_tbl %>%
@@ -367,7 +367,7 @@ fig3_stats_tbl <- bind_rows(
 )
 
 write_fig3_all_table(pathology_axis_stats, "Fig3A_inverse_braak_vs_inverse_cerad_stats")
-write_fig3_all_table(collapse_braak_stats, "Fig3B_collapse_vs_inverse_braak_correlation_stats")
+write_fig3_all_table(late_decline_braak_stats, "Fig3B_late_decline_vs_inverse_braak_correlation_stats")
 write_fig3_all_table(braak_group_stats, "Fig3_inverse_braak_group_stats_audit")
 write_fig3_all_table(delta_summary_tbl, "Fig3C_braak_minus_cerad_delta_summary")
 write_fig3_all_table(fig3_stats_tbl, "Fig3_all_clients_stats_combined")
@@ -378,13 +378,13 @@ print(fig3_stats_tbl)
 ## 4. Labels and colors
 ############################################################
 
-collapse_colors <- c(
-  "Top-quartile collapse" = "#9E4A4A",
+late_decline_colors <- c(
+  "Top-quartile late decline" = "#9E4A4A",
   "Other detected Hsp60/10 clients" = "grey75"
 )
 
-collapse_edge_colors <- c(
-  "Top-quartile collapse" = "#9E4A4A",
+late_decline_edge_colors <- c(
+  "Top-quartile late decline" = "#9E4A4A",
   "Other detected Hsp60/10 clients" = "grey55"
 )
 
@@ -410,7 +410,7 @@ fig3_label_tbl_B <- fig3_tbl %>%
       gene == "MRPS9" ~ 0.038,
       gene == "MRPL48" ~ 0.058,
       gene == "MRPS23" ~ 0.058,
-      TRUE ~ collapse_value
+      TRUE ~ late_decline_value
     ),
     label_y = case_when(
       gene == "MRPS33" ~ 0.415,
@@ -426,7 +426,7 @@ fig3_label_tbl_B <- fig3_tbl %>%
       gene == "MRPS23" ~ 0.132,
       TRUE ~ braak_axis
     ),
-    label_hjust = if_else(label_x < collapse_value, 1, 0)
+    label_hjust = if_else(label_x < late_decline_value, 1, 0)
   ) %>%
   arrange(match(gene, fig3_label_genes_B))
 
@@ -435,7 +435,7 @@ fig3_label_tbl_B <- fig3_tbl %>%
 ############################################################
 
 panelA_long <- fig3_tbl %>%
-  select(gene, collapse_group, braak_axis, cerad_axis) %>%
+  select(gene, late_decline_group, braak_axis, cerad_axis) %>%
   pivot_longer(
     cols = c(cerad_axis, braak_axis),
     names_to = "pathology_axis",
@@ -480,7 +480,7 @@ pA <- ggplot(
     linewidth = 0.40
   ) +
   geom_point(
-    aes(fill = collapse_group),
+    aes(fill = late_decline_group),
     position = position_jitter(width = 0.05, height = 0, seed = 1),
     shape = 21,
     size = 1.7,
@@ -496,14 +496,14 @@ pA <- ggplot(
     hjust = -0.02,
     vjust = 1.10,
     size = 2.7,
-    label.size = 0.25,
+    linewidth = 0.25,
     fill = "white",
     color = "grey20"
   ) +
   scale_fill_manual(
-    values = collapse_colors,
-    name = "Collapse group",
-    labels = c("Top-quartile collapse", "Other clients")
+    values = late_decline_colors,
+    name = "Late-decline group",
+    labels = c("Top-quartile late decline", "Other clients")
   ) +
   scale_y_continuous(
     expand = expansion(mult = c(0.06, 0.18))
@@ -525,16 +525,16 @@ pA <- ggplot(
 
 cor_label_B <- paste0(
   "Spearman rho = ",
-  signif(collapse_braak_stats$spearman_rho, 2),
+  signif(late_decline_braak_stats$spearman_rho, 2),
   "\n",
-  collapse_braak_stats$p_label,
+  late_decline_braak_stats$p_label,
   "\nn = ",
-  collapse_braak_stats$n_genes
+  late_decline_braak_stats$n_genes
 )
 
 pB <- ggplot(
-  collapse_braak_tbl,
-  aes(x = collapse_value, y = braak_axis)
+  late_decline_braak_tbl,
+  aes(x = late_decline_value, y = braak_axis)
 ) +
   geom_hline(
     yintercept = 0,
@@ -550,16 +550,16 @@ pB <- ggplot(
     linewidth = 0.75
   ) +
   geom_point(
-    aes(fill = collapse_group),
+    aes(fill = late_decline_group),
     shape = 21,
     color = "grey35",
     alpha = 0.78,
     size = 2.15,
-    linewidth = 0.22
+    stroke = 0.22
   ) +
   geom_segment(
     data = fig3_label_tbl_B,
-    aes(x = collapse_value, y = braak_axis, xend = label_x, yend = label_y),
+    aes(x = late_decline_value, y = braak_axis, xend = label_x, yend = label_y),
     inherit.aes = FALSE,
     color = "#7F1D1D",
     linewidth = 0.18,
@@ -582,17 +582,17 @@ pB <- ggplot(
     hjust = -0.02,
     vjust = 1.10,
     size = 2.7,
-    label.size = 0.25,
+    linewidth = 0.25,
     fill = "white",
     color = "grey20"
   ) +
-  scale_fill_manual(values = collapse_colors, guide = "none") +
+  scale_fill_manual(values = late_decline_colors, guide = "none") +
   scale_x_continuous(expand = expansion(mult = c(0.08, 0.22))) +
   scale_y_continuous(expand = expansion(mult = c(0.10, 0.34))) +
   labs(
-    title = "B. Collapse is continuously associated with inverse Braak/tau coupling",
+    title = "B. Late-stage decline is continuously associated with inverse Braak/tau coupling",
     subtitle = "Greater late-stage protein decline aligns with stronger direct inverse Braak association.",
-    x = "Late-stage protein collapse",
+    x = "Late-stage protein decline",
     y = "Inverse Braak/tau association"
   ) +
   theme_fig3_clean(11) +
@@ -630,7 +630,7 @@ pC <- ggplot(
     linewidth = 0.20
   ) +
   geom_rug(
-    aes(color = collapse_group),
+    aes(color = late_decline_group),
     alpha = 0.45,
     sides = "b",
     linewidth = 0.35,
@@ -644,14 +644,14 @@ pC <- ggplot(
     vjust = 1.10,
     label = delta_label,
     size = 3.0,
-    label.size = 0.22,
+    linewidth = 0.22,
     fill = "white",
     color = "grey20"
   ) +
   scale_color_manual(
-    values = collapse_edge_colors,
-    name = "Collapse group",
-    labels = c("Top-quartile collapse", "Other clients")
+    values = late_decline_edge_colors,
+    name = "Late-decline group",
+    labels = c("Top-quartile late decline", "Other clients")
   ) +
   scale_x_continuous(
     expand = expansion(mult = c(0.04, 0.12))

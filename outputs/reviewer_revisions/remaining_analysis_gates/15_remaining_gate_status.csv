@@ -1,0 +1,5 @@
+"gate","analytical_status","note"
+"Braak_CERAD_categorical_vs_continuous","ANALYTICALLY_REVALIDATED","Exact categorical-factor sensitivity completed for Braak and CERAD; continuous models reproduce production exactly."
+"Fig1B_numerical_and_scale","ANALYTICALLY_REVALIDATED","Transition arithmetic, cross-modal magnitude arithmetic, bootstrap alignment, and standardized-score interpretation audited."
+"Matched_cohort_and_FDR","ANALYTICALLY_REVALIDATED","Strict matched cohort and major BH/FDR families audited numerically."
+"Subtraction_analysis","ANALYTICALLY_RESOLVED_MANUSCRIPT_EDIT_PENDING","Canonical conventional DE uses NO_SUBTRACTION outputs. Fig1B subtraction-derived descriptive metric remains to be de-emphasized/removed during manuscript/figure editing."

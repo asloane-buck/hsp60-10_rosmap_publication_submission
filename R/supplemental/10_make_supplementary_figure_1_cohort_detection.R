@@ -395,15 +395,11 @@ make_detection_panel <- function(interactor_tbl, rna_info, protein_info) {
 # ============================================================
 
 stage_column_candidates <- c(
-  "diagnosis_stage",
-  "stage3",
-  "EmoryStrictDx.2019",
-  "diagnosis",
-  "cogdx",
+  "clinical_stage",
   "cogdx_num",
-  "dx",
-  "dx_numeric",
-  "Dx"
+  "cogdx",
+  "diagnosis_stage",
+  "diagnosis"
 )
 
 covariate_candidates <- list(
@@ -416,17 +412,15 @@ covariate_candidates <- list(
 )
 
 harmonize_stage_for_display <- function(stage) {
-  stage_chr <- as.character(stage)
-  stage_clean <- stage_chr |>
-    stringr::str_replace_all("[_.-]+", " ") |>
-    stringr::str_squish() |>
-    stringr::str_to_lower()
+  stage_chr <- stringr::str_squish(as.character(stage))
+  stage_clean <- stringr::str_to_lower(stage_chr)
 
   dplyr::case_when(
-    stringr::str_detect(stage_clean, "control|normal|cognitively normal|^cn$") ~ "Control",
-    stringr::str_detect(stage_clean, "intermediate|asym|early|mci|prodromal") ~ "Intermediate",
-    stringr::str_detect(stage_clean, "^ad$|alz|dementia") ~ "AD",
-    TRUE ~ stage_chr
+    is.na(stage_chr) | stage_chr == "" | stage_clean == "missing" ~ NA_character_,
+    stage_clean %in% c("1", "nci") ~ "NCI",
+    stage_clean %in% c("2", "mci") ~ "MCI",
+    stage_clean %in% c("4", "ad") ~ "AD",
+    TRUE ~ NA_character_
   )
 }
 
@@ -530,7 +524,7 @@ make_metadata_panels <- function(rna_meta, protein_meta) {
     dplyr::filter(!.data$stage %in% c("Metadata not loaded", "Stage column not found")) |>
     dplyr::mutate(
       display_stage = harmonize_stage_for_display(.data$stage),
-      display_stage = factor(.data$display_stage, levels = rev(c("Control", "Intermediate", "AD"))),
+      display_stage = factor(.data$display_stage, levels = rev(c("NCI", "MCI", "AD"))),
       modality = factor(.data$modality, levels = c("RNA", "Protein"))
     ) |>
     dplyr::filter(!is.na(.data$display_stage)) |>
@@ -560,7 +554,7 @@ make_metadata_panels <- function(rna_meta, protein_meta) {
         expand = ggplot2::expansion(mult = c(0, 0.02))
       ) +
       ggplot2::labs(
-        title = "Samples by diagnosis/stage",
+        title = "Samples by clinical stage",
         x = "Samples",
         y = NULL,
         fill = NULL

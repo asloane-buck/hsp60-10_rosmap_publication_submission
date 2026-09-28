@@ -81,7 +81,7 @@ require_gene_column <- function(tbl, label) {
 prepare_cognition_df_for_fig5 <- function(cognition_model_df) {
   required <- c(
     "SampleID", "individualID", "cogdx", "dcfdx_lv", "mmse_last_valid",
-    "age_death", "sex", "educ", "pmi", "Braak", "CERAD"
+    "age_death", "sex", "educ", "pmi", "Braak", "CERAD", "batch_factor"
   )
 
   missing <- setdiff(required, colnames(cognition_model_df))
@@ -143,7 +143,8 @@ prepare_cognition_df_for_fig5 <- function(cognition_model_df) {
       educ,
       pmi,
       Braak,
-      CERAD
+      CERAD,
+      batch_factor
     )
 }
 
@@ -158,7 +159,8 @@ run_gene_cognition_model_fig5 <- function(data, outcome, outcome_label) {
       educ,
       pmi,
       Braak,
-      CERAD
+      CERAD,
+      batch_factor
     ) %>%
     drop_na()
 
@@ -196,7 +198,7 @@ run_gene_cognition_model_fig5 <- function(data, outcome, outcome_label) {
       form <- as.formula(
         paste0(
           outcome,
-          " ~ abundance_z + age_death + sex + educ + pmi + Braak + CERAD"
+          " ~ abundance_z + age_death + sex + educ + pmi + Braak + CERAD + batch_factor"
         )
       )
 
@@ -239,9 +241,9 @@ run_gene_cognition_model_fig5 <- function(data, outcome, outcome_label) {
 }
 
 compute_gene_cognition_scores_for_fig5 <- function(gene_universe) {
-  if (!exists("prot_mat", envir = .GlobalEnv)) {
+  if (!exists("prot_mat_raw", envir = .GlobalEnv)) {
     stop(
-      "prot_mat is required to compute cognition scores for background proteins. ",
+      "prot_mat_raw is required to compute cognition scores for background proteins. ",
       "Run upstream proteomics setup before Figure 5.",
       call. = FALSE
     )
@@ -255,7 +257,7 @@ compute_gene_cognition_scores_for_fig5 <- function(gene_universe) {
     )
   }
 
-  protein_mat <- get("prot_mat", envir = .GlobalEnv)
+  protein_mat <- get("prot_mat_raw", envir = .GlobalEnv)
   rownames(protein_mat) <- toupper(as.character(rownames(protein_mat)))
   colnames(protein_mat) <- as.character(colnames(protein_mat))
 
@@ -266,12 +268,12 @@ compute_gene_cognition_scores_for_fig5 <- function(gene_universe) {
   missing_from_prot_mat <- setdiff(gene_universe, detected_gene_universe)
 
   message("Figure 5 cognition gene universe: ", length(gene_universe))
-  message("Detected in prot_mat: ", length(detected_gene_universe))
-  message("Missing from prot_mat: ", length(missing_from_prot_mat))
+  message("Detected in prot_mat_raw: ", length(detected_gene_universe))
+  message("Missing from prot_mat_raw: ", length(missing_from_prot_mat))
 
   if (length(detected_gene_universe) < 20) {
     stop(
-      "Too few Figure 5 gene-universe proteins are detected in prot_mat to compute cognition scores.",
+      "Too few Figure 5 gene-universe proteins are detected in prot_mat_raw to compute cognition scores.",
       call. = FALSE
     )
   }
@@ -598,7 +600,14 @@ if (is.na(existing_cognition_metric) || is.na(existing_null_cognition_col)) {
     observed = observed_cognition,
     null_mean = mean(null_results$null_mean_cognition_score, na.rm = TRUE),
     null_sd = sd(null_results$null_mean_cognition_score, na.rm = TRUE),
-    empirical_p_greater = mean(null_results$null_mean_cognition_score >= observed_cognition, na.rm = TRUE)
+    empirical_p_greater = (
+      sum(
+        null_results$null_mean_cognition_score >= observed_cognition,
+        na.rm = TRUE
+      ) + 1
+    ) / (
+      sum(is.finite(null_results$null_mean_cognition_score)) + 1
+    )
   )
 
   null_summary <- null_summary %>%
@@ -674,7 +683,7 @@ if (is.na(null_cognition_col)) {
 require_values(
   null_summary,
   "metric",
-  c("protein_collapse_magnitude", "inverse_braak_magnitude", cognition_metric, "agora_fraction"),
+  c("protein_late_decline_magnitude", "inverse_braak_magnitude", cognition_metric, "agora_fraction"),
   "Figure 5 null summary"
 )
 
@@ -710,14 +719,14 @@ theme_set(
 
 figure_tbl <- null_summary %>%
   filter(metric %in% c(
-    "protein_collapse_magnitude",
+    "protein_late_decline_magnitude",
     "inverse_braak_magnitude",
     cognition_metric,
     "agora_fraction"
   )) %>%
   mutate(
     metric_clean = case_when(
-      metric == "protein_collapse_magnitude" ~ "Late-stage\nprotein collapse",
+      metric == "protein_late_decline_magnitude" ~ "Late-stage\nprotein decline",
       metric == "inverse_braak_magnitude" ~ "Inverse Braak\nassociation",
       metric == cognition_metric ~ "Cognition\npreservation score",
       metric == "agora_fraction" ~ "Agora target\nfraction",
@@ -726,7 +735,7 @@ figure_tbl <- null_summary %>%
     metric_clean = factor(
       metric_clean,
       levels = rev(c(
-        "Late-stage\nprotein collapse",
+        "Late-stage\nprotein decline",
         "Inverse Braak\nassociation",
         "Cognition\npreservation score",
         "Agora target\nfraction"
@@ -798,7 +807,6 @@ panel_A <- ggplot() +
     fontface = "bold",
     label.padding = unit(0.18, "lines"),
     label.r = unit(0.12, "lines"),
-    label.size = NA,
     fill = "white",
     color = "black"
    ) +
@@ -969,11 +977,9 @@ panel_C <- ggplot(null_results, aes(x = .data[[null_cognition_col]])) +
     size = 2.16,
     lineheight = 0.92,
     fill = "white",
-    label.size = 0.20,
     label.padding = unit(0.18, "lines")
   ) +
   scale_x_continuous(
-    limits = c(xmin_cognition, xmax_cognition),
     breaks = c(2.0, 2.5, 3.0, 3.5, 4.0),
     labels = number_format(accuracy = 0.1),
     expand = expansion(mult = c(0.02, 0.08))
@@ -984,7 +990,7 @@ panel_C <- ggplot(null_results, aes(x = .data[[null_cognition_col]])) +
     x = "Mean cognition preservation score\nacross sampled null sets",
     y = "Null iterations"
   ) +
-  coord_cartesian(clip = "off") +
+  coord_cartesian(xlim = c(xmin_cognition, xmax_cognition), clip = "off") +
   theme(
     axis.title.x = element_text(size = 9.0, lineheight = 0.92),
     plot.margin = margin(8, 18, 8, 8)
@@ -1049,11 +1055,9 @@ panel_D <- ggplot(null_results, aes(x = null_agora_fraction)) +
     size = 2.16,
     lineheight = 0.92,
     fill = "white",
-    label.size = 0.20,
     label.padding = unit(0.18, "lines")
   ) +
   scale_x_continuous(
-    limits = c(xmin_agora, xmax_agora),
     labels = number_format(accuracy = 0.01),
     expand = expansion(mult = c(0.02, 0.08))
   ) +
@@ -1063,7 +1067,7 @@ panel_D <- ggplot(null_results, aes(x = null_agora_fraction)) +
     x = "Fraction of Agora nominated targets\nacross sampled null sets",
     y = "Null iterations"
   ) +
-  coord_cartesian(clip = "off") +
+  coord_cartesian(xlim = c(xmin_agora, xmax_agora), clip = "off") +
   theme(
     axis.title.x = element_text(size = 9.0, lineheight = 0.92),
     plot.margin = margin(8, 18, 8, 10)
@@ -1085,7 +1089,7 @@ final_fig <- (top_row / bottom_row) +
     title = "Hsp60/10 clients define a selectively AD- and cognition-relevant mitochondrial subnetwork",
     subtitle = paste0(
       "Against 10,000 abundance-matched non-client mitochondrial null sets, ",
-      "Hsp60/10 clients show stronger protein collapse, stronger Braak coupling, ",
+      "Hsp60/10 clients show stronger late-stage protein decline, stronger Braak coupling, ",
       "higher cognition preservation support, and greater Agora target enrichment."
     ),
     caption = paste0(

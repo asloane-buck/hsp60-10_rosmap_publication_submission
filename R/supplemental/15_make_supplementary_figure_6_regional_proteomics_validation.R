@@ -130,7 +130,7 @@ sf6_fmt_p <- function(p) {
 sf6_wilcox_p <- function(df, value_col) {
   df2 <- df |>
     dplyr::filter(.data$group %in% names(sf6_group_colors)) |>
-    dplyr::select(.data$group, value = dplyr::all_of(value_col)) |>
+    dplyr::select("group", value = dplyr::all_of(value_col)) |>
     tidyr::drop_na()
 
   if (dplyr::n_distinct(df2$group) < 2) return(NA_real_)
@@ -183,12 +183,13 @@ sf6_prepare_ad_tbl <- function(regional_protein_screen, hsp_genes, background_ge
       gene_symbol = sf6_clean_gene(.data[[gene_col]]),
       region_short = as.character(.data$region_short),
       ad_effect_raw = suppressWarnings(as.numeric(.data[[ad_col]])),
-      ad_associated_decline = dplyr::case_when(
-        ad_col == "adjusted_collapse_magnitude" ~ .data$ad_effect_raw,
-        ad_col == "ad_minus_control" ~ -.data$ad_effect_raw,
-        ad_col == "beta_ad" ~ -.data$ad_effect_raw,
-        TRUE ~ .data$ad_effect_raw
-      ),
+      ad_associated_decline = if (ad_col == "adjusted_collapse_magnitude") {
+        .data$ad_effect_raw
+      } else if (ad_col %in% c("ad_minus_control", "beta_ad")) {
+        -.data$ad_effect_raw
+      } else {
+        .data$ad_effect_raw
+      },
       group = dplyr::case_when(
         .data$gene_symbol %in% hsp_genes ~ "Hsp60/10 clients",
         .data$gene_symbol %in% background_genes ~ "Non-client mitochondrial proteins",
@@ -242,16 +243,16 @@ sf6_prepare_difference_tbl <- function(hsp_region_compare) {
     ) |>
     dplyr::transmute(
       gene_symbol = sf6_clean_gene(.data$gene_symbol),
-      `AD-associated collapse` = suppressWarnings(as.numeric(.data$stg_minus_dlpfc_adjusted_collapse)),
+      `AD-associated decline` = suppressWarnings(as.numeric(.data$stg_minus_dlpfc_adjusted_collapse)),
       `High-Braak coupling` = suppressWarnings(as.numeric(.data$stg_minus_dlpfc_adjusted_inverse_braak))
     ) |>
     tidyr::pivot_longer(
-      cols = c("AD-associated collapse", "High-Braak coupling"),
+      cols = c("AD-associated decline", "High-Braak coupling"),
       names_to = "metric",
       values_to = "stg_minus_dlpfc"
     ) |>
     dplyr::mutate(
-      metric = factor(.data$metric, levels = c("AD-associated collapse", "High-Braak coupling"))
+      metric = factor(.data$metric, levels = c("AD-associated decline", "High-Braak coupling"))
     ) |>
     dplyr::filter(is.finite(.data$stg_minus_dlpfc))
 }
@@ -381,7 +382,7 @@ sf6_difference_plot <- function(diff_tbl, paired_summary) {
 
 sf6_top_braak_plot <- function(top_tbl) {
   segment_tbl <- top_tbl |>
-    dplyr::select(.data$gene_symbol, .data$DLPFC, .data$STG)
+    dplyr::select("gene_symbol", "DLPFC", "STG")
 
   long_tbl <- top_tbl |>
     tidyr::pivot_longer(

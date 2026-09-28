@@ -1,7 +1,7 @@
 ############################################################
 ## 05_build_adjusted_all_client_tables.R
 ## Build source-of-truth all_hsp60_10_client_tbl using
-## covariate-adjusted RNA/protein inputs for stage/collapse/centrality
+## covariate-adjusted RNA/protein inputs for stage/late-decline/centrality
 ## and processed non-residualized protein input for pathology beta models.
 ##
 ## Inputs expected from scripts 00-04:
@@ -57,30 +57,32 @@ safe_sem <- function(x) {
   stats::sd(x) / sqrt(length(x))
 }
 
-make_stage_meta <- function(meta, sample_col, stage_col, stage_map) {
-  if (!sample_col %in% colnames(meta)) {
-    stop(
-      "Missing sample column in metadata: ", sample_col,
-      ". Available columns: ", available_cols_msg(meta),
-      call. = FALSE
+make_stage_meta <- function(meta, sample_col, stage_col) {
+  require_columns(
+    meta,
+    c(sample_col, stage_col),
+    "canonical clinical-stage metadata"
+  )
+
+  out <- meta |>
+    dplyr::transmute(
+      sample_id_for_model = as.character(.data[[sample_col]]),
+      stage = factor(
+        as.character(.data[[stage_col]]),
+        levels = c("NCI", "MCI", "AD")
+      )
+    ) |>
+    dplyr::filter(
+      !is.na(.data$sample_id_for_model),
+      nzchar(.data$sample_id_for_model),
+      !is.na(.data$stage)
     )
-  }
-  if (!stage_col %in% colnames(meta)) {
-    stop(
-      "Missing stage column in metadata: ", stage_col,
-      ". Available columns: ", available_cols_msg(meta),
-      call. = FALSE
-    )
+
+  if (anyDuplicated(out$sample_id_for_model) > 0) {
+    stop("Canonical stage metadata contain duplicate sample IDs.", call. = FALSE)
   }
 
-  meta |>
-    dplyr::mutate(
-      sample_id_for_model = as.character(.data[[sample_col]]),
-      stage_raw = as.character(.data[[stage_col]]),
-      stage = dplyr::recode(stage_raw, !!!stage_map, .default = stage_raw),
-      stage = factor(stage, levels = c("Control", "Early AD", "AD"))
-    ) |>
-    dplyr::filter(!is.na(stage), !is.na(sample_id_for_model), sample_id_for_model != "")
+  out
 }
 
 build_stage_summary <- function(mat, meta, genes, prefix) {
@@ -92,27 +94,28 @@ build_stage_summary <- function(mat, meta, genes, prefix) {
     y <- as.numeric(mat[g, samples])
     tmp <- tibble::tibble(stage = meta2$stage, y = y)
 
-    control <- tmp$y[tmp$stage == "Control"]
-    early   <- tmp$y[tmp$stage == "Early AD"]
-    ad      <- tmp$y[tmp$stage == "AD"]
+    nci <- tmp$y[tmp$stage == "NCI"]
+    mci <- tmp$y[tmp$stage == "MCI"]
+    ad  <- tmp$y[tmp$stage == "AD"]
 
     tibble::tibble(
       gene = g,
-      "{prefix}_control_mean" := safe_mean(control),
-      "{prefix}_early_mean"   := safe_mean(early),
+      "{prefix}_nci_mean"     := safe_mean(nci),
+      "{prefix}_mci_mean"     := safe_mean(mci),
       "{prefix}_ad_mean"      := safe_mean(ad),
-      "{prefix}_control_sem"  := safe_sem(control),
-      "{prefix}_early_sem"    := safe_sem(early),
+      "{prefix}_nci_sem"      := safe_sem(nci),
+      "{prefix}_mci_sem"      := safe_sem(mci),
       "{prefix}_ad_sem"       := safe_sem(ad),
-      "{prefix}_n_control"    := sum(is.finite(control)),
-      "{prefix}_n_early"      := sum(is.finite(early)),
+      "{prefix}_n_nci"        := sum(is.finite(nci)),
+      "{prefix}_n_mci"        := sum(is.finite(mci)),
       "{prefix}_n_ad"         := sum(is.finite(ad)),
-      "{prefix}_early_effect" := safe_mean(early) - safe_mean(control),
-      "{prefix}_late_effect"  := safe_mean(ad) - safe_mean(early),
-      "{prefix}_total_effect" := safe_mean(ad) - safe_mean(control)
+      "{prefix}_early_effect" := safe_mean(mci) - safe_mean(nci),
+      "{prefix}_late_effect"  := safe_mean(ad) - safe_mean(mci),
+      "{prefix}_total_effect" := safe_mean(ad) - safe_mean(nci)
     )
   })
 }
+
 
 assign_informative_function <- function(gene) {
   dplyr::case_when(
@@ -193,18 +196,31 @@ load_agora_targets <- function() {
 prot_stage_meta <- make_stage_meta(
   prot_meta_adj,
   sample_col = "SampleID",
-  stage_col = "EmoryStrictDx.2019",
-  stage_map = c("Control" = "Control", "AsymAD" = "Early AD", "AD" = "AD")
+  stage_col = "clinical_stage"
 ) |>
-  dplyr::filter(sample_id_for_model %in% colnames(prot_mat))
+  dplyr::filter(.data$sample_id_for_model %in% colnames(prot_mat))
 
 rna_stage_meta <- make_stage_meta(
   rna_meta_adj,
   sample_col = "sample_id",
-  stage_col = "diagnosis_stage",
-  stage_map = c("Control" = "Control", "Early_AD" = "Early AD", "AD" = "AD")
+  stage_col = "clinical_stage"
 ) |>
-  dplyr::filter(sample_id_for_model %in% colnames(rna_mat))
+  dplyr::filter(.data$sample_id_for_model %in% colnames(rna_mat))
+
+stage_analysis_sample_counts <- dplyr::bind_rows(
+  prot_stage_meta |>
+    dplyr::count(.data$stage, name = "n") |>
+    dplyr::mutate(modality = "Protein"),
+  rna_stage_meta |>
+    dplyr::count(.data$stage, name = "n") |>
+    dplyr::mutate(modality = "RNA")
+) |>
+  dplyr::select(modality, stage, n)
+
+write_tbl(
+  stage_analysis_sample_counts,
+  "clinical_stage_sample_counts_before_abundance_missingness"
+)
 
 all_detected_or_supplied <- clean_gene_symbols(all_hsp60_10_clients)
 prot_genes <- intersect(all_detected_or_supplied, rownames(prot_mat))
@@ -309,22 +325,40 @@ all_hsp60_10_client_tbl <- tibble::tibble(gene = all_detected_or_supplied) |>
 
     functional_class = assign_informative_function(gene),
 
-    protein_collapse_magnitude = dplyr::if_else(protein_late_effect < 0, abs(protein_late_effect), 0),
-    abs_delta_late = abs(protein_late_effect - rna_late_effect),
+    protein_late_decline_magnitude = dplyr::case_when(
+      !is.finite(protein_late_effect) ~ NA_real_,
+      protein_late_effect < 0 ~ abs(protein_late_effect),
+      TRUE ~ 0
+    ),
+    late_effect_absolute_difference = abs(
+      protein_late_effect - rna_late_effect
+    ),
 
     inverse_braak_magnitude = adjusted_inverse_braak_beta,
     inverse_cerad_magnitude = adjusted_inverse_cerad_beta,
 
-    collapse_percentile = percentile01(protein_collapse_magnitude),
+    late_decline_percentile = percentile01(
+      protein_late_decline_magnitude
+    ),
     inverse_braak_percentile = percentile01(inverse_braak_magnitude),
     centrality_percentile = percentile01(hub_mean_abs_cor),
-    discordance_percentile = percentile01(abs_delta_late),
+    late_effect_difference_percentile = percentile01(
+      late_effect_absolute_difference
+    ),
 
-    pathology_vulnerability_score = sqrt(collapse_percentile * inverse_braak_percentile),
+    pathology_vulnerability_score = sqrt(
+      late_decline_percentile * inverse_braak_percentile
+    ),
 
     ## Generic four-axis score used by some intermediate scripts.
+    ## The RNA-protein late-effect difference is descriptive only.
     priority_score_internal_only = rowMeans(
-      cbind(collapse_percentile, inverse_braak_percentile, centrality_percentile, discordance_percentile),
+      cbind(
+        late_decline_percentile,
+        inverse_braak_percentile,
+        centrality_percentile,
+        late_effect_difference_percentile
+      ),
       na.rm = TRUE
     ),
     vulnerability_rank = rank(-priority_score_internal_only, ties.method = "min", na.last = "keep"),
@@ -354,60 +388,74 @@ print(table(all_hsp60_10_client_tbl$agora_target, useNA = "ifany"))
 
 all_client_stage_long <- dplyr::bind_rows(
   all_hsp60_10_client_tbl |>
-    dplyr::filter(detected_in_protein) |>
-    dplyr::select(gene, protein_control_mean, protein_early_mean, protein_ad_mean,
-                  protein_control_sem, protein_early_sem, protein_ad_sem) |>
+    dplyr::filter(.data$detected_in_protein) |>
+    dplyr::select(
+      gene,
+      protein_nci_mean,
+      protein_mci_mean,
+      protein_ad_mean,
+      protein_nci_sem,
+      protein_mci_sem,
+      protein_ad_sem
+    ) |>
     tidyr::pivot_longer(
-      cols = c(protein_control_mean, protein_early_mean, protein_ad_mean),
+      cols = c(protein_nci_mean, protein_mci_mean, protein_ad_mean),
       names_to = "stage_key",
       values_to = "mean_expr"
     ) |>
     dplyr::mutate(
       Modality = "Protein",
       Stage = dplyr::recode(
-        stage_key,
-        protein_control_mean = "Control",
-        protein_early_mean = "Early AD",
+        .data$stage_key,
+        protein_nci_mean = "NCI",
+        protein_mci_mean = "MCI",
         protein_ad_mean = "AD"
       ),
       sem = dplyr::case_when(
-        stage_key == "protein_control_mean" ~ protein_control_sem,
-        stage_key == "protein_early_mean" ~ protein_early_sem,
-        stage_key == "protein_ad_mean" ~ protein_ad_sem,
+        .data$stage_key == "protein_nci_mean" ~ .data$protein_nci_sem,
+        .data$stage_key == "protein_mci_mean" ~ .data$protein_mci_sem,
+        .data$stage_key == "protein_ad_mean" ~ .data$protein_ad_sem,
         TRUE ~ NA_real_
       )
     ) |>
     dplyr::select(gene, Modality, Stage, mean_expr, sem),
 
   all_hsp60_10_client_tbl |>
-    dplyr::filter(detected_in_rna) |>
-    dplyr::select(gene, rna_control_mean, rna_early_mean, rna_ad_mean,
-                  rna_control_sem, rna_early_sem, rna_ad_sem) |>
+    dplyr::filter(.data$detected_in_rna) |>
+    dplyr::select(
+      gene,
+      rna_nci_mean,
+      rna_mci_mean,
+      rna_ad_mean,
+      rna_nci_sem,
+      rna_mci_sem,
+      rna_ad_sem
+    ) |>
     tidyr::pivot_longer(
-      cols = c(rna_control_mean, rna_early_mean, rna_ad_mean),
+      cols = c(rna_nci_mean, rna_mci_mean, rna_ad_mean),
       names_to = "stage_key",
       values_to = "mean_expr"
     ) |>
     dplyr::mutate(
       Modality = "RNA",
       Stage = dplyr::recode(
-        stage_key,
-        rna_control_mean = "Control",
-        rna_early_mean = "Early AD",
+        .data$stage_key,
+        rna_nci_mean = "NCI",
+        rna_mci_mean = "MCI",
         rna_ad_mean = "AD"
       ),
       sem = dplyr::case_when(
-        stage_key == "rna_control_mean" ~ rna_control_sem,
-        stage_key == "rna_early_mean" ~ rna_early_sem,
-        stage_key == "rna_ad_mean" ~ rna_ad_sem,
+        .data$stage_key == "rna_nci_mean" ~ .data$rna_nci_sem,
+        .data$stage_key == "rna_mci_mean" ~ .data$rna_mci_sem,
+        .data$stage_key == "rna_ad_mean" ~ .data$rna_ad_sem,
         TRUE ~ NA_real_
       )
     ) |>
     dplyr::select(gene, Modality, Stage, mean_expr, sem)
 ) |>
   dplyr::mutate(
-    Stage = factor(Stage, levels = c("Control", "Early AD", "AD")),
-    Modality = factor(Modality, levels = c("Protein", "RNA"))
+    Stage = factor(.data$Stage, levels = c("NCI", "MCI", "AD")),
+    Modality = factor(.data$Modality, levels = c("Protein", "RNA"))
   )
 
 ############################################################
@@ -421,18 +469,18 @@ message("AGORA-like columns in priority_input_tbl: ", paste(grep("agora|target|n
 
 priority_tbl <- priority_input_tbl |>
   dplyr::mutate(
-    collapse_topq = as.integer(collapse_percentile >= 75),
+    late_decline_topq = as.integer(late_decline_percentile >= 75),
     braak_topq = as.integer(inverse_braak_percentile >= 75),
     centrality_topq = as.integer(centrality_percentile >= 75),
 
     ## Clinical/pathology support axis used by Figure 6:
-    ## strong collapse OR strong adjusted inverse Braak.
-    clinical_topq = as.integer(collapse_percentile >= 75 | inverse_braak_percentile >= 75),
+    ## strong late-stage decline OR strong adjusted inverse Braak.
+    clinical_topq = as.integer(late_decline_percentile >= 75 | inverse_braak_percentile >= 75),
 
-    n_total_axes = collapse_topq + braak_topq + centrality_topq + clinical_topq + agora_target,
+    n_total_axes = late_decline_topq + braak_topq + centrality_topq + clinical_topq + agora_target,
 
     proteomic_vulnerability_axis = rowMeans(
-      cbind(collapse_percentile, inverse_braak_percentile, centrality_percentile),
+      cbind(late_decline_percentile, inverse_braak_percentile, centrality_percentile),
       na.rm = TRUE
     ),
 
@@ -444,7 +492,7 @@ priority_tbl <- priority_input_tbl |>
     ## Main Figure 6 priority score.
     priority_score = rowMeans(
       cbind(
-        collapse_percentile,
+        late_decline_percentile,
         inverse_braak_percentile,
         centrality_percentile,
         clinical_topq * 100,

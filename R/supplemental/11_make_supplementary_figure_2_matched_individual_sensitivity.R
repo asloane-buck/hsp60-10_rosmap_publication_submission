@@ -165,15 +165,11 @@ sf2_first_present_col <- function(df, candidates) {
 }
 
 sf2_stage_candidates <- c(
-  "diagnosis_stage",
-  "stage3",
-  "EmoryStrictDx.2019",
-  "diagnosis",
-  "cogdx",
+  "clinical_stage",
   "cogdx_num",
-  "dx",
-  "dx_numeric",
-  "Dx"
+  "cogdx",
+  "diagnosis_stage",
+  "diagnosis"
 )
 
 sf2_individual_id_candidates <- c(
@@ -188,19 +184,13 @@ sf2_sample_id_candidates <- c(
 )
 
 sf2_harmonize_stage <- function(stage) {
-  stage_chr <- as.character(stage)
-  stage_clean <- stage_chr |>
-    stringr::str_replace_all("[_.-]+", " ") |>
-    stringr::str_squish() |>
-    stringr::str_to_lower()
+  stage_chr <- stringr::str_squish(as.character(stage))
+  stage_clean <- stringr::str_to_lower(stage_chr)
 
   dplyr::case_when(
-    stage_clean %in% c("1", "control") ~ "Control",
-    stringr::str_detect(stage_clean, "control|normal|cognitively normal|^cn$|nci") ~ "Control",
-    stage_clean %in% c("2", "intermediate") ~ "Intermediate",
-    stringr::str_detect(stage_clean, "intermediate|asym|early|mci|prodromal") ~ "Intermediate",
+    stage_clean %in% c("1", "nci") ~ "NCI",
+    stage_clean %in% c("2", "mci") ~ "MCI",
     stage_clean %in% c("4", "ad") ~ "AD",
-    stringr::str_detect(stage_clean, "^ad$|alz|dementia") ~ "AD",
     TRUE ~ NA_character_
   )
 }
@@ -263,7 +253,23 @@ sf2_build_sample_meta <- function(meta, matrix_sample_ids, modality) {
     ) |>
     dplyr::arrange(.data$sample_id) |>
     dplyr::mutate(sample_id = as.character(.data$sample_id)) |>
-    dplyr::filter(!is.na(.data$individual_id), nzchar(.data$individual_id))
+    dplyr::filter(
+      !is.na(.data$individual_id),
+      nzchar(.data$individual_id),
+      !is.na(.data$Stage)
+    )
+
+  if (anyDuplicated(out$sample_id) > 0) {
+    stop(modality, " metadata contain duplicate matrix sample IDs.", call. = FALSE)
+  }
+
+  if (anyDuplicated(out$individual_id) > 0) {
+    stop(
+      modality,
+      " metadata contain more than one primary-stage sample per participant.",
+      call. = FALSE
+    )
+  }
 
   message(modality, " metadata columns:")
   message("  sample column: ", sample_col)
@@ -335,7 +341,7 @@ sf2_safe_paired_wilcox <- function(df, value_col = "Score", modality_col = "Moda
     ) |>
     tidyr::drop_na() |>
     dplyr::distinct(.data$individual_id, .data$Modality, .keep_all = TRUE) |>
-    tidyr::pivot_wider(names_from = .data$Modality, values_from = .data$Score) |>
+    tidyr::pivot_wider(names_from = "Modality", values_from = "Score") |>
     tidyr::drop_na(dplyr::all_of(c(m1, m2)))
 
   if (nrow(wide) < 3) {
@@ -428,6 +434,7 @@ make_supfig2_matched_individual_sensitivity <- function(inputs) {
 
   interactor_input <- sf2_get_input(
     c(
+      "hsp60_hsp10_interactor_inventory",
       "hsp60_hsp10_client_inventory",
       "all_hsp60_10_client_tbl",
       "hsp60_client_tbl",
@@ -477,16 +484,63 @@ make_supfig2_matched_individual_sensitivity <- function(inputs) {
   rna_meta <- sf2_build_sample_meta(rna_info$metadata, colnames(rna_info$matrix), "RNA")
   protein_meta <- sf2_build_sample_meta(protein_info$metadata, colnames(protein_info$matrix), "Protein")
 
-  overlap_ids <- intersect(unique(protein_meta$individual_id), unique(rna_meta$individual_id))
-  if (length(overlap_ids) < 10) {
+  matched_stage_crosswalk <- protein_meta |>
+    dplyr::select(
+      individual_id,
+      protein_sample_id = sample_id,
+      protein_stage = Stage
+    ) |>
+    dplyr::inner_join(
+      rna_meta |>
+        dplyr::select(
+          individual_id,
+          rna_sample_id = sample_id,
+          rna_stage = Stage
+        ),
+      by = "individual_id"
+    ) |>
+    dplyr::mutate(
+      stage_agrees = as.character(.data$protein_stage) ==
+        as.character(.data$rna_stage)
+    )
+
+  if (any(!matched_stage_crosswalk$stage_agrees)) {
+    bad <- matched_stage_crosswalk |>
+      dplyr::filter(!.data$stage_agrees)
+
+    readr::write_csv(
+      bad,
+      file.path(audits_dir, "SuppFig2_STAGE_DISAGREEMENTS_ERROR.csv")
+    )
+
     stop(
-      "Too few matched individuals found across RNA and protein: ", length(overlap_ids),
-      ". Check individual ID columns in RNA/protein metadata.",
+      "RNA and protein canonical clinical stages disagree for ",
+      nrow(bad),
+      " matched participants. See SuppFig2_STAGE_DISAGREEMENTS_ERROR.csv.",
       call. = FALSE
     )
   }
 
-  message("Matched individuals with RNA and protein available: ", length(overlap_ids))
+  overlap_ids <- matched_stage_crosswalk$individual_id
+
+  if (length(overlap_ids) < 10) {
+    stop(
+      "Too few primary-stage matched individuals found across RNA and protein: ",
+      length(overlap_ids),
+      ". Check individual ID/stage columns.",
+      call. = FALSE
+    )
+  }
+
+  message(
+    "Matched individuals with RNA and protein and identical canonical stage: ",
+    length(overlap_ids)
+  )
+
+  readr::write_csv(
+    matched_stage_crosswalk,
+    file.path(audits_dir, "SuppFig2_matched_stage_crosswalk.csv")
+  )
 
   readr::write_csv(
     dplyr::bind_rows(rna_meta, protein_meta) |>
@@ -526,7 +580,7 @@ make_supfig2_matched_individual_sensitivity <- function(inputs) {
       !is.na(.data$Score)
     ) |>
     dplyr::mutate(
-      Stage = factor(.data$Stage, levels = c("Control", "Intermediate", "AD")),
+      Stage = factor(.data$Stage, levels = c("NCI", "MCI", "AD")),
       Modality = factor(.data$Modality, levels = c("Protein", "RNA")),
       facet_label = factor(.data$facet_label, levels = pathway_tbl$facet_label),
       x = as.numeric(.data$Stage)
@@ -565,11 +619,11 @@ make_supfig2_matched_individual_sensitivity <- function(inputs) {
       y2_top <- max(summ$mean_score[summ$x %in% c(2, 3)] + summ$sem[summ$x %in% c(2, 3)], na.rm = TRUE)
       x_shift <- if (as.character(key$Modality[[1]]) == "Protein") -0.10 else 0.10
 
-      p_early <- sf2_safe_unpaired_wilcox(d, "Score", "Stage", "Control", "Intermediate")
-      p_late <- sf2_safe_unpaired_wilcox(d, "Score", "Stage", "Intermediate", "AD")
+      p_early <- sf2_safe_unpaired_wilcox(d, "Score", "Stage", "NCI", "MCI")
+      p_late <- sf2_safe_unpaired_wilcox(d, "Score", "Stage", "MCI", "AD")
 
       tibble::tibble(
-        comparison = c("Control_vs_Intermediate", "Intermediate_vs_AD"),
+        comparison = c("NCI_vs_MCI", "MCI_vs_AD"),
         x1 = c(1, 2) + x_shift,
         x2 = c(2, 3) + x_shift,
         y = if (as.character(key$Modality[[1]]) == "Protein") {
@@ -746,7 +800,7 @@ make_supfig2_matched_individual_sensitivity <- function(inputs) {
     } +
     ggplot2::scale_x_continuous(
       breaks = c(1, 2, 3),
-      labels = c("Control", "Intermediate", "AD")
+      labels = c("NCI", "MCI", "AD")
     ) +
     ggplot2::scale_color_manual(
       values = modality_colors[c("Protein", "RNA")],
@@ -800,7 +854,7 @@ make_supfig2_matched_individual_sensitivity <- function(inputs) {
     "Supplementary Figure 2 run summary",
     paste0("generated at: ", format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z")),
     "figure: matched-individual RNA/protein sensitivity analysis",
-    paste0("matched individuals: ", length(overlap_ids)),
+    paste0("matched primary-stage individuals with identical RNA/protein stage: ", length(overlap_ids)),
     paste0("RNA matrix: ", nrow(rna_info$matrix), " genes x ", ncol(rna_info$matrix), " samples"),
     paste0("Protein matrix: ", nrow(protein_info$matrix), " genes x ", ncol(protein_info$matrix), " samples"),
     paste0("RNA metadata input: ", rna_info$meta_name),
@@ -819,7 +873,11 @@ make_supfig2_matched_individual_sensitivity <- function(inputs) {
     matched_summary = matched_summary,
     within_sig = within_sig,
     between_sig = between_sig,
-    pathway_tbl = pathway_tbl
+    pathway_tbl = pathway_tbl,
+    rna_meta = rna_meta,
+    protein_meta = protein_meta,
+    matched_stage_crosswalk = matched_stage_crosswalk,
+    overlap_ids = overlap_ids
   ))
 }
 

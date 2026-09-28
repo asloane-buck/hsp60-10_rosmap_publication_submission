@@ -292,15 +292,23 @@ rna_scores_all_clients <- compute_pathway_scores(
   sample_col = "sample_id"
 )
 
-require_columns(prot_scores, c("SampleID", "EmoryStrictDx.2019"), "Figure 1 protein stage metadata")
-prot_stage_meta <- prot_scores %>%
-  select(SampleID, EmoryStrictDx.2019) %>%
-  distinct()
+require_columns(
+  prot_scores,
+  c("SampleID", "clinical_stage"),
+  "Figure 1 protein clinical-stage metadata"
+)
+prot_stage_meta <- prot_scores |>
+  dplyr::select(SampleID, clinical_stage) |>
+  dplyr::distinct()
 
-require_columns(rna_scores, c("sample_id", "diagnosis_stage"), "Figure 1 RNA stage metadata")
-rna_stage_meta <- rna_scores %>%
-  select(sample_id, diagnosis_stage) %>%
-  distinct()
+require_columns(
+  rna_scores,
+  c("sample_id", "clinical_stage"),
+  "Figure 1 RNA clinical-stage metadata"
+)
+rna_stage_meta <- rna_scores |>
+  dplyr::select(sample_id, clinical_stage) |>
+  dplyr::distinct()
 
 prot_scores_all_clients <- prot_scores_all_clients %>%
   checked_left_join(prot_stage_meta, by = "SampleID", label = "Figure 1 protein pathway scores to stage metadata")
@@ -322,12 +330,7 @@ overlay_long_all_clients <- bind_rows(
     transmute(
       sample_id = SampleID,
       Modality = "Protein",
-      Stage = recode(
-        as.character(EmoryStrictDx.2019),
-        Control = "NCI",
-        AsymAD = "MCI",
-        AD = "AD"
-      ),
+      Stage = as.character(clinical_stage),
       Pathway,
       PathwayLabel = fig1_panelA_plain_labels[Pathway],
       PathwayShort = fig1_panelB_labels[Pathway],
@@ -344,12 +347,7 @@ overlay_long_all_clients <- bind_rows(
     transmute(
       sample_id = sample_id,
       Modality = "RNA",
-      Stage = recode(
-        as.character(diagnosis_stage),
-        Control = "NCI",
-        Early_AD = "MCI",
-        AD = "AD"
-      ),
+      Stage = as.character(clinical_stage),
       Pathway,
       PathwayLabel = fig1_panelA_plain_labels[Pathway],
       PathwayShort = fig1_panelB_labels[Pathway],
@@ -951,7 +949,7 @@ pB <- ggplot(
   labs(
     title = "B. Protein-biased remodeling magnitude",
     subtitle = "Positive values indicate a larger protein-level stage change than RNA-level stage change.",
-    x = "Protein remodeling magnitude − RNA remodeling magnitude",
+    x = "Protein remodeling magnitude - RNA remodeling magnitude",
     y = NULL
   ) +
   paper_theme_rebuilt(10.3) +

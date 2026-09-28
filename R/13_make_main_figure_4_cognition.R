@@ -51,7 +51,7 @@ if (!exists("cfg")) {
 }
 
 require_objects(
-  c("cfg", "cognition_model_df", "prot_mat", "all_hsp60_10_client_tbl"),
+  c("cfg", "cognition_model_df", "prot_mat_raw", "all_hsp60_10_client_tbl"),
   context = "13_make_main_figure_4_cognition.R"
 )
 
@@ -62,6 +62,7 @@ require_columns(
     "individualID",
     "Hsp60_client_score_z",
     "cogdx",
+    "clinical_stage_broad",
     "dcfdx_lv",
     "mmse_last_valid",
     "age_death",
@@ -70,7 +71,8 @@ require_columns(
     "pmi",
     "Braak",
     "CERAD"
-  ),
+  ,
+    "batch_factor"),
   "Figure 4 integrated cognition_model_df"
 )
 
@@ -219,7 +221,7 @@ plot_df <- cognition_model_df %>%
       TRUE ~ NA_real_
     ),
     
-    ## Reoriented so higher = better cognition.
+    ## Broad ROSMAP cognition severity; reoriented so higher = better cognition.
     cogdx_better = case_when(
       cogdx_severity == 0 ~ 2,
       cogdx_severity == 1 ~ 1,
@@ -238,14 +240,16 @@ plot_df <- cognition_model_df %>%
     dcfdx_lv_better_z = as.numeric(scale(dcfdx_lv_better)),
     mmse_last_valid_z = as.numeric(scale(mmse_last_valid)),
     
-    cog_group = case_when(
-      cogdx == 1 ~ "NCI",
-      cogdx %in% c(2, 3) ~ "MCI",
-      cogdx %in% c(4, 5) ~ "AD",
-      TRUE ~ NA_character_
+    ## For cognition analyses, use the broad ROSMAP consensus grouping
+    ## already defined upstream: 1=NCI, 2/3=MCI, 4/5=AD, 6=other dementia.
+    ## This is outcome-specific and distinct from the primary 1/2/4
+    ## clinical-stage analysis.
+    cog_group = factor(
+      as.character(.data$clinical_stage_broad),
+      levels = c("NCI", "MCI", "AD")
     ),
-    cog_group = factor(cog_group, levels = c("NCI", "MCI", "AD")),
-    sex = as.factor(sex)
+    sex = as.factor(sex),
+    batch_factor = as.factor(batch_factor)
   )
 
 ############################################################
@@ -261,7 +265,8 @@ diag_df <- plot_df %>%
     !is.na(educ),
     !is.na(pmi),
     !is.na(Braak),
-    !is.na(CERAD)
+    !is.na(CERAD),
+    !is.na(batch_factor)
   ) %>%
   mutate(
     cog_group_num = case_when(
@@ -273,7 +278,7 @@ diag_df <- plot_df %>%
   )
 
 fit_hsp_adjust <- lm(
-  Hsp60_client_score_z ~ age_death + sex + educ + pmi + Braak + CERAD,
+  Hsp60_client_score_z ~ age_death + sex + educ + pmi + Braak + CERAD + batch_factor,
   data = diag_df
 )
 
@@ -283,7 +288,7 @@ diag_df <- diag_df %>%
   )
 
 fit_group_trend <- lm(
-  Hsp60_client_score_z ~ cog_group_num + age_death + sex + educ + pmi + Braak + CERAD,
+  Hsp60_client_score_z ~ cog_group_num + age_death + sex + educ + pmi + Braak + CERAD + batch_factor,
   data = diag_df
 )
 
@@ -395,7 +400,7 @@ run_network_model <- function(outcome, label, data) {
   formula_use <- as.formula(
     paste0(
       outcome,
-      " ~ Hsp60_client_score_z + age_death + sex + educ + pmi + Braak + CERAD"
+      " ~ Hsp60_client_score_z + age_death + sex + educ + pmi + Braak + CERAD + batch_factor"
     )
   )
   
@@ -427,7 +432,7 @@ all_hsp_clients <- all_hsp60_10_client_tbl %>%
   filter(!is.na(gene), gene != "") %>%
   distinct(gene)
 
-protein_mat <- prot_mat
+protein_mat <- prot_mat_raw
 rownames(protein_mat) <- clean_gene(rownames(protein_mat))
 colnames(protein_mat) <- as.character(colnames(protein_mat))
 
@@ -443,11 +448,11 @@ missing_clients <- setdiff(
 
 message("\nFigure 4 client-level cognition models")
 message("Curated Hsp60/10 clients: ", nrow(all_hsp_clients))
-message("Detected clients in prot_mat: ", length(detected_clients))
+message("Detected clients in prot_mat_raw: ", length(detected_clients))
 message("Missing clients: ", length(missing_clients))
 
 if (length(detected_clients) < 5) {
-  stop("Too few detected Hsp60/10 clients in prot_mat.", call. = FALSE)
+  stop("Too few detected Hsp60/10 clients in prot_mat_raw.", call. = FALSE)
 }
 
 client_mat <- protein_mat[detected_clients, , drop = FALSE]
@@ -490,7 +495,8 @@ cog_df <- plot_df %>%
     educ,
     pmi,
     Braak,
-    CERAD
+    CERAD,
+    batch_factor
   )
 
 analysis_long <- client_long %>%
@@ -512,7 +518,8 @@ run_client_model <- function(data, outcome, outcome_label) {
       educ,
       pmi,
       Braak,
-      CERAD
+      CERAD,
+      batch_factor
     ) %>%
     drop_na()
   
@@ -553,7 +560,7 @@ run_client_model <- function(data, outcome, outcome_label) {
       form <- as.formula(
         paste0(
           outcome,
-          " ~ client_abundance_z + age_death + sex + educ + pmi + Braak + CERAD"
+          " ~ client_abundance_z + age_death + sex + educ + pmi + Braak + CERAD + batch_factor"
         )
       )
       
@@ -705,7 +712,7 @@ client_cognition_summary <- client_cognition_all %>%
 sheets <- readxl::excel_sheets(mitocarta_path)
 
 read_mitocarta_sheet <- function(sh) {
-  raw <- readxl::read_excel(mitocarta_path, sheet = sh)
+  raw <- readxl::read_excel(mitocarta_path, sheet = sh, col_types = "text")
   names(raw) <- clean_col(names(raw))
   raw
 }
@@ -1321,7 +1328,7 @@ write_fig4_table(
 message("\n============================================================")
 message("Integrated Figure 4 complete.")
 message("Curated Hsp60/10 clients: ", nrow(all_hsp_clients))
-message("Detected clients in prot_mat: ", length(detected_clients))
+message("Detected clients in prot_mat_raw: ", length(detected_clients))
 message("Displayed genes in Panel B: ", length(top_genes))
 message("MitoCarta sheet used: ", chosen_sheet)
 message("Outputs written to:")
