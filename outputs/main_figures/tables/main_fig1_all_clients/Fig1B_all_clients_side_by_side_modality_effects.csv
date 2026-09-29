@@ -1,0 +1,77 @@
+Pathway,PathwayLabel,PathwayShort,Modality,Shift,stage_change
+Hsp60_10_all_clients,Hsp60/10 clients,Hsp60/10 clients,Protein,NCI to MCI,-0.056344150691985374
+Hsp60_10_all_clients,Hsp60/10 clients,Hsp60/10 clients,Protein,MCI to AD,-0.16908659886742608
+Hsp60_10_all_clients,Hsp60/10 clients,Hsp60/10 clients,RNA,NCI to MCI,0.05654302658486121
+Hsp60_10_all_clients,Hsp60/10 clients,Hsp60/10 clients,RNA,MCI to AD,-0.10503022835272861
+Broad_MitoCarta_non_Hsp60_10,"Broad mitochondrial
+non-Hsp60/10",Broad mito,Protein,NCI to MCI,-0.03335165364223994
+Broad_MitoCarta_non_Hsp60_10,"Broad mitochondrial
+non-Hsp60/10",Broad mito,Protein,MCI to AD,-0.10909412492008924
+Broad_MitoCarta_non_Hsp60_10,"Broad mitochondrial
+non-Hsp60/10",Broad mito,RNA,NCI to MCI,0.03244873008531358
+Broad_MitoCarta_non_Hsp60_10,"Broad mitochondrial
+non-Hsp60/10",Broad mito,RNA,MCI to AD,-0.07653148441130017
+Mito_translation_non_Hsp60_10,"Mito translation
+non-Hsp60/10",Mito translation,Protein,NCI to MCI,-0.04089731324007898
+Mito_translation_non_Hsp60_10,"Mito translation
+non-Hsp60/10",Mito translation,Protein,MCI to AD,-0.17473557477228321
+Mito_translation_non_Hsp60_10,"Mito translation
+non-Hsp60/10",Mito translation,RNA,NCI to MCI,0.04112923138572676
+Mito_translation_non_Hsp60_10,"Mito translation
+non-Hsp60/10",Mito translation,RNA,MCI to AD,-0.10928194474204533
+OXPHOS_ETC_non_Hsp60_10,"OXPHOS/ETC
+non-Hsp60/10",OXPHOS/ETC,Protein,NCI to MCI,-0.07871981769858137
+OXPHOS_ETC_non_Hsp60_10,"OXPHOS/ETC
+non-Hsp60/10",OXPHOS/ETC,Protein,MCI to AD,-0.13510561089004536
+OXPHOS_ETC_non_Hsp60_10,"OXPHOS/ETC
+non-Hsp60/10",OXPHOS/ETC,RNA,NCI to MCI,0.051673686745425815
+OXPHOS_ETC_non_Hsp60_10,"OXPHOS/ETC
+non-Hsp60/10",OXPHOS/ETC,RNA,MCI to AD,-0.14650099805987643
+TCA_pyruvate_metabolism_non_Hsp60_10,"TCA/pyruvate
+non-Hsp60/10",TCA/pyruvate,Protein,NCI to MCI,-0.03303276198908741
+TCA_pyruvate_metabolism_non_Hsp60_10,"TCA/pyruvate
+non-Hsp60/10",TCA/pyruvate,Protein,MCI to AD,-0.14050852586055707
+TCA_pyruvate_metabolism_non_Hsp60_10,"TCA/pyruvate
+non-Hsp60/10",TCA/pyruvate,RNA,NCI to MCI,0.04491850427595653
+TCA_pyruvate_metabolism_non_Hsp60_10,"TCA/pyruvate
+non-Hsp60/10",TCA/pyruvate,RNA,MCI to AD,-0.06400843081386669
+FAO_metabolism_non_Hsp60_10,"FAO/metabolism
+non-Hsp60/10",FAO/metabolism,Protein,NCI to MCI,-0.009310355270787087
+FAO_metabolism_non_Hsp60_10,"FAO/metabolism
+non-Hsp60/10",FAO/metabolism,Protein,MCI to AD,-0.13258588013331143
+FAO_metabolism_non_Hsp60_10,"FAO/metabolism
+non-Hsp60/10",FAO/metabolism,RNA,NCI to MCI,0.04140976269768481
+FAO_metabolism_non_Hsp60_10,"FAO/metabolism
+non-Hsp60/10",FAO/metabolism,RNA,MCI to AD,-0.032343864194254286
+Mito_protein_quality_control_non_Hsp60_10,"Mito protein QC
+non-Hsp60/10",Mito protein QC,Protein,NCI to MCI,-0.048365004961981456
+Mito_protein_quality_control_non_Hsp60_10,"Mito protein QC
+non-Hsp60/10",Mito protein QC,Protein,MCI to AD,-0.13338198447483446
+Mito_protein_quality_control_non_Hsp60_10,"Mito protein QC
+non-Hsp60/10",Mito protein QC,RNA,NCI to MCI,0.01934441417943989
+Mito_protein_quality_control_non_Hsp60_10,"Mito protein QC
+non-Hsp60/10",Mito protein QC,RNA,MCI to AD,-0.07698554142485933
+Proteasome_core_non_Hsp60_10,"Proteasome
+core",Proteasome,Protein,NCI to MCI,-0.03579716587968292
+Proteasome_core_non_Hsp60_10,"Proteasome
+core",Proteasome,Protein,MCI to AD,0.042257674713043834
+Proteasome_core_non_Hsp60_10,"Proteasome
+core",Proteasome,RNA,NCI to MCI,0.07610889854116058
+Proteasome_core_non_Hsp60_10,"Proteasome
+core",Proteasome,RNA,MCI to AD,-0.15586469346189613
+Lysosome_core_non_Hsp60_10,"Lysosome
+core",Lysosome,Protein,NCI to MCI,3.138665892380328e-4
+Lysosome_core_non_Hsp60_10,"Lysosome
+core",Lysosome,Protein,MCI to AD,-0.05359450235039366
+Lysosome_core_non_Hsp60_10,"Lysosome
+core",Lysosome,RNA,NCI to MCI,0.02383489578810835
+Lysosome_core_non_Hsp60_10,"Lysosome
+core",Lysosome,RNA,MCI to AD,-0.04608836300718516
+UPRmt_core_non_Hsp60_10,"UPRmt
+core",UPRmt,Protein,NCI to MCI,-0.08592326138926645
+UPRmt_core_non_Hsp60_10,"UPRmt
+core",UPRmt,Protein,MCI to AD,-0.04001511233223309
+UPRmt_core_non_Hsp60_10,"UPRmt
+core",UPRmt,RNA,NCI to MCI,0.042224114175032565
+UPRmt_core_non_Hsp60_10,"UPRmt
+core",UPRmt,RNA,MCI to AD,-0.05442713404842049
