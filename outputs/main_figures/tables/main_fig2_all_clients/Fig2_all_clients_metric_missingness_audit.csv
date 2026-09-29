@@ -1,2 +1,2 @@
-n_total_detected_protein,n_with_discordance,n_missing_discordance,n_with_centrality,n_missing_centrality,n_with_both,n_missing_either
-306,285,21,306,0,285,21
+n_total_detected_protein,n_with_centrality,n_missing_centrality
+306,306,0

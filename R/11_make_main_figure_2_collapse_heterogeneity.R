@@ -5,7 +5,7 @@
 ############################################################
 
 ## MAIN FIGURE 2 — ALL HSP60/10 CLIENTS
-## Heterogeneous collapse, discordance, and centrality
+## Heterogeneous late-stage decline and network centrality
 ############################################################
 
 suppressPackageStartupMessages({
@@ -153,17 +153,9 @@ require_columns(
     "detected_in_protein",
     "detected_in_rna",
     "protein_late_decline_magnitude",
-    "late_effect_absolute_difference",
     "hub_mean_abs_cor"
   ),
   "Figure 2 source all-client table"
-)
-
-late_effect_difference_col <- "late_effect_absolute_difference"
-
-message(
-  "Figure 2 RNA-protein late-effect difference column used: ",
-  late_effect_difference_col
 )
 
 fig2_tbl <- all_hsp60_10_client_tbl %>%
@@ -173,12 +165,6 @@ fig2_tbl <- all_hsp60_10_client_tbl %>%
     detected_in_rna = as.logical(detected_in_rna),
     
     late_decline_value = protein_late_decline_magnitude,
-    
-    late_effect_difference_value = if (!is.na(late_effect_difference_col)) {
-      abs(as.numeric(.data[[late_effect_difference_col]]))
-    } else {
-      NA_real_
-    },
     
     centrality_value = hub_mean_abs_cor
   ) %>%
@@ -245,7 +231,24 @@ fig2_label_tbl <- fig2_tbl %>%
     )
   )
 
-write_fig2_all_table(fig2_tbl, "Fig2_all_clients_ranked_client_table")
+fig2_ranked_output_tbl <- fig2_tbl %>%
+  select(
+    gene,
+    late_decline_rank,
+    late_decline_group,
+    detected_in_protein,
+    detected_in_rna,
+    protein_late_decline_magnitude,
+    late_decline_value,
+    hub_mean_abs_cor,
+    centrality_value,
+    label_gene
+  )
+
+write_fig2_all_table(
+  fig2_ranked_output_tbl,
+  "Fig2_all_clients_ranked_client_table"
+)
 
 late_decline_group_counts <- fig2_tbl %>%
   count(late_decline_group, name = "n_clients")
@@ -257,26 +260,6 @@ print(late_decline_group_counts)
 ############################################################
 ## 3. Stats for Panels B and C
 ############################################################
-
-late_effect_difference_stats_tbl <- fig2_tbl %>%
-  filter(is.finite(late_effect_difference_value)) %>%
-  summarise(
-    comparison = "Top-quartile late decline vs other detected clients",
-    metric = "Late RNA-protein late-effect difference",
-    n_top = sum(late_decline_group == "Top-quartile late decline"),
-    n_other = sum(late_decline_group == "Other detected Hsp60/10 clients"),
-    median_top = median(late_effect_difference_value[late_decline_group == "Top-quartile late decline"], na.rm = TRUE),
-    median_other = median(late_effect_difference_value[late_decline_group == "Other detected Hsp60/10 clients"], na.rm = TRUE),
-    p_value = suppressWarnings(
-      wilcox.test(
-        late_effect_difference_value[late_decline_group == "Top-quartile late decline"],
-        late_effect_difference_value[late_decline_group == "Other detected Hsp60/10 clients"],
-        exact = FALSE
-      )$p.value
-    ),
-    p_label = p_to_label(p_value),
-    star = star_label(p_value)
-  )
 
 centrality_stats_tbl <- fig2_tbl %>%
   filter(is.finite(centrality_value)) %>%
@@ -298,7 +281,7 @@ centrality_stats_tbl <- fig2_tbl %>%
     star = star_label(p_value)
   )
 
-fig2_stats_tbl <- bind_rows(late_effect_difference_stats_tbl, centrality_stats_tbl)
+fig2_stats_tbl <- centrality_stats_tbl
 
 write_fig2_all_table(fig2_stats_tbl, "Fig2_all_clients_panel_stats")
 
@@ -403,96 +386,9 @@ pA <- ggplot(
   )
 
 ############################################################
-## 6. Panel B — discordance comparison
 ############################################################
-
-late_effect_difference_plot_tbl <- fig2_tbl %>%
-  filter(is.finite(late_effect_difference_value)) %>%
-  mutate(
-      late_decline_group_short = case_when(
-    late_decline_group == "Top-quartile late decline" ~ paste0("Top quartile\n(n=", sum(late_decline_group == "Top-quartile late decline"), ")"),
-    late_decline_group == "Other detected Hsp60/10 clients" ~ paste0("Other clients\n(n=", sum(late_decline_group == "Other detected Hsp60/10 clients"), ")")
-  ),
-  late_decline_group_short = factor(
-    late_decline_group_short,
-    levels = c(
-      paste0("Top quartile\n(n=", sum(late_decline_group == "Top-quartile late decline"), ")"),
-      paste0("Other clients\n(n=", sum(late_decline_group == "Other detected Hsp60/10 clients"), ")")
-    )
-)
-  )
-
-require_columns(
-  late_effect_difference_plot_tbl,
-  c("late_decline_group_short", "late_effect_difference_value", "late_decline_group"),
-  "Figure 2 Panel B discordance table"
-)
-require_values(late_effect_difference_plot_tbl, "late_decline_group", levels(fig2_tbl$late_decline_group), "Figure 2 Panel B")
-
-late_effect_difference_ymax <- max(late_effect_difference_plot_tbl$late_effect_difference_value, na.rm = TRUE)
-late_effect_difference_yrange <- diff(range(late_effect_difference_plot_tbl$late_effect_difference_value, na.rm = TRUE))
-if (!is.finite(late_effect_difference_yrange) || late_effect_difference_yrange == 0) late_effect_difference_yrange <- 0.1
-
-pB <- ggplot(
-  late_effect_difference_plot_tbl,
-  aes(x = late_decline_group_short, y = late_effect_difference_value, fill = late_decline_group)
-) +
-  geom_boxplot(
-    width = 0.52,
-    outlier.shape = NA,
-    alpha = 0.75,
-    color = "grey30",
-    linewidth = 0.45
-  ) +
-  geom_jitter(
-    aes(color = late_decline_group),
-    width = 0.13,
-    size = 1.35,
-    alpha = 0.45,
-    show.legend = FALSE
-  ) +
-  annotate(
-    "segment",
-    x = 1,
-    xend = 2,
-    y = late_effect_difference_ymax + late_effect_difference_yrange * 0.26,
-    yend = late_effect_difference_ymax + late_effect_difference_yrange * 0.26,
-    color = "black",
-    linewidth = 0.45
-  ) +
-  annotate(
-    "text",
-    x = 1.5,
-    y = late_effect_difference_ymax + late_effect_difference_yrange * 0.48,
-    label = paste0(
-      late_effect_difference_stats_tbl$star,
-      "\n",
-      late_effect_difference_stats_tbl$p_label
-    ),
-    size = 2.8,
-    fontface = "bold",
-    lineheight = 0.95
-  ) +
-  scale_fill_manual(values = late_decline_colors, guide = "none") +
-  scale_color_manual(values = late_decline_point_colors, guide = "none") +
-  scale_y_continuous(expand = expansion(mult = c(0.05, 0.66))) +
-  labs(
-    title = "B. RNA-protein late-effect difference",
-    subtitle = "The absolute RNA-protein late-effect difference is not significantly higher in the top late-decline quartile.",
-    x = NULL,
-    y = "Late RNA-protein late-effect difference"
-  ) +
-  theme_fig2(11) +
-  theme(
-    axis.text.x = element_text(angle = 0, hjust = 0.5, size = 9.5),
-    plot.title = element_text(size = 14, face = "bold"),
-    plot.subtitle = element_text(size = 10, color = "grey35"),
-    axis.title = element_text(face = "bold"),
-    panel.grid.minor = element_blank()
-  )
-
+## 6. Panel B — centrality comparison
 ############################################################
-## 7. Panel C — centrality comparison
 ############################################################
 
 centrality_plot_tbl <- fig2_tbl %>%
@@ -514,15 +410,15 @@ centrality_plot_tbl <- fig2_tbl %>%
 require_columns(
   centrality_plot_tbl,
   c("late_decline_group_short", "centrality_value", "late_decline_group"),
-  "Figure 2 Panel C centrality table"
+  "Figure 2 Panel B centrality table"
 )
-require_values(centrality_plot_tbl, "late_decline_group", levels(fig2_tbl$late_decline_group), "Figure 2 Panel C")
+require_values(centrality_plot_tbl, "late_decline_group", levels(fig2_tbl$late_decline_group), "Figure 2 Panel B")
 
 centrality_ymax <- max(centrality_plot_tbl$centrality_value, na.rm = TRUE)
 centrality_yrange <- diff(range(centrality_plot_tbl$centrality_value, na.rm = TRUE))
 if (!is.finite(centrality_yrange) || centrality_yrange == 0) centrality_yrange <- 0.1
 
-pC <- ggplot(
+pB <- ggplot(
   centrality_plot_tbl,
   aes(x = late_decline_group_short, y = centrality_value, fill = late_decline_group)
 ) +
@@ -566,7 +462,7 @@ pC <- ggplot(
   scale_color_manual(values = late_decline_point_colors, guide = "none") +
   scale_y_continuous(expand = expansion(mult = c(0.05, 0.70))) +
   labs(
-    title = "C. Network centrality",
+    title = "B. Network centrality",
     subtitle = "Top-quartile late-declining clients occupy more central positions in the client network.",
     x = NULL,
     y = "Network centrality"
@@ -581,17 +477,17 @@ pC <- ggplot(
   )
 
 ############################################################
-## 8. Assemble Figure 2
+## 7. Assemble Figure 2
 ############################################################
 
 
 
 
-fig2_all_clients <- pA / (pB | pC) +
-  plot_layout(heights = c(1.15, 1.0)) +
+fig2_all_clients <- pA / pB +
+  plot_layout(heights = c(1.35, 0.85)) +
   plot_annotation(
     title = "Hsp60/10 client vulnerability is selective across the full client network",
-    subtitle = "Late-stage protein decline is heterogeneous; strongly late-declining clients show stronger network centrality, while RNA-protein late-effect difference is not uniformly elevated.",
+    subtitle = "Late-stage protein decline is heterogeneous; strongly late-declining clients show greater network centrality.",
     theme = theme(
       plot.title = element_text(face = "bold", hjust = 0.5, size = 18),
       plot.subtitle = element_text(hjust = 0.5, size = 12, color = "grey35")
@@ -600,7 +496,7 @@ fig2_all_clients <- pA / (pB | pC) +
 
 save_fig2_all_plot(
   fig2_all_clients,
-  "Main_Fig2_all_clients_late_decline_effect_difference_centrality",
+  "Main_Fig2_all_clients_late_decline_centrality",
   width = 15.5,
   height = 10.2
 )
@@ -610,19 +506,15 @@ fig2_all_clients
 fig2_missingness_audit <- fig2_tbl %>%
   summarise(
     n_total_detected_protein = n(),
-    n_with_late_effect_difference = sum(is.finite(late_effect_difference_value)),
-    n_missing_late_effect_difference = sum(!is.finite(late_effect_difference_value)),
     n_with_centrality = sum(is.finite(centrality_value)),
-    n_missing_centrality = sum(!is.finite(centrality_value)),
-    n_with_both = sum(is.finite(late_effect_difference_value) & is.finite(centrality_value)),
-    n_missing_either = sum(!is.finite(late_effect_difference_value) | !is.finite(centrality_value))
+    n_missing_centrality = sum(!is.finite(centrality_value))
   )
 
 write_fig2_all_table(fig2_missingness_audit, "Fig2_all_clients_metric_missingness_audit")
 print(fig2_missingness_audit)
 
 fig2_metric_missing_genes <- fig2_tbl %>%
-  filter(!is.finite(late_effect_difference_value) | !is.finite(centrality_value)) %>%
+  filter(!is.finite(centrality_value)) %>%
   select(
     any_of(c(
       "gene",
@@ -631,9 +523,7 @@ fig2_metric_missing_genes <- fig2_tbl %>%
       "detected_in_protein",
       "detected_in_rna",
       "protein_late_decline_magnitude",
-      "late_effect_difference_value",
       "centrality_value",
-      "late_effect_absolute_difference",
       "hub_mean_abs_cor"
     ))
   ) %>%

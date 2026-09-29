@@ -1,3 +1,2 @@
 comparison,metric,n_top,n_other,median_top,median_other,p_value,p_label,star
-Top-quartile collapse vs other detected clients,Late RNA-protein discordance,73,212,0.02917457698917271,0.03193282091579056,0.2328949865090069,P = 0.23,ns
-Top-quartile collapse vs other detected clients,Network centrality,77,229,0.2589712802680986,0.17047879932083704,7.770203491530084e-14,P = 7.77e-14,***
+Top-quartile late decline vs other detected clients,Network centrality,77,229,0.23830871587175678,0.169588904668146,9.97405718812298e-8,P = 9.97e-08,***
