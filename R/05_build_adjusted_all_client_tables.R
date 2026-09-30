@@ -334,21 +334,163 @@ all_hsp60_10_client_tbl <- tibble::tibble(gene = all_detected_or_supplied) |>
       protein_late_effect - rna_late_effect
     ),
 
-    inverse_braak_magnitude = adjusted_inverse_braak_beta,
-    inverse_cerad_magnitude = adjusted_inverse_cerad_beta,
+    ########################################################
+    ## Canonical pathology variables
+    ##
+    ## Positive pathology-aligned beta means lower protein
+    ## abundance with WORSE pathology for both endpoints.
+    ##
+    ## Braak:
+    ##   higher score = worse pathology
+    ##   therefore pathology-aligned beta = -braak_beta
+    ##
+    ## CERAD:
+    ##   lower score = worse pathology
+    ##   therefore pathology-aligned beta = +cerad_beta
+    ########################################################
+
+    braak_pathology_aligned_beta = dplyr::if_else(
+      is.finite(braak_beta),
+      -braak_beta,
+      NA_real_
+    ),
+
+    cerad_pathology_aligned_beta = dplyr::if_else(
+      is.finite(cerad_beta),
+      cerad_beta,
+      NA_real_
+    ),
+
+    ## One-sided vulnerability magnitudes.
+    braak_pathology_magnitude = dplyr::if_else(
+      is.finite(braak_pathology_aligned_beta),
+      pmax(braak_pathology_aligned_beta, 0),
+      NA_real_
+    ),
+
+    cerad_pathology_magnitude = dplyr::if_else(
+      is.finite(cerad_pathology_aligned_beta),
+      pmax(cerad_pathology_aligned_beta, 0),
+      NA_real_
+    ),
+
+    ## Raw standardized-coefficient joint pathology metrics.
+    ## These require both pathology models to be available.
+    joint_pathology_magnitude = dplyr::if_else(
+      is.finite(braak_pathology_magnitude) &
+        is.finite(cerad_pathology_magnitude),
+      (
+        braak_pathology_magnitude +
+          cerad_pathology_magnitude
+      ) / 2,
+      NA_real_
+    ),
+
+    strict_joint_pathology_magnitude = dplyr::if_else(
+      is.finite(braak_pathology_magnitude) &
+        is.finite(cerad_pathology_magnitude),
+      pmin(
+        braak_pathology_magnitude,
+        cerad_pathology_magnitude
+      ),
+      NA_real_
+    ),
 
     late_decline_percentile = percentile01(
       protein_late_decline_magnitude
     ),
-    inverse_braak_percentile = percentile01(inverse_braak_magnitude),
-    centrality_percentile = percentile01(hub_mean_abs_cor),
+
+    braak_pathology_percentile = percentile01(
+      braak_pathology_magnitude
+    ),
+
+    cerad_pathology_percentile = percentile01(
+      cerad_pathology_magnitude
+    ),
+
+    ## Equal-weight single AD-neuropathology score.
+    ##
+    ## This is the MEAN OF TWO PERCENTILES and therefore is
+    ## on a 0-100 scale, but is not itself a percentile rank.
+    joint_pathology_score = dplyr::if_else(
+      is.finite(braak_pathology_percentile) &
+        is.finite(cerad_pathology_percentile),
+      (
+        braak_pathology_percentile +
+          cerad_pathology_percentile
+      ) / 2,
+      NA_real_
+    ),
+
+    ## Strict continuous convergence score: a gene is limited
+    ## by its weaker pathology dimension.
+    strict_joint_pathology_score = dplyr::if_else(
+      is.finite(braak_pathology_percentile) &
+        is.finite(cerad_pathology_percentile),
+      pmin(
+        braak_pathology_percentile,
+        cerad_pathology_percentile
+      ),
+      NA_real_
+    ),
+
+    ## Proper percentile ranks of the combined scores.
+    joint_pathology_percentile = percentile01(
+      joint_pathology_score
+    ),
+
+    strict_joint_pathology_percentile = percentile01(
+      strict_joint_pathology_score
+    ),
+
+    ## Descriptive binary concordance criterion.
+    dual_pathology_topq = dplyr::case_when(
+      is.finite(braak_pathology_percentile) &
+        is.finite(cerad_pathology_percentile) ~
+        as.integer(
+          braak_pathology_percentile >= 75 &
+            cerad_pathology_percentile >= 75
+        ),
+      TRUE ~ NA_integer_
+    ),
+
+    ########################################################
+    ## Backward-compatible aliases
+    ##
+    ## Retain temporarily while downstream scripts are
+    ## migrated. New code should use the canonical names.
+    ########################################################
+
+    inverse_braak_magnitude =
+      braak_pathology_magnitude,
+
+    inverse_cerad_magnitude =
+      cerad_pathology_magnitude,
+
+    inverse_braak_percentile =
+      braak_pathology_percentile,
+
+    inverse_cerad_percentile =
+      cerad_pathology_percentile,
+
+    centrality_percentile = percentile01(
+      hub_mean_abs_cor
+    ),
+
     late_effect_difference_percentile = percentile01(
       late_effect_absolute_difference
     ),
 
-    pathology_vulnerability_score = sqrt(
-      late_decline_percentile * inverse_braak_percentile
+    ## Legacy Braak-only score retained solely for migration
+    ## validation. Do not use as the revised primary pathology
+    ## framework.
+    legacy_braak_pathology_vulnerability_score = sqrt(
+      late_decline_percentile *
+        inverse_braak_percentile
     ),
+
+    pathology_vulnerability_score =
+      legacy_braak_pathology_vulnerability_score,
 
     ## Generic four-axis score used by some intermediate scripts.
     ## The RNA-protein late-effect difference is descriptive only.
@@ -469,13 +611,40 @@ message("AGORA-like columns in priority_input_tbl: ", paste(grep("agora|target|n
 
 priority_tbl <- priority_input_tbl |>
   dplyr::mutate(
-    late_decline_topq = as.integer(late_decline_percentile >= 75),
-    braak_topq = as.integer(inverse_braak_percentile >= 75),
-    centrality_topq = as.integer(centrality_percentile >= 75),
+    late_decline_topq = as.integer(
+      late_decline_percentile >= 75
+    ),
 
-    ## Clinical/pathology support axis used by Figure 6:
-    ## strong late-stage decline OR strong adjusted inverse Braak.
-    clinical_topq = as.integer(late_decline_percentile >= 75 | inverse_braak_percentile >= 75),
+    ## Legacy Braak-only flag retained during migration.
+    braak_topq = as.integer(
+      inverse_braak_percentile >= 75
+    ),
+
+    ## Canonical pathology support flags.
+    cerad_topq = as.integer(
+      cerad_pathology_percentile >= 75
+    ),
+
+    joint_pathology_topq = as.integer(
+      joint_pathology_percentile >= 75
+    ),
+
+    strict_joint_pathology_topq = as.integer(
+      strict_joint_pathology_percentile >= 75
+    ),
+
+    centrality_topq = as.integer(
+      centrality_percentile >= 75
+    ),
+
+    ## LEGACY classification field retained temporarily for
+    ## exact migration validation. It double-uses pathology
+    ## in the old priority-score architecture and will not be
+    ## the revised Figure 6 primary framework.
+    clinical_topq = as.integer(
+      late_decline_percentile >= 75 |
+        inverse_braak_percentile >= 75
+    ),
 
     n_total_axes = late_decline_topq + braak_topq + centrality_topq + clinical_topq + agora_target,
 

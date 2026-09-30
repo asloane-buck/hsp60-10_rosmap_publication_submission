@@ -470,10 +470,33 @@ late_decline_col <- require_any_col(
   c("late_decline_percentile", "late_decline_pct"),
   "late-stage decline percentile"
 )
-braak_col <- require_any_col(
+joint_pathology_col <- require_any_col(
   priority_tbl,
-  c("inverse_braak_percentile", "braak_pct"),
-  "inverse Braak percentile"
+  c(
+    "joint_pathology_percentile",
+    "joint_pathology_pct"
+  ),
+  "joint AD-pathology percentile"
+)
+
+strict_joint_pathology_col <- require_any_col(
+  priority_tbl,
+  c(
+    "strict_joint_pathology_percentile",
+    "strict_joint_pathology_pct"
+  ),
+  "strict joint AD-pathology percentile"
+)
+
+## Legacy Braak-only axis retained solely for migration
+## validation against the frozen Figure 6 frontier.
+legacy_braak_col <- require_any_col(
+  priority_tbl,
+  c(
+    "inverse_braak_percentile",
+    "braak_pct"
+  ),
+  "legacy inverse Braak percentile"
 )
 centrality_col <- require_any_col(
   priority_tbl,
@@ -495,9 +518,36 @@ fig6_tbl <- priority_tbl %>%
   mutate(gene = clean_gene(gene)) %>%
   left_join(mitocarta_tbl, by = "gene") %>%
   mutate(
-    late_decline_pct = as_fraction(.data[[late_decline_col]]),
-    braak_pct = as_fraction(.data[[braak_col]]),
-    centrality_pct = as_fraction(.data[[centrality_col]]),
+    late_decline_pct =
+      as_fraction(
+        .data[[late_decline_col]]
+      ),
+
+    ## Primary pathology dimension:
+    ## one equal-weight joint Braak/CERAD percentile axis.
+    joint_pathology_pct =
+      as_fraction(
+        .data[[joint_pathology_col]]
+      ),
+
+    ## Strict convergence sensitivity:
+    ## percentile of the weaker Braak/CERAD pathology score.
+    strict_joint_pathology_pct =
+      as_fraction(
+        .data[[strict_joint_pathology_col]]
+      ),
+
+    ## Legacy Braak-only dimension retained for exact migration
+    ## comparison; it is not used in the revised primary figure.
+    legacy_braak_pct =
+      as_fraction(
+        .data[[legacy_braak_col]]
+      ),
+
+    centrality_pct =
+      as_fraction(
+        .data[[centrality_col]]
+      ),
     agora_binary = as.integer(as.numeric(.data[[agora_col]]) > 0),
     functional_class = classify_mitocarta(gene, mitocarta_pathways_raw, mitocarta_description),
     functional_class = factor(functional_class, levels = functional_levels)
@@ -596,16 +646,51 @@ fig6_tbl <- fig6_tbl %>%
     cognition_pct = if_else(is.na(cognition_pct), 0, cognition_pct)
   )
 
+## Primary Figure 6 Pareto frontier.
 fig6_tbl$pareto_frontier <- pareto_frontier_flag(
-  fig6_tbl %>% select(late_decline_pct, braak_pct, cognition_pct, centrality_pct)
+  fig6_tbl %>%
+    select(
+      late_decline_pct,
+      joint_pathology_pct,
+      cognition_pct,
+      centrality_pct
+    )
+)
+
+## Strict joint-pathology sensitivity frontier.
+fig6_tbl$strict_joint_pareto_frontier <- pareto_frontier_flag(
+  fig6_tbl %>%
+    select(
+      late_decline_pct,
+      strict_joint_pathology_pct,
+      cognition_pct,
+      centrality_pct
+    )
+)
+
+## Frozen Braak-only frontier retained for migration validation.
+fig6_tbl$legacy_braak_pareto_frontier <- pareto_frontier_flag(
+  fig6_tbl %>%
+    select(
+      late_decline_pct,
+      legacy_braak_pct,
+      cognition_pct,
+      centrality_pct
+    )
 )
 
 fig6_tbl <- fig6_tbl %>%
   mutate(
-    mean_axis_percentile_for_display_only = rowMeans(
-      cbind(late_decline_pct, braak_pct, cognition_pct, centrality_pct),
-      na.rm = TRUE
-    ),
+    mean_axis_percentile_for_display_only =
+      rowMeans(
+        cbind(
+          late_decline_pct,
+          joint_pathology_pct,
+          cognition_pct,
+          centrality_pct
+        ),
+        na.rm = TRUE
+      ),
     candidate_layer = case_when(
       pareto_frontier & agora_binary == 1 ~ "Pareto frontier + AGORA",
       pareto_frontier ~ "Pareto frontier",
@@ -641,9 +726,23 @@ category_summary <- fig6_tbl %>%
   group_by(functional_class) %>%
   summarise(
     n_genes = n(),
-    median_late_decline = median(late_decline_pct, na.rm = TRUE),
-    median_inverse_braak = median(braak_pct, na.rm = TRUE),
-    median_cognition = median(cognition_pct, na.rm = TRUE),
+    median_late_decline =
+      median(
+        late_decline_pct,
+        na.rm = TRUE
+      ),
+
+    median_joint_pathology =
+      median(
+        joint_pathology_pct,
+        na.rm = TRUE
+      ),
+
+    median_cognition =
+      median(
+        cognition_pct,
+        na.rm = TRUE
+      ),
     median_centrality = median(centrality_pct, na.rm = TRUE),
     pareto_fraction = mean(pareto_frontier, na.rm = TRUE),
     agora_fraction = mean(agora_binary == 1, na.rm = TRUE),
@@ -653,7 +752,7 @@ category_summary <- fig6_tbl %>%
   arrange(
     desc(pareto_fraction),
     desc(median_cognition),
-    desc(median_inverse_braak),
+    desc(median_joint_pathology),
     desc(median_late_decline),
     desc(median_centrality)
   ) %>%
@@ -664,13 +763,13 @@ write_fig6_table(category_summary, "Fig6_MitoCarta_functional_class_summary_rank
 heatmap_tbl <- category_summary %>%
   select(
     module_rank, functional_class, n_genes,
-    median_late_decline, median_inverse_braak, median_cognition, median_centrality,
+    median_late_decline, median_joint_pathology, median_cognition, median_centrality,
     pareto_fraction, agora_fraction
   ) %>%
   pivot_longer(
     cols = c(
       median_late_decline,
-      median_inverse_braak,
+      median_joint_pathology,
       median_cognition,
       median_centrality,
       pareto_fraction,
@@ -683,7 +782,7 @@ heatmap_tbl <- category_summary %>%
     evidence_layer = dplyr::recode(
       evidence_layer_raw,
       median_late_decline = "Late decline",
-      median_inverse_braak = "Inverse Braak",
+      median_joint_pathology = "Joint pathology",
       median_cognition = "Cognition",
       median_centrality = "Centrality",
       pareto_fraction = "Frontier\nfraction",
@@ -691,7 +790,7 @@ heatmap_tbl <- category_summary %>%
     ),
     evidence_layer = factor(
       evidence_layer,
-      levels = c("Late decline", "Inverse Braak", "Cognition", "Centrality", "Frontier\nfraction", "AGORA\nfraction")
+      levels = c("Late decline", "Joint pathology", "Cognition", "Centrality", "Frontier\nfraction", "AGORA\nfraction")
     ),
     row_label = paste0(module_rank, ". ", functional_class, " (n=", n_genes, ")"),
     row_label = factor(row_label, levels = rev(unique(row_label)))
@@ -704,8 +803,17 @@ candidate_rank_table <- fig6_tbl %>%
   ungroup() %>%
   select(
     display_rank_within_layer, gene, candidate_layer, functional_class,
-    late_decline_pct, braak_pct, cognition_pct, centrality_pct,
-    pareto_frontier, agora_binary, mean_axis_percentile_for_display_only,
+    late_decline_pct,
+    joint_pathology_pct,
+    strict_joint_pathology_pct,
+    legacy_braak_pct,
+    cognition_pct,
+    centrality_pct,
+    pareto_frontier,
+    strict_joint_pareto_frontier,
+    legacy_braak_pareto_frontier,
+    agora_binary,
+    mean_axis_percentile_for_display_only,
     mitocarta_pathways_raw, mitocarta_description, mitocarta_submito, everything()
   )
 
@@ -756,10 +864,21 @@ write_fig6_table(candidate_display_tbl, "Fig6_panelD_display_candidates_rule_bas
 
 candidate_heatmap_tbl <- candidate_display_tbl %>%
   select(
-    row_label, candidate_layer, functional_class, late_decline_pct, braak_pct, cognition_pct, centrality_pct
+    row_label,
+    candidate_layer,
+    functional_class,
+    late_decline_pct,
+    joint_pathology_pct,
+    cognition_pct,
+    centrality_pct
   ) %>%
   pivot_longer(
-    cols = c(late_decline_pct, braak_pct, cognition_pct, centrality_pct),
+    cols = c(
+      late_decline_pct,
+      joint_pathology_pct,
+      cognition_pct,
+      centrality_pct
+    ),
     names_to = "axis",
     values_to = "percentile"
   ) %>%
@@ -767,16 +886,16 @@ candidate_heatmap_tbl <- candidate_display_tbl %>%
     axis = recode(
       axis,
       late_decline_pct = "Late decline",
-      braak_pct = "Inverse Braak",
+      joint_pathology_pct = "Joint pathology",
       cognition_pct = "Cognition",
       centrality_pct = "Centrality"
     ),
-    axis = factor(axis, levels = c("Late decline", "Inverse Braak", "Cognition", "Centrality"))
+    axis = factor(axis, levels = c("Late decline", "Joint pathology", "Cognition", "Centrality"))
   )
 
 candidate_class_dot_tbl <- candidate_display_tbl %>%
   distinct(row_label, candidate_layer, functional_class) %>%
-  mutate(axis = factor("Class", levels = c("Class", "Late decline", "Inverse Braak", "Cognition", "Centrality")))
+  mutate(axis = factor("Class", levels = c("Class", "Late decline", "Joint pathology", "Cognition", "Centrality")))
 
 candidate_layer_class_counts <- fig6_tbl %>%
   filter(candidate_layer != "Other classified client") %>%
@@ -826,8 +945,8 @@ schem_tbl <- tibble(
   header = c("Input", "Four prioritization axes", "Support/context layers", "Output"),
   body = c(
     "Detected Hsp60/10\nclients",
-    "Late-stage protein decline\nInverse Braak/tau association\nCognition preservation\nNetwork centrality",
-    "Pareto/frontier status\nAgora support\nMitoCarta class",
+    "Late-stage protein decline\nJoint Braak/CERAD pathology\nCognition preservation\nNetwork centrality",
+    "Pareto/frontier status\nAGORA support\nMitoCarta class",
     "Rule-based\ncandidate classes\nfor mechanistic\nfollow-up"
   ),
   fill = c("#F4F4F4", "#EEF1E6", "#F2ECE6", "#EAF1F6"),
@@ -893,7 +1012,13 @@ pA <- ggplot() +
 ## 8. Panel B simplified collapse-Braak landscape
 ############################################################
 
-pB <- ggplot(fig6_tbl, aes(x = late_decline_pct, y = braak_pct)) +
+pB <- ggplot(
+  fig6_tbl,
+  aes(
+    x = late_decline_pct,
+    y = joint_pathology_pct
+  )
+) +
   geom_point(
     data = fig6_tbl %>% filter(candidate_layer == "Other classified client"),
     color = "grey83",
@@ -931,10 +1056,10 @@ pB <- ggplot(fig6_tbl, aes(x = late_decline_pct, y = braak_pct)) +
   scale_y_continuous(labels = percent_format(accuracy = 1), limits = c(0, 1), breaks = seq(0, 1, 0.25)) +
   coord_cartesian(clip = "off") +
   labs(
-    title = "B. Late-decline-Braak target landscape",
-    subtitle = "Candidate-layer genes are colored by MitoCarta class; unlabeled background clients are grey. \nPareto rings use late-stage decline, inverse Braak, cognition, and centrality axes.",
+    title = "B. Late-decline / joint-pathology target landscape",
+    subtitle = "Candidate-layer genes are colored by MitoCarta class; unlabeled background clients are grey. \nPareto rings use late-stage decline, joint pathology, cognition, and centrality axes.",
     x = "Late-stage protein decline\npercentile",
-    y = "Inverse Braak/tau\npercentile"
+    y = "Joint AD pathology\npercentile"
   ) +
   theme_fig6(10.2) +
   theme(
@@ -960,7 +1085,7 @@ pC <- ggplot(heatmap_tbl, aes(x = evidence_layer, y = row_label, fill = value)) 
   muted_full_fill_scale(name = "Percentile /\nfraction") +
   labs(
     title = "C. Ranked MitoCarta functional-class evidence summary",
-    subtitle = "Rows are ordered by frontier fraction, then cognition, inverse Braak, late-stage decline, and centrality.",
+    subtitle = "Rows are ordered by frontier fraction, then cognition, joint pathology, late-stage decline, and centrality.",
     x = NULL, y = NULL
   ) +
   theme_fig6(9.8) +
@@ -1024,7 +1149,7 @@ pD <- ggplot() +
     title = "D. Rule-based candidate-layer evidence table",
     subtitle = paste0(
       "Rows show up to ", display_n_per_layer,
-      " genes per candidate layer when available. Class dots use the same MitoCarta colors as Panel C/B. \nOrdering uses the unweighted mean of late-stage decline, inverse Braak, cognition, and centrality percentiles for display only; \nfull ranked table is saved."
+      " genes per candidate layer when available. Class dots use the same MitoCarta colors as Panel C/B. \nOrdering uses the unweighted mean of late-stage decline, joint pathology, cognition, and centrality percentiles for display only; \nfull ranked table is saved."
     ),
     x = NULL,
     y = NULL
@@ -1156,7 +1281,7 @@ fig6_candidate_classification <- patchwork::free(pA) / patchwork::free(pB) / pC 
   ) +
   plot_annotation(
     title = "Integrated Hsp60/10 client evidence defines candidate classes for mechanistic follow-up",
-    subtitle = "Late-stage decline, inverse Braak/tau coupling, cognition support, and centrality are continuous axes; AGORA support and MitoCarta-derived functional classes annotate rule-based candidate layers.",
+    subtitle = "Late-stage decline, joint Braak/CERAD pathology, cognition support, and centrality are continuous axes; AGORA support and MitoCarta-derived functional classes annotate rule-based candidate layers.",
     theme = theme(
       plot.title = element_text(face = "bold", hjust = 0.5, size = 17.2),
       plot.subtitle = element_text(hjust = 0.5, size = 11.0, color = "grey35"),

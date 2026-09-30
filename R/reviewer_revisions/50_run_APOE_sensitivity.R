@@ -302,6 +302,15 @@ fit_pathology_augmented <- function(
   mat, meta_df, genes, predictor, covars,
   model_name, endpoint_name, min_n = 30
 ) {
+  if (!endpoint_name %in% c("Braak", "CERAD")) {
+    stop(
+      "Unsupported pathology endpoint: ",
+      endpoint_name,
+      ". Expected Braak or CERAD.",
+      call. = FALSE
+    )
+  }
+
   mat <- as.matrix(mat)
   meta_df <- meta_df[
     match(colnames(mat), meta_df$SampleID),
@@ -391,11 +400,27 @@ fit_pathology_augmented <- function(
     dplyr::group_by(.data$endpoint, .data$model) |>
     dplyr::mutate(
       fdr = stats::p.adjust(.data$p_value, method = "BH"),
-      inverse_magnitude = dplyr::case_when(
+
+      ## Pathology-aligned protein-decline magnitude.
+      ##
+      ## Braak: higher score = worse pathology, so a negative beta
+      ## indicates lower protein abundance with worse pathology.
+      ##
+      ## CERAD in this ROSMAP coding: lower score = worse pathology,
+      ## so a positive beta indicates lower protein abundance with
+      ## worse pathology.
+      pathology_aligned_magnitude = dplyr::case_when(
         !is.finite(.data$effect) ~ NA_real_,
-        .data$effect < 0 ~ abs(.data$effect),
+        .data$endpoint == "Braak" & .data$effect < 0 ~
+          abs(.data$effect),
+        .data$endpoint == "CERAD" & .data$effect > 0 ~
+          .data$effect,
         TRUE ~ 0
-      )
+      ),
+
+      ## Backward-compatible alias for existing downstream code.
+      ## New pathology code should use pathology_aligned_magnitude.
+      inverse_magnitude = .data$pathology_aligned_magnitude
     ) |>
     dplyr::ungroup()
 }

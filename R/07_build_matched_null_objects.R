@@ -165,8 +165,13 @@ background_metrics <- purrr::map_dfr(
 )
 
 ############################################################
-## 4. Adjusted Braak association
+## 4. Adjusted Braak and CERAD pathology associations
 ############################################################
+
+## Braak:
+## higher score = worse pathology.
+## Negative abundance beta therefore indicates protein loss
+## with worse pathology.
 
 background_braak <- fit_adjusted_braak_beta(
   mat = prot_mat_raw,
@@ -179,7 +184,31 @@ background_braak <- fit_adjusted_braak_beta(
 ) |>
   dplyr::transmute(
     gene,
-    inverse_braak_magnitude = adjusted_inverse_braak_beta
+    braak_pathology_magnitude =
+      adjusted_inverse_braak_beta,
+
+    ## Legacy alias retained for exact migration validation.
+    inverse_braak_magnitude =
+      adjusted_inverse_braak_beta
+  )
+
+## CERAD:
+## lower score = worse pathology in this ROSMAP coding.
+## Positive abundance beta therefore indicates protein loss
+## with worse pathology.
+
+background_cerad <- fit_adjusted_cerad_beta(
+  mat = prot_mat_raw,
+  meta_df = prot_meta_adj,
+  sample_col = "SampleID",
+  genes = all_null_genes,
+  covars = protein_covars,
+  min_n = cfg$min_n_gene_model
+) |>
+  dplyr::transmute(
+    gene,
+    cerad_pathology_magnitude =
+      adjusted_inverse_cerad_beta
   )
 
 ############################################################
@@ -202,19 +231,86 @@ null_input_tbl <- tibble::tibble(
     by = "gene",
     label = "null genes to adjusted Braak metrics"
   ) |>
+  checked_left_join(
+    background_cerad,
+    by = "gene",
+    label = "null genes to adjusted CERAD metrics"
+  ) |>
   dplyr::mutate(
-    agora_nominated_target = .data$gene %in% agora_target_symbols,
+    agora_nominated_target =
+      .data$gene %in% agora_target_symbols,
+
+    ########################################################
+    ## Rank-based legacy quantities
+    ########################################################
+
     late_decline_rank =
-      percentile01(.data$protein_late_decline_magnitude) / 100,
+      percentile01(
+        .data$protein_late_decline_magnitude
+      ) / 100,
+
+    braak_pathology_rank =
+      percentile01(
+        .data$braak_pathology_magnitude
+      ) / 100,
+
+    ## Legacy alias.
     inverse_braak_rank =
-      percentile01(.data$inverse_braak_magnitude) / 100,
-    pathology_vulnerability_score = rowMeans(
-      cbind(
-        .data$late_decline_rank,
-        .data$inverse_braak_rank
+      .data$braak_pathology_rank,
+
+    cerad_pathology_rank =
+      percentile01(
+        .data$cerad_pathology_magnitude
+      ) / 100,
+
+    ########################################################
+    ## Primary raw standardized joint-pathology metrics
+    ########################################################
+
+    joint_pathology_magnitude =
+      (
+        .data$braak_pathology_magnitude +
+          .data$cerad_pathology_magnitude
+      ) / 2,
+
+    strict_joint_pathology_magnitude =
+      pmin(
+        .data$braak_pathology_magnitude,
+        .data$cerad_pathology_magnitude
       ),
-      na.rm = TRUE
-    )
+
+    ########################################################
+    ## Rank-based joint pathology sensitivity quantities
+    ########################################################
+
+    joint_pathology_score =
+      (
+        .data$braak_pathology_rank +
+          .data$cerad_pathology_rank
+      ) / 2,
+
+    strict_joint_pathology_score =
+      pmin(
+        .data$braak_pathology_rank,
+        .data$cerad_pathology_rank
+      ),
+
+    ########################################################
+    ## LEGACY Figure 5 composite.
+    ##
+    ## Retained only so the frozen null can be reproduced
+    ## exactly during migration. It will no longer be the
+    ## revised primary Figure 5 pathology metric.
+    ########################################################
+
+    pathology_vulnerability_score =
+      rowMeans(
+        cbind(
+          .data$late_decline_rank,
+          .data$inverse_braak_rank
+        ),
+        na.rm = TRUE
+      )
   )
 
 message(
@@ -226,6 +322,9 @@ null_input_tbl <- null_input_tbl |>
   dplyr::filter(
     !is.na(.data$protein_late_decline_magnitude),
     !is.na(.data$inverse_braak_magnitude),
+    !is.na(.data$cerad_pathology_magnitude),
+    !is.na(.data$joint_pathology_magnitude),
+    !is.na(.data$strict_joint_pathology_magnitude),
     !is.na(.data$pathology_vulnerability_score),
     !is.na(.data$matching_abundance)
   )
@@ -356,6 +455,23 @@ observed_stats <- hsp_null_tbl |>
       .data$inverse_braak_magnitude,
       na.rm = TRUE
     ),
+
+    observed_mean_cerad_pathology = mean(
+      .data$cerad_pathology_magnitude,
+      na.rm = TRUE
+    ),
+
+    observed_mean_joint_pathology = mean(
+      .data$joint_pathology_magnitude,
+      na.rm = TRUE
+    ),
+
+    observed_mean_strict_joint_pathology = mean(
+      .data$strict_joint_pathology_magnitude,
+      na.rm = TRUE
+    ),
+
+    ## Legacy Braak + late-decline composite.
     observed_mean_pathology_score = mean(
       .data$pathology_vulnerability_score,
       na.rm = TRUE
@@ -417,6 +533,23 @@ null_results <- purrr::map_dfr(
         sampled_bg$inverse_braak_magnitude,
         na.rm = TRUE
       ),
+
+      null_mean_cerad_pathology = mean(
+        sampled_bg$cerad_pathology_magnitude,
+        na.rm = TRUE
+      ),
+
+      null_mean_joint_pathology = mean(
+        sampled_bg$joint_pathology_magnitude,
+        na.rm = TRUE
+      ),
+
+      null_mean_strict_joint_pathology = mean(
+        sampled_bg$strict_joint_pathology_magnitude,
+        na.rm = TRUE
+      ),
+
+      ## Legacy migration-control distribution.
       null_mean_pathology_score = mean(
         sampled_bg$pathology_vulnerability_score,
         na.rm = TRUE
@@ -439,44 +572,143 @@ obs <- observed_stats
 null_summary <- tibble::tibble(
   metric = c(
     "protein_late_decline_magnitude",
+
+    ## Legacy migration-control metrics.
     "inverse_braak_magnitude",
     "pathology_vulnerability_score",
+
+    ## Corrected pathology metrics.
+    "cerad_pathology_magnitude",
+    "joint_pathology_magnitude",
+    "strict_joint_pathology_magnitude",
+
     "agora_fraction"
   ),
+
   observed = c(
     obs$observed_mean_late_decline,
+
     obs$observed_mean_inverse_braak,
     obs$observed_mean_pathology_score,
+
+    obs$observed_mean_cerad_pathology,
+    obs$observed_mean_joint_pathology,
+    obs$observed_mean_strict_joint_pathology,
+
     obs$observed_agora_fraction
   ),
+
   null_mean = c(
-    mean(null_results$null_mean_late_decline, na.rm = TRUE),
-    mean(null_results$null_mean_inverse_braak, na.rm = TRUE),
-    mean(null_results$null_mean_pathology_score, na.rm = TRUE),
-    mean(null_results$null_agora_fraction, na.rm = TRUE)
+    mean(
+      null_results$null_mean_late_decline,
+      na.rm = TRUE
+    ),
+
+    mean(
+      null_results$null_mean_inverse_braak,
+      na.rm = TRUE
+    ),
+
+    mean(
+      null_results$null_mean_pathology_score,
+      na.rm = TRUE
+    ),
+
+    mean(
+      null_results$null_mean_cerad_pathology,
+      na.rm = TRUE
+    ),
+
+    mean(
+      null_results$null_mean_joint_pathology,
+      na.rm = TRUE
+    ),
+
+    mean(
+      null_results$null_mean_strict_joint_pathology,
+      na.rm = TRUE
+    ),
+
+    mean(
+      null_results$null_agora_fraction,
+      na.rm = TRUE
+    )
   ),
+
   null_sd = c(
-    stats::sd(null_results$null_mean_late_decline, na.rm = TRUE),
-    stats::sd(null_results$null_mean_inverse_braak, na.rm = TRUE),
-    stats::sd(null_results$null_mean_pathology_score, na.rm = TRUE),
-    stats::sd(null_results$null_agora_fraction, na.rm = TRUE)
+    stats::sd(
+      null_results$null_mean_late_decline,
+      na.rm = TRUE
+    ),
+
+    stats::sd(
+      null_results$null_mean_inverse_braak,
+      na.rm = TRUE
+    ),
+
+    stats::sd(
+      null_results$null_mean_pathology_score,
+      na.rm = TRUE
+    ),
+
+    stats::sd(
+      null_results$null_mean_cerad_pathology,
+      na.rm = TRUE
+    ),
+
+    stats::sd(
+      null_results$null_mean_joint_pathology,
+      na.rm = TRUE
+    ),
+
+    stats::sd(
+      null_results$null_mean_strict_joint_pathology,
+      na.rm = TRUE
+    ),
+
+    stats::sd(
+      null_results$null_agora_fraction,
+      na.rm = TRUE
+    )
   ),
+
   empirical_p_greater = c(
     mean(
       null_results$null_mean_late_decline >=
         obs$observed_mean_late_decline,
       na.rm = TRUE
     ),
+
     mean(
       null_results$null_mean_inverse_braak >=
         obs$observed_mean_inverse_braak,
       na.rm = TRUE
     ),
+
     mean(
       null_results$null_mean_pathology_score >=
         obs$observed_mean_pathology_score,
       na.rm = TRUE
     ),
+
+    mean(
+      null_results$null_mean_cerad_pathology >=
+        obs$observed_mean_cerad_pathology,
+      na.rm = TRUE
+    ),
+
+    mean(
+      null_results$null_mean_joint_pathology >=
+        obs$observed_mean_joint_pathology,
+      na.rm = TRUE
+    ),
+
+    mean(
+      null_results$null_mean_strict_joint_pathology >=
+        obs$observed_mean_strict_joint_pathology,
+      na.rm = TRUE
+    ),
+
     mean(
       null_results$null_agora_fraction >=
         obs$observed_agora_fraction,
@@ -485,11 +717,18 @@ null_summary <- tibble::tibble(
   )
 ) |>
   dplyr::mutate(
-    z_score = (.data$observed - .data$null_mean) / .data$null_sd,
-    empirical_p_greater = pmax(
-      .data$empirical_p_greater,
-      1 / n_iter
-    )
+    z_score =
+      (
+        .data$observed -
+          .data$null_mean
+      ) /
+        .data$null_sd,
+
+    empirical_p_greater =
+      pmax(
+        .data$empirical_p_greater,
+        1 / n_iter
+      )
   )
 
 ############################################################

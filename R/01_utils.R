@@ -703,7 +703,14 @@ fit_adjusted_cerad_beta <- function(mat, meta_df, sample_col, genes, covars, min
       cerad_beta = hit$estimate,
       cerad_p = hit$p.value,
       cerad_n = sum(keep),
-      adjusted_inverse_cerad_beta = dplyr::if_else(hit$estimate < 0, abs(hit$estimate), 0)
+      ## In this ROSMAP CERAD coding, lower scores indicate worse pathology.
+      ## Therefore a positive CERAD beta means protein abundance is lower
+      ## with worse pathology. Retain that pathology-aligned direction.
+      adjusted_inverse_cerad_beta = dplyr::if_else(
+        hit$estimate > 0,
+        hit$estimate,
+        0
+      )
     )
   }) |>
     dplyr::mutate(cerad_padj = p.adjust(cerad_p, method = "BH"))

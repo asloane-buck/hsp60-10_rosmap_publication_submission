@@ -1,11 +1,19 @@
 ############################################################
-## 14_main_fig5_matched_null_specificity.R
-## Literal migration of the final old plotting block.
-## Inputs are supplied by adjusted upstream scripts.
+## 14_make_main_figure_5_matched_null_specificity.R
+## MAIN FIGURE 5 — MATCHED MITOCHONDRIAL SPECIFICITY
+##
+## Primary comparison:
+## Hsp60/10 clients versus abundance-matched non-client
+## mitochondrial proteins across:
+##   - late-stage protein decline
+##   - joint Braak/CERAD AD-pathology association
+##   - cognition preservation support
+##   - AGORA AD target enrichment
+##
+## Braak-only, CERAD-only, and strict joint-pathology results
+## are retained upstream as sensitivity outputs but are not
+## separate primary Figure 5 axes.
 ############################################################
-
-## Hsp60/10 clients define a selectively AD- and cognition-relevant
-## mitochondrial subnetwork
 ##
 ## Requires:
 ##   null_results, null_summary, observed_stats,
@@ -633,6 +641,14 @@ require_columns(
   "null_agora_fraction",
   "Figure 5 null results"
 )
+
+## Canonical Figure 5 pathology metric.
+##
+## This is the equal-weight mean of the correctly oriented,
+## standardized Braak and CERAD pathology-associated protein
+## decline magnitudes.
+primary_pathology_metric <- "joint_pathology_magnitude"
+
 ## Figure 5 now uses cognition preservation instead of the older
 ## paired pathology-vulnerability composite. The upstream matched-null
 ## builder must provide one cognition metric in null_summary and the
@@ -683,8 +699,27 @@ if (is.na(null_cognition_col)) {
 require_values(
   null_summary,
   "metric",
-  c("protein_late_decline_magnitude", "inverse_braak_magnitude", cognition_metric, "agora_fraction"),
-  "Figure 5 null summary"
+  c(
+    "protein_late_decline_magnitude",
+    primary_pathology_metric,
+    cognition_metric,
+    "agora_fraction"
+  ),
+  "Figure 5 primary null summary"
+)
+
+## Sensitivity metrics must also remain available in the
+## production null summary even though they are not plotted
+## as separate primary Figure 5 dimensions.
+require_values(
+  null_summary,
+  "metric",
+  c(
+    "inverse_braak_magnitude",
+    "cerad_pathology_magnitude",
+    "strict_joint_pathology_magnitude"
+  ),
+  "Figure 5 pathology sensitivity summary"
 )
 
 output_dir <- file.path(cfg$plot_dir, "main_fig5_matched_null_specificity")
@@ -718,42 +753,93 @@ theme_set(
 ############################################################
 
 figure_tbl <- null_summary %>%
-  filter(metric %in% c(
-    "protein_late_decline_magnitude",
-    "inverse_braak_magnitude",
-    cognition_metric,
-    "agora_fraction"
-  )) %>%
+  filter(
+    metric %in% c(
+      "protein_late_decline_magnitude",
+      primary_pathology_metric,
+      cognition_metric,
+      "agora_fraction"
+    )
+  ) %>%
   mutate(
     metric_clean = case_when(
-      metric == "protein_late_decline_magnitude" ~ "Late-stage\nprotein decline",
-      metric == "inverse_braak_magnitude" ~ "Inverse Braak\nassociation",
-      metric == cognition_metric ~ "Cognition\npreservation score",
-      metric == "agora_fraction" ~ "Agora target\nfraction",
-      TRUE ~ as.character(metric)
+      metric == "protein_late_decline_magnitude" ~
+        "Late-stage\nprotein decline",
+
+      metric == primary_pathology_metric ~
+        "Joint AD pathology\nassociation",
+
+      metric == cognition_metric ~
+        "Cognition\npreservation score",
+
+      metric == "agora_fraction" ~
+        "AGORA target\nfraction",
+
+      TRUE ~
+        as.character(metric)
     ),
+
     metric_clean = factor(
       metric_clean,
-      levels = rev(c(
-        "Late-stage\nprotein decline",
-        "Inverse Braak\nassociation",
-        "Cognition\npreservation score",
-        "Agora target\nfraction"
-      ))
+      levels = rev(
+        c(
+          "Late-stage\nprotein decline",
+          "Joint AD pathology\nassociation",
+          "Cognition\npreservation score",
+          "AGORA target\nfraction"
+        )
+      )
     ),
-    fold_enrichment = observed / null_mean,
-    fold_label = case_when(
-      metric == "agora_fraction" ~ paste0(round(fold_enrichment, 2), "x enriched"),
-      TRUE ~ paste0(round(fold_enrichment, 2), "x higher")
-    ),
-    value_label = paste0(
-      "Obs ", number(observed, accuracy = 0.001),
-      " | Null ", number(null_mean, accuracy = 0.001)
-    ),
+    fold_enrichment =
+      observed / null_mean,
+
     p_label = ifelse(
-      empirical_p_greater <= 1 / nrow(null_results),
-      paste0("empirical p <= ", format(1 / nrow(null_results), scientific = TRUE)),
-      paste0("empirical p = ", signif(empirical_p_greater, 2))
+      empirical_p_greater <=
+        1 / nrow(null_results),
+
+      paste0(
+        "P <= ",
+        format(
+          1 / nrow(null_results),
+          scientific = TRUE
+        )
+      ),
+
+      paste0(
+        "P = ",
+        signif(
+          empirical_p_greater,
+          2
+        )
+      )
+    ),
+
+    fold_label = case_when(
+      metric == "agora_fraction" ~
+        paste0(
+          round(fold_enrichment, 2),
+          "x enriched"
+        ),
+      TRUE ~
+        paste0(
+          round(fold_enrichment, 2),
+          "x higher"
+        )
+    ),
+
+    value_label = paste0(
+      "Obs ",
+      number(
+        observed,
+        accuracy = 0.001
+      ),
+      " | Null ",
+      number(
+        null_mean,
+        accuracy = 0.001
+      ),
+      " | ",
+      p_label
     )
   )
 
@@ -834,7 +920,7 @@ panel_A <- ggplot() +
   annotate(
     "label",
     x = 6.15, y = 2.25,
-    label = "Hsp60/10 clients exceed\nmatched-null expectation\nacross pathology, cognition,\nand AD target metrics",
+    label = "Hsp60/10 clients exceed\nmatched-null expectation across\nall four AD-relevant dimensions",
     size = 2.70,
     fontface = "bold",
     label.padding = unit(0.34, "lines"),
@@ -948,7 +1034,7 @@ ymax_cognition <- max(ggplot_build(
 )$data[[1]]$count)
 cognition_label_x <- obs_cognition + 0.025 * (xmax_cognition - xmin_cognition)
 cognition_label <- paste0(
-  "Observed mean",
+  "Observed",
   "\nObs ", number(obs_cognition, accuracy = 0.001),
   "\nNull ", number(null_cognition, accuracy = 0.001),
   "\n", cognition_p_short
@@ -1026,7 +1112,7 @@ ymax_agora <- max(ggplot_build(
 )$data[[1]]$count)
 agora_label_x <- obs_agora + 0.025 * (xmax_agora - xmin_agora)
 agora_label <- paste0(
-  "Observed mean",
+  "Observed",
   "\nObs ", number(obs_agora, accuracy = 0.001),
   "\nNull ", number(null_agora, accuracy = 0.001),
   "\n", agora_p_short
@@ -1062,9 +1148,9 @@ panel_D <- ggplot(null_results, aes(x = null_agora_fraction)) +
     expand = expansion(mult = c(0.02, 0.08))
   ) +
   labs(
-    title = "D. Agora target enrichment exceeds the matched-null distribution",
+    title = "D. AGORA target enrichment exceeds the matched-null distribution",
     subtitle = "External AD target nomination enrichment",
-    x = "Fraction of Agora nominated targets\nacross sampled null sets",
+    x = "Fraction of AGORA nominated targets\nacross sampled null sets",
     y = "Null iterations"
   ) +
   coord_cartesian(xlim = c(xmin_agora, xmax_agora), clip = "off") +
@@ -1086,11 +1172,11 @@ bottom_row <- panel_C + panel_D +
 final_fig <- (top_row / bottom_row) +
   plot_layout(widths = c(1, 1), heights = c(1.00, 1.15)) +
   plot_annotation(
-    title = "Hsp60/10 clients define a selectively AD- and cognition-relevant mitochondrial subnetwork",
+    title = "Hsp60/10 clients show coordinated vulnerability across AD-relevant dimensions",
     subtitle = paste0(
       "Against 10,000 abundance-matched non-client mitochondrial null sets, ",
-      "Hsp60/10 clients show stronger late-stage protein decline, stronger Braak coupling, ",
-      "higher cognition preservation support, and greater Agora target enrichment."
+      "Hsp60/10 clients show stronger late-stage protein decline, stronger joint Braak/CERAD ",
+      "pathology association, higher cognition preservation support, and greater AGORA target enrichment."
     ),
     caption = paste0(
       "Matched background = detected non-Hsp60/10 mitochondrial proteins. ",
