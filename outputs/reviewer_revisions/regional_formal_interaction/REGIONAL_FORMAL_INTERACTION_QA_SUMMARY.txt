@@ -1,0 +1,81 @@
+REGIONAL FORMAL INTERACTION ANALYSIS
+FINAL MODEL QA AND FREEZE SUMMARY
+
+Date: 2026-10-01
+
+FINAL MODEL STATUS
+==================
+
+Total model records: 27045
+Cleanly converged: 27001
+Successful nlminb fallback: 7
+Insufficient sample size: 36
+Missing Braak-bin information: 1
+Unresolved model errors: 0
+
+Final status counts:
+  ok: 27001
+  ok_nlminb_fallback: 7
+  insufficient_n: 36
+  missing_braak_bin: 1
+
+FINAL QA CONCLUSION
+===================
+
+No unresolved model-fitting errors remain.
+
+All estimable models either:
+  1. converged normally, or
+  2. converged successfully using the nlminb fallback optimizer.
+
+Models marked insufficient_n were excluded because the predefined
+sample-size requirement was not met.
+
+The single missing_braak_bin model was excluded because the required
+categorical Braak-bin information was unavailable.
+
+RECOVERED MODELS
+================
+
+Q96B70 / region_x_AD:
+  final status = ok_nlminb_fallback
+  Initial fit error was successfully recovered using the fallback
+  optimizer.
+
+Q96FH0 / region_x_Braak_continuous:
+  final status = ok_nlminb_fallback
+  Initial convergence warning was successfully recovered using the
+  fallback optimizer.
+
+Q96FH0 / region_x_Braak_bin3:
+  final status = ok_nlminb_fallback
+
+OTHER SUCCESSFUL FALLBACK MODELS
+================================
+
+O95487 / region_x_AD
+Q13619 / region_x_AD
+P63261 / region_x_Braak_bin3
+Q6R327 / region_x_Braak_bin3
+
+AUDIT INTERPRETATION
+====================
+
+MODEL_ERRORS_REQUIRING_REVIEW.csv has been regenerated from the final
+MASTER_regional_interaction_model_status.csv.
+
+Because no unresolved model errors remain, the final
+MODEL_ERRORS_REQUIRING_REVIEW.csv contains zero records.
+
+The previous Q96B70 fit_error represented an intermediate failed fit,
+not a final unresolved model error.
+
+The final regional interaction analysis therefore requires no model
+rerun on the basis of optimizer convergence.
+
+REGIONAL ANALYSIS STATUS
+========================
+
+CLOSED FOR MODEL QA.
+
+Scientific results are unchanged by this audit reconciliation.
