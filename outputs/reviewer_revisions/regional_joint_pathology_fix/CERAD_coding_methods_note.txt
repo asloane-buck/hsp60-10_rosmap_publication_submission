@@ -1,0 +1,224 @@
+ROSMAP / AMP-AD CERAD CODING AND PATHOLOGY METHODS NOTE
+
+Purpose
+
+This note documents the distinction between the authoritative AMP-AD
+CERAD coding (C0-C3) and the inverse-coded CERAD variable used in the
+existing ROSMAP protein-analysis framework (1-4). This distinction
+should be preserved in the manuscript Methods, analysis documentation,
+and downstream code.
+
+1. TWO REPRESENTATIONS OF THE SAME CERAD VARIABLE
+
+The authoritative AMP-AD metadata stores CERAD as amyCerad using four
+categories:
+
+    C0 = None/No AD
+    C1 = Sparse/Possible
+    C2 = Moderate/Probable
+    C3 = Frequent/Definite
+
+Thus, the original source coding increases with pathology burden:
+
+    C0 -> C3 = increasing pathology
+
+For compatibility with the existing protein-analysis framework, the
+regional analysis additionally creates an inverse-coded numeric
+variable, cerad_num:
+
+    C3 Frequent/Definite -> 1
+    C2 Moderate/Probable -> 2
+    C1 Sparse/Possible   -> 3
+    C0 None/No AD         -> 4
+
+The exact transformation is:
+
+    cerad_num = 4 - cerad_source_c0_c3
+
+Therefore:
+
+    Authoritative C0-C3       Analysis cerad_num
+    ------------------------------------------------
+    C0 None/No AD          ->  4
+    C1 Sparse/Possible     ->  3
+    C2 Moderate/Probable   ->  2
+    C3 Frequent/Definite   ->  1
+
+The underlying pathology classification does not change. Only the
+numeric representation changes.
+
+2. WHY THE INVERSE 1-4 CODING IS USED
+
+The existing ROSMAP protein-analysis framework historically represented
+CERAD as an inverse ordinal variable in which:
+
+    1 = greatest pathology burden
+    4 = least pathology burden
+
+This convention is retained for compatibility with existing models and
+downstream analyses.
+
+The original AMP-AD C0-C3 coding is retained in the metadata as
+cerad_source_c0_c3, and the original categorical label is retained as
+cerad.
+
+Therefore, cerad_num should not be described simply as “the CERAD score”
+without qualification. It should be described as an inverse-coded CERAD
+ordinal score or inverse-coded CERAD variable.
+
+3. PATHOLOGY DIRECTION AND REGRESSION INTERPRETATION
+
+Braak and the original CERAD C0-C3 coding both increase with worsening
+pathology.
+
+Braak: Higher score = worse pathology.
+
+Authoritative CERAD: Higher C code = worse pathology.
+
+However, cerad_num is intentionally reversed:
+
+    Higher cerad_num = less pathology.
+    Lower cerad_num  = more pathology.
+
+This matters for interpreting protein-expression regression
+coefficients.
+
+For the analyses using the existing inverse-coded CERAD variable:
+
+    Braak beta < 0
+        = lower protein abundance with worse Braak pathology
+
+    CERAD beta > 0
+        = higher protein abundance with higher cerad_num
+          (less CERAD pathology)
+        = equivalently, lower protein abundance with worse CERAD pathology
+
+Therefore, the pathology-aligned protein vulnerability definitions use:
+
+    Braak:
+        negative association -> pathology-aligned vulnerability
+
+    Inverse-coded CERAD:
+        positive association -> pathology-aligned vulnerability
+
+This is not an arbitrary sign reversal. It follows directly from the
+different numeric orientations of the variables.
+
+4. AUTHORITATIVE REGIONAL METADATA
+
+The authoritative source for the regional pathology metadata is:
+
+    AMP-AD_DiverseCohorts_individual_metadata.csv
+
+The regional cohort contains:
+
+    Regional individuals:             1,669
+    AMP-AD individuals:               1,669
+    ID overlap:                       1,669 / 1,669
+    Regional ID overlap:              100%
+
+CERAD availability:
+
+    CERAD available:                  1,333
+    CERAD missing/unknown:              336
+    CERAD coverage:                   79.87%
+
+Braak availability:
+
+    Braak available:                  1,594
+
+Both Braak and CERAD available:
+
+    1,282
+
+The 336 missing/unknown CERAD values are genuine missing/unknown values
+in the authoritative regional metadata. They are not evidence that the
+wrong metadata source was selected.
+
+5. AUTHORITATIVE CERAD DISTRIBUTION
+
+Among the 1,669 regional individuals:
+
+    Frequent/Definite/C3             489
+    Moderate/Probable/C2             382
+    Sparse/Possible/C1               148
+    None/No AD/C0                    314
+    missing or unknown               336
+
+Usable CERAD values:
+
+    1,333 / 1,669 = 79.87%
+
+6. CERAD CROSSWALK AUDIT
+
+The authoritative-to-analysis numeric crosswalk is:
+
+    cerad                         source C0-C3    cerad_num    n
+    ----------------------------------------------------------------
+    Frequent/Definite/C3               3              1       489
+    Moderate/Probable/C2               2              2       382
+    Sparse/Possible/C1                 1              3       148
+    None/No AD/C0                      0              4       314
+    missing or unknown                NA             NA       336
+
+This crosswalk was verified by comparing the authoritative AMP-AD
+metadata against the existing 400-person protein-analysis metadata.
+Among the 185 individuals shared by those datasets, the existing
+cerad_num values mapped as follows:
+
+    Frequent/Definite/C3 -> cerad_num 1
+    Moderate/Probable/C2 -> cerad_num 2
+    Sparse/Possible/C1   -> cerad_num 3
+    None/No AD/C0        -> cerad_num 4
+
+Thus the existing protein-analysis CERAD convention is confirmed to be
+inverse-coded relative to the authoritative C0-C3 source coding.
+
+7. RECOMMENDED MANUSCRIPT METHODS LANGUAGE
+
+Neuropathology measures. Braak stage and CERAD neuritic plaque score
+were obtained from the authoritative AMP-AD Diverse Cohorts
+individual-level metadata. CERAD was originally encoded in the source
+data as C0-C3, corresponding to none/no AD, sparse/possible,
+moderate/probable, and frequent/definite neuritic plaque pathology,
+respectively. For compatibility with the existing protein-analysis
+framework, CERAD was additionally recoded as an inverse ordinal variable
+(cerad_num = 4 - C), such that 1 represented the greatest pathology
+burden and 4 the least. The original CERAD categories were retained in
+the analysis metadata. Thus, for regression interpretation, worsening
+Braak pathology corresponds to increasing Braak score, whereas worsening
+CERAD pathology corresponds to decreasing cerad_num. Pathology- aligned
+protein vulnerability was therefore defined from negative Braak
+associations and positive CERAD associations.
+
+8. TERMINOLOGY TO USE CONSISTENTLY
+
+Preferred:
+
+    "authoritative CERAD C0-C3 coding"
+    "original AMP-AD CERAD coding"
+    "inverse-coded CERAD ordinal variable"
+    "cerad_num"
+    "CERAD pathology burden"
+    "higher cerad_num indicates less pathology"
+
+Avoid:
+
+    "CERAD 1-4 score" without explaining the inverse coding
+    "higher CERAD = worse pathology" when referring specifically to cerad_num
+    treating C0-C3 and cerad_num as interchangeable numeric variables
+
+9. IMPORTANT ANALYTICAL IMPLICATION
+
+When combining Braak and CERAD into joint pathology measures, the
+variables must first be put onto a common pathology-aligned direction.
+The inverse coding of cerad_num is therefore a representation issue, not
+a biological difference between the two pathology measures.
+
+The canonical joint-pathology variables developed elsewhere in this
+analysis use pathology-aligned effect magnitudes rather than assuming
+that the raw numeric directions of Braak and cerad_num are identical.
+
+This distinction should remain explicit in the code comments and
+manuscript Methods so that the direction of every pathology association
+is unambiguous.
