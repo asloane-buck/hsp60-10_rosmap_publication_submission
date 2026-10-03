@@ -97,7 +97,7 @@ sf4_get_input <- function(candidate_names, required = TRUE, label = "input") {
 sf4_validate_null_tbl <- function(tbl, label) {
   required_cols <- c(
     "gene",
-    "protein_collapse_magnitude",
+    "protein_late_decline_magnitude",
     "inverse_braak_magnitude"
   )
   
@@ -167,7 +167,7 @@ sf4_metadata_sample_ids <- function(meta, label) {
 
 sf4_prepare_protein_matrix <- function(hsp_genes) {
   matrix_input <- sf4_get_input(
-    c("prot_mat", "prot_mat_in", "protein_matrix", "protein_mat", "tmt_mat", "prot_expr_mat", "prot_mat_raw"),
+    c("prot_mat_raw"),
     required = TRUE,
     label = "protein matrix"
   )
@@ -230,10 +230,10 @@ sf4_prepare_model_metadata <- function(meta, matrix_sample_ids) {
 
   braak_col <- sf4_pick_col(df, c("braak_num", "Braak", "braak", "braaksc", "braak_stage", "Braak.Stage"), TRUE, "Braak")
   cerad_col <- sf4_pick_col(df, c("cerad_num", "CERAD", "cerad", "ceradsc", "cerad_score", "CERAD.Score"), TRUE, "CERAD")
-  age_col <- sf4_pick_col(df, c("age", "age_at_death", "age_death", "age_c", "Age"), FALSE, "age")
-  sex_col <- sf4_pick_col(df, c("sex_label", "sex", "msex", "Sex", "gender"), FALSE, "sex")
-  pmi_col <- sf4_pick_col(df, c("pmi", "PMI", "pmi_c", "postmortem_interval", "postmortem.interval"), FALSE, "PMI")
-  dx_col <- sf4_pick_col(df, c("diagnosis_stage", "diagnosis", "EmoryStrictDx.2019", "cogdx", "dx", "Dx"), FALSE, "diagnosis/stage")
+  age_col <- sf4_pick_col(df, c("age_num", "age_death", "age", "age_at_death", "age_c", "Age"), TRUE, "age")
+  sex_col <- sf4_pick_col(df, c("sex_factor", "sex_label", "sex", "msex", "Sex", "gender"), TRUE, "sex")
+  pmi_col <- sf4_pick_col(df, c("pmi_num", "pmi", "PMI", "pmi_c", "postmortem_interval", "postmortem.interval"), TRUE, "PMI")
+  batch_col <- sf4_pick_col(df, c("batch_factor", "tmt_batch", "batch", "Batch"), TRUE, "TMT batch")
 
   meta_out <- tibble::as_tibble(df) |>
     dplyr::mutate(sample_id = as.character(.data[[sample_col]])) |>
@@ -245,16 +245,16 @@ sf4_prepare_model_metadata <- function(meta, matrix_sample_ids) {
       sample_id = as.character(.data$sample_id),
       braak_num_model = sf4_as_numeric(.data[[braak_col]]),
       cerad_num_model = sf4_as_numeric(.data[[cerad_col]]),
-      age_model = if (!is.na(age_col)) sf4_as_numeric(.data[[age_col]]) else NA_real_,
-      pmi_model = if (!is.na(pmi_col)) sf4_as_numeric(.data[[pmi_col]]) else NA_real_,
-      sex_model = if (!is.na(sex_col)) as.factor(.data[[sex_col]]) else factor(NA_character_),
-      diagnosis_model = if (!is.na(dx_col)) as.factor(.data[[dx_col]]) else factor(NA_character_)
+      age_model = sf4_as_numeric(.data[[age_col]]),
+      pmi_model = sf4_as_numeric(.data[[pmi_col]]),
+      sex_model = as.factor(.data[[sex_col]]),
+      batch_model = as.factor(.data[[batch_col]])
     )
 
   readr::write_csv(
     tibble::tibble(
-      conceptual_variable = c("sample_id", "braak", "cerad", "age", "sex", "pmi", "diagnosis"),
-      detected_column = c(sample_col, braak_col, cerad_col, age_col, sex_col, pmi_col, dx_col),
+      conceptual_variable = c("sample_id", "braak", "cerad", "age", "sex", "pmi", "tmt_batch"),
+      detected_column = c(sample_col, braak_col, cerad_col, age_col, sex_col, pmi_col, batch_col),
       n_matrix_samples = length(matrix_sample_ids),
       n_metadata_rows_matched = nrow(meta_out)
     ),
@@ -269,7 +269,7 @@ sf4_prepare_model_metadata <- function(meta, matrix_sample_ids) {
   message("  age column: ", age_col)
   message("  sex column: ", sex_col)
   message("  PMI column: ", pmi_col)
-  message("  diagnosis column: ", dx_col)
+  message("  TMT batch column: ", batch_col)
 
   meta_out
 }
@@ -306,13 +306,14 @@ sf4_fit_gene <- function(gene, protein_mat, meta_model) {
 
   # Model 1: Braak + core covariates.
   m1_df <- model_df |>
-    dplyr::select(.data$y_z, .data$braak_z, .data$age_z, .data$pmi_z, .data$sex_model) |>
-    tidyr::drop_na(.data$y_z, .data$braak_z)
+    dplyr::select("y_z", "braak_z", "age_z", "pmi_z", "sex_model", "batch_model") |>
+    tidyr::drop_na("y_z", "braak_z")
 
   m1_terms <- c("braak_z")
   if (sum(is.finite(m1_df$age_z)) >= 10 && stats::sd(m1_df$age_z, na.rm = TRUE) > 0) m1_terms <- c(m1_terms, "age_z")
   if (sum(is.finite(m1_df$pmi_z)) >= 10 && stats::sd(m1_df$pmi_z, na.rm = TRUE) > 0) m1_terms <- c(m1_terms, "pmi_z")
   if (dplyr::n_distinct(stats::na.omit(m1_df$sex_model)) > 1) m1_terms <- c(m1_terms, "sex_model")
+  if (dplyr::n_distinct(stats::na.omit(m1_df$batch_model)) > 1) m1_terms <- c(m1_terms, "batch_model")
 
   m1_result <- tryCatch({
     if (nrow(m1_df) < 30 || stats::sd(m1_df$y_z, na.rm = TRUE) == 0) {
@@ -328,13 +329,14 @@ sf4_fit_gene <- function(gene, protein_mat, meta_model) {
 
   # Model 2: Braak + CERAD + core covariates.
   m2_df <- model_df |>
-    dplyr::select(.data$y_z, .data$braak_z, .data$cerad_z, .data$age_z, .data$pmi_z, .data$sex_model) |>
-    tidyr::drop_na(.data$y_z, .data$braak_z, .data$cerad_z)
+    dplyr::select("y_z", "braak_z", "cerad_z", "age_z", "pmi_z", "sex_model", "batch_model") |>
+    tidyr::drop_na("y_z", "braak_z", "cerad_z")
 
   m2_terms <- c("braak_z", "cerad_z")
   if (sum(is.finite(m2_df$age_z)) >= 10 && stats::sd(m2_df$age_z, na.rm = TRUE) > 0) m2_terms <- c(m2_terms, "age_z")
   if (sum(is.finite(m2_df$pmi_z)) >= 10 && stats::sd(m2_df$pmi_z, na.rm = TRUE) > 0) m2_terms <- c(m2_terms, "pmi_z")
   if (dplyr::n_distinct(stats::na.omit(m2_df$sex_model)) > 1) m2_terms <- c(m2_terms, "sex_model")
+  if (dplyr::n_distinct(stats::na.omit(m2_df$batch_model)) > 1) m2_terms <- c(m2_terms, "batch_model")
 
   m2_result <- tryCatch({
     if (nrow(m2_df) < 30 || stats::sd(m2_df$y_z, na.rm = TRUE) == 0) {
@@ -352,22 +354,30 @@ sf4_fit_gene <- function(gene, protein_mat, meta_model) {
     dplyr::bind_cols(
       m1_result |>
         dplyr::rename(
-          braak_beta_adjusted = .data$beta,
-          braak_se_adjusted = .data$se,
-          braak_p_adjusted = .data$p_value,
-          n_adjusted = .data$n
+          braak_beta_adjusted = "beta",
+          braak_se_adjusted = "se",
+          braak_p_adjusted = "p_value",
+          n_adjusted = "n"
         ),
       m2_result |>
         dplyr::rename(
-          braak_beta_cerad_adjusted = .data$beta,
-          braak_se_cerad_adjusted = .data$se,
-          braak_p_cerad_adjusted = .data$p_value,
-          n_cerad_adjusted = .data$n
+          braak_beta_cerad_adjusted = "beta",
+          braak_se_cerad_adjusted = "se",
+          braak_p_cerad_adjusted = "p_value",
+          n_cerad_adjusted = "n"
         )
     ) |>
     dplyr::mutate(
-      inverse_braak_beta_adjusted = -.data$braak_beta_adjusted,
-      inverse_braak_beta_cerad_adjusted = -.data$braak_beta_cerad_adjusted
+      inverse_braak_beta_adjusted = dplyr::case_when(
+        !is.finite(.data$braak_beta_adjusted) ~ NA_real_,
+        .data$braak_beta_adjusted < 0 ~ abs(.data$braak_beta_adjusted),
+        TRUE ~ 0
+      ),
+      inverse_braak_beta_cerad_adjusted = dplyr::case_when(
+        !is.finite(.data$braak_beta_cerad_adjusted) ~ NA_real_,
+        .data$braak_beta_cerad_adjusted < 0 ~ abs(.data$braak_beta_cerad_adjusted),
+        TRUE ~ 0
+      )
     )
 }
 
@@ -391,7 +401,7 @@ sf4_p_label <- function(p) {
 sf4_wilcox_group_p <- function(df, value_col) {
   df2 <- df |>
     dplyr::filter(.data$group %in% names(sf4_group_colors)) |>
-    dplyr::select(.data$group, value = dplyr::all_of(value_col)) |>
+    dplyr::select("group", value = dplyr::all_of(value_col)) |>
     tidyr::drop_na()
 
   if (dplyr::n_distinct(df2$group) < 2) return(NA_real_)
@@ -453,13 +463,13 @@ sf4_make_distribution_plot <- function(plot_tbl, value_col, title, subtitle, yla
 sf4_make_scatter_plot <- function(plot_tbl) {
   scatter_tbl <- plot_tbl |>
     dplyr::filter(
-      is.finite(.data$protein_collapse_magnitude),
+      is.finite(.data$protein_late_decline_magnitude),
       is.finite(.data$inverse_braak_beta_cerad_adjusted)
     )
 
   rho <- tryCatch(
     stats::cor(
-      scatter_tbl$protein_collapse_magnitude,
+      scatter_tbl$protein_late_decline_magnitude,
       scatter_tbl$inverse_braak_beta_cerad_adjusted,
       method = "spearman",
       use = "complete.obs"
@@ -470,7 +480,7 @@ sf4_make_scatter_plot <- function(plot_tbl) {
   ggplot2::ggplot(
     scatter_tbl,
     ggplot2::aes(
-      x = .data$protein_collapse_magnitude,
+      x = .data$protein_late_decline_magnitude,
       y = .data$inverse_braak_beta_cerad_adjusted
     )
   ) +
@@ -494,16 +504,18 @@ sf4_make_scatter_plot <- function(plot_tbl) {
       y = Inf,
       hjust = 1.03,
       vjust = 1.1,
-      label = paste0("Spearman rho = ", signif(rho, 3)),
+      label = paste0("n = ", nrow(scatter_tbl), "; Spearman rho = ", signif(rho, 3),
+        "\nP = ", formatC(stats::cor.test(scatter_tbl$protein_late_decline_magnitude,
+          scatter_tbl$inverse_braak_beta_cerad_adjusted, method = "spearman", exact = FALSE)$p.value,
+          format = "e", digits = 2)),
       size = 3.2,
-      label.size = 0.25,
       fill = "white",
       color = "grey20"
     ) +
     ggplot2::labs(
-      title = "Collapse vs adjusted Braak",
+      title = "Late-stage decline vs adjusted Braak",
       subtitle = NULL,
-      x = "Late-stage protein collapse magnitude",
+      x = "Late-stage protein decline magnitude",
       y = "CERAD-adjusted inverse Braak"
     ) +
     sf4_theme(base_size = 8.5)
@@ -542,6 +554,25 @@ make_supfig4_pathology_model_robustness <- function(inputs) {
       )
     )
 
+  frozen <- isTRUE(get0("SUPP_USE_FROZEN_MODELS", ifnotfound = FALSE))
+  if (frozen) {
+    frozen_path <- file.path(audits_dir, "SuppFig4_plotted_gene_level_values.csv")
+    plot_tbl <- readr::read_csv(frozen_path, show_col_types = FALSE)
+    required <- c("gene", "group", "protein_late_decline_magnitude",
+      "inverse_braak_beta_adjusted", "inverse_braak_beta_cerad_adjusted")
+    if (!all(required %in% names(plot_tbl)) || nrow(plot_tbl) != 915 ||
+        sum(plot_tbl$group == "Hsp60/10 clients") != 306 ||
+        sum(plot_tbl$group == "Non-client mitochondrial proteins") != 609 ||
+        anyDuplicated(plot_tbl$gene) ||
+        any(!is.finite(plot_tbl$inverse_braak_beta_adjusted)) ||
+        any(!is.finite(plot_tbl$inverse_braak_beta_cerad_adjusted))) {
+      stop("S4 frozen source does not contain the verified 306-client/609-background models.", call. = FALSE)
+    }
+    plot_tbl$group <- factor(plot_tbl$group,
+      levels = c("Non-client mitochondrial proteins", "Hsp60/10 clients"))
+    adjusted_tbl <- plot_tbl
+    message("S4: rendering frozen non-residualized abundance regression coefficients.")
+  } else {
   protein_info <- sf4_prepare_protein_matrix(hsp_tbl$gene)
   protein_mat <- protein_info$matrix
   meta_model <- sf4_prepare_model_metadata(protein_info$metadata, colnames(protein_mat))
@@ -561,9 +592,8 @@ make_supfig4_pathology_model_robustness <- function(inputs) {
     )
     stop(
       "Supp Fig 4 found zero overlap between base_tbl genes and protein matrix rownames after orientation. ",
-      "This usually means the script selected prot_mat_raw, whose row identifiers are not cleaned gene symbols. ",
-      "The patched script now prioritizes prot_mat over prot_mat_raw; if this still fails, inspect ",
-      "SuppFig4_protein_matrix_orientation_failed_audit.csv and confirm that inputs$prot_mat exists and has gene-symbol rownames.",
+      "Inspect the matrix orientation audit and the cleaned gene identifiers in prot_mat_raw. ",
+      "Do not substitute a covariate-residualized matrix into a directly adjusted model.",
       call. = FALSE
     )
   }
@@ -634,66 +664,52 @@ make_supfig4_pathology_model_robustness <- function(inputs) {
   readr::write_csv(adjusted_tbl, file.path(audits_dir, "SuppFig4_adjusted_braak_model_results.csv"))
   readr::write_csv(plot_tbl, file.path(audits_dir, "SuppFig4_plotted_gene_level_values.csv"))
 
+  }
+
   summary_tbl <- plot_tbl |>
     dplyr::group_by(.data$group) |>
     dplyr::summarise(
       n = dplyr::n(),
-      median_inverse_braak = stats::median(.data$inverse_braak_magnitude, na.rm = TRUE),
+      median_inverse_braak = stats::median(.data$inverse_braak_beta_adjusted, na.rm = TRUE),
       median_adjusted_inverse_beta = stats::median(.data$inverse_braak_beta_adjusted, na.rm = TRUE),
       median_cerad_adjusted_inverse_beta = stats::median(.data$inverse_braak_beta_cerad_adjusted, na.rm = TRUE),
-      median_collapse = stats::median(.data$protein_collapse_magnitude, na.rm = TRUE),
+      median_late_decline = stats::median(.data$protein_late_decline_magnitude, na.rm = TRUE),
       .groups = "drop"
     )
 
   readr::write_csv(summary_tbl, file.path(audits_dir, "SuppFig4_group_summary.csv"))
 
-  panel_a <- sf4_panel_label(
-    sf4_make_distribution_plot(
-      plot_tbl,
-      "inverse_braak_magnitude",
-      "Spearman Braak",
-      NULL,
-      "Inverse Braak magnitude"
-    ),
-    "A"
-  )
-
-  panel_b <- sf4_panel_label(
-    sf4_make_distribution_plot(
-      plot_tbl,
-      "inverse_braak_beta_adjusted",
-      "Adjusted Braak",
-      NULL,
-      "Adjusted inverse Braak"
-    ),
-    "B"
-  )
-
-  panel_c <- sf4_panel_label(
-    sf4_make_distribution_plot(
-      plot_tbl,
-      "inverse_braak_beta_cerad_adjusted",
-      "CERAD-adjusted Braak",
-      NULL,
-      "CERAD-adjusted inverse Braak"
-    ),
-    "C"
-  )
-
-  panel_d <- sf4_panel_label(
-    sf4_make_scatter_plot(plot_tbl),
-    "D"
-  )
-
+  # Three panels: nuisance-adjusted Braak, CERAD-adjusted Braak, and all-protein scatter.
+  panel_a <- sf4_panel_label(sf4_make_distribution_plot(
+    plot_tbl, "inverse_braak_beta_adjusted", "Adjusted Braak", NULL,
+    "Adjusted inverse Braak magnitude"), "A")
+  panel_b <- sf4_panel_label(sf4_make_distribution_plot(
+    plot_tbl, "inverse_braak_beta_cerad_adjusted", "CERAD-adjusted Braak", NULL,
+    "CERAD-adjusted inverse Braak magnitude"), "B")
+  panel_c <- sf4_panel_label(sf4_make_scatter_plot(plot_tbl), "C")
   panel_paths <- c(
-    save_panel_set(panel_a, "SuppFig4A_spearman_braak_distribution", width = 5.9, height = 4.0, output_dir = panels_dir),
-    save_panel_set(panel_b, "SuppFig4B_covariate_adjusted_braak_distribution", width = 5.9, height = 4.0, output_dir = panels_dir),
-    save_panel_set(panel_c, "SuppFig4C_cerad_adjusted_braak_distribution", width = 5.9, height = 4.0, output_dir = panels_dir),
-    save_panel_set(panel_d, "SuppFig4D_collapse_vs_adjusted_braak", width = 5.9, height = 4.0, output_dir = panels_dir)
+    save_panel_set(panel_a, "SuppFig4A_covariate_adjusted_braak_distribution", output_dir = panels_dir),
+    save_panel_set(panel_b, "SuppFig4B_cerad_adjusted_braak_distribution", output_dir = panels_dir),
+    save_panel_set(panel_c, "SuppFig4C_late_decline_vs_cerad_adjusted_braak", output_dir = panels_dir)
   )
-
-  composite <- (panel_a | panel_b) /
-    (panel_c | panel_d) +
+  sf4_spearman_result <- stats::cor.test(plot_tbl$protein_late_decline_magnitude,
+    plot_tbl$inverse_braak_beta_cerad_adjusted, method = "spearman", exact = FALSE)
+  # Compute outside tibble's column mask: the output column `test` must not
+  # shadow the correlation-result object during evaluation.
+  sf4_check_values <- c(
+    sf4_wilcox_group_p(plot_tbl, "inverse_braak_beta_adjusted"),
+    sf4_wilcox_group_p(plot_tbl, "inverse_braak_beta_cerad_adjusted"),
+    unname(sf4_spearman_result$estimate), sf4_spearman_result$p.value)
+  checks <- tibble::tibble(
+    test = c("A_two_sided_Wilcoxon", "B_two_sided_Wilcoxon", "C_all_915_Spearman_rho", "C_all_915_Spearman_P"),
+    value = sf4_check_values
+  )
+  if (frozen && any(abs(checks$value - c(2.0563661173078336e-4,
+      4.822979248565039e-4, .32095895898382526, 2.278288414378184e-23)) > 1e-8)) {
+    stop("S4 frozen source differs from the verified caption statistics.", call. = FALSE)
+  }
+  readr::write_csv(checks, file.path(audits_dir, "SuppFig4_manuscript_panel_statistics.csv"))
+  composite <- (panel_a | panel_b) / panel_c +
     patchwork::plot_layout(heights = c(1, 1))
 
   save_plot_set(
@@ -708,9 +724,9 @@ make_supfig4_pathology_model_robustness <- function(inputs) {
     "Supplementary Figure 4 run summary",
     paste0("generated at: ", format(Sys.time(), "%Y-%m-%d %H:%M:%S %Z")),
     "figure: pathology-model robustness of Hsp60/10 client vulnerability",
-    paste0("protein matrix: ", nrow(protein_mat), " genes x ", ncol(protein_mat), " samples after metadata alignment"),
-    paste0("protein matrix input: ", protein_info$matrix_name),
-    paste0("protein metadata input: ", protein_info$meta_name),
+    "primary adjusted model: protein_z ~ braak_z + age_z + sex + pmi_z + TMT batch",
+    "CERAD sensitivity model: protein_z ~ braak_z + cerad_z + age_z + sex + pmi_z + TMT batch",
+    paste0("model source: ", if (frozen) "frozen SuppFig4_plotted_gene_level_values.csv" else protein_info$matrix_name),
     paste0("Hsp60/10 genes plotted: ", sum(plot_tbl$group == "Hsp60/10 clients", na.rm = TRUE)),
     paste0("background genes plotted: ", sum(plot_tbl$group == "Non-client mitochondrial proteins", na.rm = TRUE)),
     "group summary:",
@@ -734,7 +750,7 @@ make_supfig4_pathology_model_robustness <- function(inputs) {
     plot_tbl = plot_tbl,
     adjusted_tbl = adjusted_tbl,
     summary_tbl = summary_tbl,
-    panels = list(A = panel_a, B = panel_b, C = panel_c, D = panel_d),
+    panels = list(A = panel_a, B = panel_b, C = panel_c),
     panel_paths = panel_paths
   ))
 }

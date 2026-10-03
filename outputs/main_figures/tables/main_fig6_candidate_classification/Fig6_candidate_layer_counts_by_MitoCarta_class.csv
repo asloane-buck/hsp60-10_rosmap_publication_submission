@@ -1,13 +1,14 @@
 functional_class,candidate_layer,n,total_candidate_layer_n
-Mito translation / ribosome,Pareto frontier + AGORA,4,23
-Mito translation / ribosome,Pareto frontier,6,23
-Mito translation / ribosome,AGORA-supported,13,23
-TCA / pyruvate / redox metabolism,Pareto frontier + AGORA,1,22
-TCA / pyruvate / redox metabolism,Pareto frontier,2,22
-TCA / pyruvate / redox metabolism,AGORA-supported,19,22
+Mito translation / ribosome,Pareto frontier + AGORA,4,20
+Mito translation / ribosome,Pareto frontier,3,20
+Mito translation / ribosome,AGORA-supported,13,20
+TCA / pyruvate / redox metabolism,Pareto frontier + AGORA,1,21
+TCA / pyruvate / redox metabolism,Pareto frontier,1,21
+TCA / pyruvate / redox metabolism,AGORA-supported,19,21
 OXPHOS / ETC,AGORA-supported,4,4
 FAO / lipid metabolism,AGORA-supported,1,1
-Proteostasis / stress,AGORA-supported,2,2
+Proteostasis / stress,Pareto frontier,1,3
+Proteostasis / stress,AGORA-supported,2,3
 Transport / membrane / signaling,AGORA-supported,1,1
 Other mitochondrial metabolism,Pareto frontier,1,3
 Other mitochondrial metabolism,AGORA-supported,2,3

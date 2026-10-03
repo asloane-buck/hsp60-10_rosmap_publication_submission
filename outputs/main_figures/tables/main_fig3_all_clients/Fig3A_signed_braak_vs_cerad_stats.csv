@@ -1,0 +1,2 @@
+n_genes,median_braak_aligned_beta,median_cerad_aligned_beta,mean_braak_aligned_beta,mean_cerad_aligned_beta,median_braak_minus_cerad,mean_braak_minus_cerad,n_braak_positive,n_braak_negative,n_cerad_positive,n_cerad_negative,n_braak_gt_cerad,n_equal,n_cerad_gt_braak,p_value,p_label,star
+306,0.04688895931406184,0.05714843099703078,0.04599119925119547,0.05020876824426888,-0.009624253902679895,-0.0042175689930734,237,69,229,77,132,0,174,0.09748180239859465,P = 0.097,ns

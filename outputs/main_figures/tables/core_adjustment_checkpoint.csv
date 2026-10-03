@@ -1,0 +1,8 @@
+metric,value
+Protein input samples,400
+Protein samples with adjusted abundance data,398
+Protein primary-stage phenotype eligible,374
+Protein primary-stage analyzable,372
+Protein broad-stage phenotype eligible,392
+Protein broad-stage analyzable,390
+Protein TMT batch levels,50

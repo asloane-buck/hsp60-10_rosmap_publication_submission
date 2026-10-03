@@ -205,8 +205,7 @@ fig1_pathway_colors <- c(
 
 modality_colors <- c(
   "Protein" = "#8E1B1B",
-  "RNA" = "#1B4F9C",
-  "Protein vs RNA" = "black"
+  "RNA" = "#1B4F9C"
 )
 
 fig1_strip_labels <- c(
@@ -292,15 +291,23 @@ rna_scores_all_clients <- compute_pathway_scores(
   sample_col = "sample_id"
 )
 
-require_columns(prot_scores, c("SampleID", "EmoryStrictDx.2019"), "Figure 1 protein stage metadata")
-prot_stage_meta <- prot_scores %>%
-  select(SampleID, EmoryStrictDx.2019) %>%
-  distinct()
+require_columns(
+  prot_scores,
+  c("SampleID", "clinical_stage"),
+  "Figure 1 protein clinical-stage metadata"
+)
+prot_stage_meta <- prot_scores |>
+  dplyr::select(SampleID, clinical_stage) |>
+  dplyr::distinct()
 
-require_columns(rna_scores, c("sample_id", "diagnosis_stage"), "Figure 1 RNA stage metadata")
-rna_stage_meta <- rna_scores %>%
-  select(sample_id, diagnosis_stage) %>%
-  distinct()
+require_columns(
+  rna_scores,
+  c("sample_id", "clinical_stage"),
+  "Figure 1 RNA clinical-stage metadata"
+)
+rna_stage_meta <- rna_scores |>
+  dplyr::select(sample_id, clinical_stage) |>
+  dplyr::distinct()
 
 prot_scores_all_clients <- prot_scores_all_clients %>%
   checked_left_join(prot_stage_meta, by = "SampleID", label = "Figure 1 protein pathway scores to stage metadata")
@@ -322,12 +329,7 @@ overlay_long_all_clients <- bind_rows(
     transmute(
       sample_id = SampleID,
       Modality = "Protein",
-      Stage = recode(
-        as.character(EmoryStrictDx.2019),
-        Control = "NCI",
-        AsymAD = "MCI",
-        AD = "AD"
-      ),
+      Stage = as.character(clinical_stage),
       Pathway,
       PathwayLabel = fig1_panelA_plain_labels[Pathway],
       PathwayShort = fig1_panelB_labels[Pathway],
@@ -344,12 +346,7 @@ overlay_long_all_clients <- bind_rows(
     transmute(
       sample_id = sample_id,
       Modality = "RNA",
-      Stage = recode(
-        as.character(diagnosis_stage),
-        Control = "NCI",
-        Early_AD = "MCI",
-        AD = "AD"
-      ),
+      Stage = as.character(clinical_stage),
       Pathway,
       PathwayLabel = fig1_panelA_plain_labels[Pathway],
       PathwayShort = fig1_panelB_labels[Pathway],
@@ -391,7 +388,6 @@ write_fig1_all_table(overlay_summary_all_clients, "Fig1A_all_clients_overlay_sum
 ############################################################
 ## 7. Panel A significance annotations
 ## Colored brackets = within-modality stage changes
-## Black brackets = Protein vs RNA within same stage
 ############################################################
 make_fig1_all_sig_annotations <- function(overlay_long, overlay_summary) {
   stage_levels <- c("NCI", "MCI", "AD")
@@ -487,77 +483,7 @@ make_fig1_all_sig_annotations <- function(overlay_long, overlay_summary) {
       p_value, star, x, xend, y, tick_y, text_y
     )
 
-  between_grid <- tidyr::expand_grid(
-    pathway_i = unique(overlay_long$Pathway),
-    stage_i = stage_levels
-  )
-
-  between_tbl <- purrr::pmap_dfr(
-    between_grid,
-    function(pathway_i, stage_i) {
-      sub <- overlay_long %>%
-        filter(
-          as.character(Pathway) == as.character(pathway_i),
-          as.character(Stage) == stage_i
-        )
-
-      x <- sub %>%
-        filter(as.character(Modality) == "Protein") %>%
-        pull(Score)
-
-      y <- sub %>%
-        filter(as.character(Modality) == "RNA") %>%
-        pull(Score)
-
-      p <- if (sum(is.finite(x)) >= 2 && sum(is.finite(y)) >= 2) {
-        suppressWarnings(wilcox.test(x, y, exact = FALSE)$p.value)
-      } else {
-        NA_real_
-      }
-
-      tibble(
-        Pathway = pathway_i,
-        Stage = stage_i,
-        n_protein = sum(is.finite(x)),
-        n_rna = sum(is.finite(y)),
-        mean_protein = mean(x, na.rm = TRUE),
-        mean_rna = mean(y, na.rm = TRUE),
-        p_value = p
-      )
-    }
-  ) %>%
-    mutate(
-      star = case_when(
-        is.na(p_value) ~ "",
-        p_value < 0.001 ~ "***",
-        p_value < 0.01 ~ "**",
-        p_value < 0.05 ~ "*",
-        TRUE ~ ""
-      )
-    ) %>%
-    filter(star != "") %>%
-    checked_left_join(facet_range_tbl, by = "Pathway", label = "Figure 1 between-modality annotations to facet ranges") %>%
-    mutate(
-      x = as.numeric(factor(Stage, levels = stage_levels)) - 0.18,
-      xend = as.numeric(factor(Stage, levels = stage_levels)) + 0.18,
-    
-      ## Put black Protein-vs-RNA bars just above the higher point at that stage,
-      ## instead of floating above all within-stage red/blue brackets.
-      y_stage_max = pmax(mean_protein, mean_rna, na.rm = TRUE),
-      y = y_stage_max + yrange * 0.23,
-      tick_y = y - yrange * 0.025,
-      text_y = y + yrange * 0.012,
-    
-      annotation_class = "Protein vs RNA",
-      comparison = paste0("Protein_vs_RNA_at_", Stage)
-    ) %>%
-    select(
-      Pathway, PathwayLabel, PathwayStrip, annotation_class,
-      comparison, Stage, n_protein, n_rna, mean_protein, mean_rna,
-      p_value, star, x, xend, y, tick_y, text_y
-    )
-
-  bind_rows(within_tbl, between_tbl)
+  within_tbl
 }
 
 fig1_sig_ann_all_clients <- make_fig1_all_sig_annotations(
@@ -576,11 +502,22 @@ fig1_sig_ann_all_clients %>%
   print(n = 100)
 
 ############################################################
-## 8. Panel B effect-difference table
+## 8. Panel B side-by-side modality effect table
+##
+## Show signed RNA and protein stage changes separately.
+## No RNA-minus-protein or protein-minus-RNA subtraction is
+## calculated or used for inference.
 ############################################################
 
-effect_diff_all_clients <- overlay_summary_all_clients %>%
-  select(Pathway, PathwayLabel, PathwayShort, Modality, Stage, mean_score) %>%
+pB_tbl <- overlay_summary_all_clients %>%
+  select(
+    Pathway,
+    PathwayLabel,
+    PathwayShort,
+    Modality,
+    Stage,
+    mean_score
+  ) %>%
   pivot_wider(
     names_from = c(Modality, Stage),
     values_from = mean_score
@@ -589,21 +526,42 @@ effect_diff_all_clients <- overlay_summary_all_clients %>%
     protein_early_effect = `Protein_MCI` - `Protein_NCI`,
     protein_late_effect = `Protein_AD` - `Protein_MCI`,
     rna_early_effect = `RNA_MCI` - `RNA_NCI`,
-    rna_late_effect = `RNA_AD` - `RNA_MCI`,
-
-    early_protein_minus_rna_magnitude = abs(protein_early_effect) - abs(rna_early_effect),
-    late_protein_minus_rna_magnitude = abs(protein_late_effect) - abs(rna_late_effect)
+    rna_late_effect = `RNA_AD` - `RNA_MCI`
+  ) %>%
+  select(
+    Pathway,
+    PathwayLabel,
+    PathwayShort,
+    protein_early_effect,
+    protein_late_effect,
+    rna_early_effect,
+    rna_late_effect
   ) %>%
   pivot_longer(
-    cols = c(early_protein_minus_rna_magnitude, late_protein_minus_rna_magnitude),
-    names_to = "Shift",
-    values_to = "protein_minus_rna_magnitude"
+    cols = c(
+      protein_early_effect,
+      protein_late_effect,
+      rna_early_effect,
+      rna_late_effect
+    ),
+    names_to = c("modality_key", "shift_key"),
+    names_pattern = "(protein|rna)_(early|late)_effect",
+    values_to = "stage_change"
   ) %>%
   mutate(
+    Modality = recode(
+      modality_key,
+      protein = "Protein",
+      rna = "RNA"
+    ),
     Shift = recode(
-      Shift,
-      early_protein_minus_rna_magnitude = "NCI to MCI",
-      late_protein_minus_rna_magnitude = "MCI to AD"
+      shift_key,
+      early = "NCI to MCI",
+      late = "MCI to AD"
+    ),
+    Modality = factor(
+      Modality,
+      levels = c("RNA", "Protein")
     ),
     Shift = factor(
       Shift,
@@ -613,152 +571,65 @@ effect_diff_all_clients <- overlay_summary_all_clients %>%
       PathwayShort,
       levels = rev(fig1_panelB_labels[figure1_pathways_all])
     )
+  ) %>%
+  select(
+    Pathway,
+    PathwayLabel,
+    PathwayShort,
+    Modality,
+    Shift,
+    stage_change
   )
 
-write_fig1_all_table(
-  effect_diff_all_clients,
-  "Fig1B_all_clients_protein_minus_rna_effect_difference"
+require_columns(
+  pB_tbl,
+  c(
+    "Pathway",
+    "PathwayShort",
+    "Modality",
+    "Shift",
+    "stage_change"
+  ),
+  "Figure 1 Panel B side-by-side effect table"
 )
 
-############################################################
-## 9. Clean Panel B table
-## No bootstrap CIs here. Panel B is an effect-size summary.
-## Protein-vs-RNA significance is shown in Panel A.
-############################################################
+require_values(
+  pB_tbl,
+  "Pathway",
+  figure1_pathways_all,
+  "Figure 1 Panel B"
+)
 
-calc_panelB_bootstrap <- function(overlay_long, B = 1000, seed = 1) {
-  set.seed(seed)
+require_values(
+  pB_tbl,
+  "Modality",
+  c("RNA", "Protein"),
+  "Figure 1 Panel B"
+)
 
-  stage_pairs <- tribble(
-    ~Shift, ~s1, ~s2,
-    "NCI to MCI", "NCI", "MCI",
-    "MCI to AD", "MCI", "AD"
-  )
+expected_panelB_rows <- length(figure1_pathways_all) * 2L * 2L
 
-  boot_grid <- crossing(
-    pathway_i = unique(overlay_long$Pathway),
-    Shift = stage_pairs$Shift
-  ) %>%
-    checked_left_join(stage_pairs, by = "Shift", label = "Figure 1 bootstrap grid to stage pairs")
-
-  purrr::pmap_dfr(
-    boot_grid,
-    function(pathway_i, Shift, s1, s2) {
-      sub <- overlay_long %>%
-        filter(as.character(Pathway) == as.character(pathway_i))
-
-      p1 <- sub %>% filter(as.character(Modality) == "Protein", as.character(Stage) == s1) %>% pull(Score)
-      p2 <- sub %>% filter(as.character(Modality) == "Protein", as.character(Stage) == s2) %>% pull(Score)
-      r1 <- sub %>% filter(as.character(Modality) == "RNA", as.character(Stage) == s1) %>% pull(Score)
-      r2 <- sub %>% filter(as.character(Modality) == "RNA", as.character(Stage) == s2) %>% pull(Score)
-
-      if (
-        sum(is.finite(p1)) < 2 ||
-        sum(is.finite(p2)) < 2 ||
-        sum(is.finite(r1)) < 2 ||
-        sum(is.finite(r2)) < 2
-      ) {
-        return(tibble(
-          Pathway = pathway_i,
-          Shift = Shift,
-          delta = NA_real_,
-          ci_lo = NA_real_,
-          ci_hi = NA_real_,
-          p_value = NA_real_,
-          star = ""
-        ))
-      }
-
-      p1 <- p1[is.finite(p1)]
-      p2 <- p2[is.finite(p2)]
-      r1 <- r1[is.finite(r1)]
-      r2 <- r2[is.finite(r2)]
-
-      boot_delta <- replicate(B, {
-        bp1 <- mean(sample(p1, length(p1), replace = TRUE))
-        bp2 <- mean(sample(p2, length(p2), replace = TRUE))
-        br1 <- mean(sample(r1, length(r1), replace = TRUE))
-        br2 <- mean(sample(r2, length(r2), replace = TRUE))
-
-        abs(bp2 - bp1) - abs(br2 - br1)
-      })
-
-      delta_hat <- mean(boot_delta, na.rm = TRUE)
-      p_val <- 2 * min(
-        mean(boot_delta >= 0, na.rm = TRUE),
-        mean(boot_delta <= 0, na.rm = TRUE)
-      )
-
-      tibble(
-        Pathway = pathway_i,
-        Shift = Shift,
-        delta = delta_hat,
-        ci_lo = as.numeric(quantile(boot_delta, 0.025, na.rm = TRUE)),
-        ci_hi = as.numeric(quantile(boot_delta, 0.975, na.rm = TRUE)),
-        p_value = p_val,
-        star = case_when(
-          is.na(p_val) ~ "",
-          p_val < 0.001 ~ "***",
-          p_val < 0.01 ~ "**",
-          p_val < 0.05 ~ "*",
-          TRUE ~ ""
-        )
-      )
-    }
+if (nrow(pB_tbl) != expected_panelB_rows) {
+  stop(
+    "Figure 1 Panel B row count changed: observed ",
+    nrow(pB_tbl),
+    "; expected ",
+    expected_panelB_rows,
+    ".",
+    call. = FALSE
   )
 }
 
-panelB_sig_tbl <- calc_panelB_bootstrap(
-  overlay_long_all_clients,
-  B = 1000,
-  seed = 1
-)
-
-write_fig1_all_table(
-  panelB_sig_tbl,
-  "Fig1B_all_clients_bootstrap_significance_FIXED"
-)
-
-panelB_sig_tbl %>%
-  arrange(Shift, Pathway) %>%
-  print(n = 100)
-
-############################################################
-## 11. Plot Panel B — cleaner effect-size summary
-############################################################
-
-############################################################
-## 11. Plot Panel B — remodeling magnitude summary
-############################################################
-
-pB_tbl <- effect_diff_all_clients %>%
-  mutate(
-    PathwayShort = factor(
-      PathwayShort,
-      levels = rev(fig1_panelB_labels[figure1_pathways_all])
-    ),
-    value_label = sprintf(
-      "%.2f",
-      if_else(abs(protein_minus_rna_magnitude) < 0.005, 0, protein_minus_rna_magnitude)
-    ),
-    label_x = case_when(
-      protein_minus_rna_magnitude > 0 ~ protein_minus_rna_magnitude + 0.004,
-      protein_minus_rna_magnitude < 0 ~ protein_minus_rna_magnitude - 0.004,
-      TRUE ~ 0.004
-    ),
-    label_hjust = case_when(
-      protein_minus_rna_magnitude > 0 ~ 0,
-      protein_minus_rna_magnitude < 0 ~ 1,
-      TRUE ~ 0
-    )
+if (any(!is.finite(pB_tbl$stage_change))) {
+  stop(
+    "Figure 1 Panel B contains non-finite stage-change values.",
+    call. = FALSE
   )
-
-x_min_b <- min(pB_tbl$protein_minus_rna_magnitude, na.rm = TRUE)
-x_max_b <- max(pB_tbl$protein_minus_rna_magnitude, na.rm = TRUE)
+}
 
 write_fig1_all_table(
   pB_tbl,
-  "Fig1B_all_clients_clean_effect_summary"
+  "Fig1B_all_clients_side_by_side_modality_effects"
 )
 
 ############################################################
@@ -882,7 +753,7 @@ pA <- ggplot(
   scale_y_continuous(expand = expansion(mult = c(0.08, 0.52))) +
   labs(
     title = "A. All-client pathway remodeling across AD stage",
-    subtitle = "Colored brackets show within-modality stage changes; black brackets show Protein vs RNA differences within each stage.",
+    subtitle = "Colored brackets show within-modality stage changes.",
     x = NULL,
     y = "Mean standardized pathway score"
   ) +
@@ -903,69 +774,89 @@ pA <- ggplot(
   coord_cartesian(clip = "off")
 
 ############################################################
-## 11. Plot Panel B — clean effect-size summary
+## 11. Plot Panel B — side-by-side RNA and protein effects
 ############################################################
 
-require_columns(
-  pB_tbl,
-  c("Pathway", "PathwayShort", "Shift", "protein_minus_rna_magnitude", "value_label", "label_x", "label_hjust"),
-  "Figure 1 Panel B effect table"
-)
-require_values(pB_tbl, "Pathway", figure1_pathways_all, "Figure 1 Panel B")
-
-pB <- ggplot(
-  pB_tbl,
-  aes(x = protein_minus_rna_magnitude, y = PathwayShort, fill = Pathway)
-) +
+pB <- ggplot() +
   geom_vline(
     xintercept = 0,
     linetype = "dashed",
     color = "grey45",
     linewidth = 0.45
   ) +
-  geom_col(
-    width = 0.62,
-    color = "white",
-    linewidth = 0.25
-  ) +
-  geom_text(
+  geom_point(
+    data = pB_tbl,
     aes(
-      x = label_x,
-      label = value_label,
-      hjust = label_hjust
+      x = stage_change,
+      y = PathwayShort,
+      shape = Modality,
+      color = Modality
     ),
-    size = 2.55,
-    color = "grey20",
-    na.rm = TRUE
+    size = 2.7,
+    stroke = 0.8
   ) +
-  facet_wrap(~ Shift, ncol = 1) +
-  scale_fill_manual(
-    values = fig1_pathway_colors,
-    guide = "none"
+  facet_wrap(
+    ~ Shift,
+    ncol = 2
+  ) +
+  scale_shape_manual(
+    values = c(
+      RNA = 16,
+      Protein = 17
+    ),
+    name = NULL
+  ) +
+  scale_color_manual(
+    values = c(
+      RNA = modality_colors[["RNA"]],
+      Protein = modality_colors[["Protein"]]
+    ),
+    name = NULL
   ) +
   scale_x_continuous(
-    limits = c(x_min_b - 0.025, x_max_b + 0.03),
     breaks = scales::pretty_breaks(n = 5),
-    expand = expansion(mult = c(0, 0))
+    expand = expansion(mult = c(0.06, 0.06))
   ) +
   labs(
-    title = "B. Protein-biased remodeling magnitude",
-    subtitle = "Positive values indicate a larger protein-level stage change than RNA-level stage change.",
-    x = "Protein remodeling magnitude − RNA remodeling magnitude",
+    title = "B. RNA and protein stage changes",
+    subtitle = paste0(
+      "Signed standardized pathway-score changes are shown separately ",
+      "by modality; no cross-modal subtraction is used."
+    ),
+    x = "Change in mean standardized pathway score",
     y = NULL
   ) +
   paper_theme_rebuilt(10.3) +
   theme(
-    plot.title = element_text(hjust = 0, size = 14, face = "bold"),
-    plot.subtitle = element_text(hjust = 0, size = 10),
-    strip.text = element_text(face = "bold", size = 9.2),
-    axis.text.y = element_text(size = 7.9, lineheight = 0.88),
-    axis.text.x = element_text(size = 8.0),
-    axis.title.x = element_text(size = 9.4, face = "bold"),
+    plot.title = element_text(
+      hjust = 0,
+      size = 14,
+      face = "bold"
+    ),
+    plot.subtitle = element_text(
+      hjust = 0,
+      size = 9.5
+    ),
+    strip.text = element_text(
+      face = "bold",
+      size = 9.2
+    ),
+    axis.text.y = element_text(
+      size = 7.9,
+      lineheight = 0.88
+    ),
+    axis.text.x = element_text(
+      size = 8.0
+    ),
+    axis.title.x = element_text(
+      size = 9.4,
+      face = "bold"
+    ),
+    legend.position = "top",
+    legend.justification = "left",
     panel.spacing.y = unit(0.90, "lines"),
     plot.margin = margin(8, 18, 10, 10)
-  ) +
-  coord_cartesian(clip = "off")
+  )
 
 ############################################################
 ## 12. Assemble and save Figure 1
@@ -974,9 +865,9 @@ pB <- ggplot(
 
 
 fig1_all_clients <- pA / pB +
-  plot_layout(heights = c(1.36, 0.92)) +
+  plot_layout(heights = c(1.48, 0.72)) +
   plot_annotation(
-    title = "All-client Hsp60/10 analysis resolves protein-biased mitochondrial remodeling in AD",
+    title = "All-client Hsp60/10 analysis reveals stage-dependent mitochondrial remodeling in AD",
     subtitle = "Hsp60/10 clients are evaluated against broad MitoCarta and non-overlapping mitochondrial/comparator gene sets.",
     theme = theme(
       plot.title = element_text(face = "bold", hjust = 0.5, size = 18),

@@ -22,23 +22,84 @@ set.seed(123)
 options(stringsAsFactors = FALSE)
 
 locate_project_dir <- function() {
+  find_repo_root <- function(start_path) {
+    if (is.na(start_path) || !nzchar(start_path)) {
+      return(NA_character_)
+    }
+
+    start_path <- normalizePath(
+      start_path,
+      mustWork = FALSE
+    )
+
+    if (!dir.exists(start_path)) {
+      start_path <- dirname(start_path)
+    }
+
+    current <- start_path
+
+    repeat {
+      if (
+        file.exists(file.path(current, "R", "00_config.R")) &&
+        file.exists(file.path(current, "R", "01_utils.R"))
+      ) {
+        return(normalizePath(current, mustWork = FALSE))
+      }
+
+      parent <- dirname(current)
+
+      if (identical(parent, current)) {
+        break
+      }
+
+      current <- parent
+    }
+
+    NA_character_
+  }
+
+  candidates <- character()
+
   this_file <- tryCatch(
     normalizePath(sys.frame(1)$ofile, mustWork = TRUE),
     error = function(e) NA_character_
   )
 
-  if (is.na(this_file) && requireNamespace("rstudioapi", quietly = TRUE)) {
-    this_file <- tryCatch(
-      normalizePath(rstudioapi::getActiveDocumentContext()$path, mustWork = TRUE),
+  if (!is.na(this_file)) {
+    candidates <- c(candidates, this_file)
+  }
+
+  if (requireNamespace("rstudioapi", quietly = TRUE)) {
+    active_file <- tryCatch(
+      normalizePath(
+        rstudioapi::getActiveDocumentContext()$path,
+        mustWork = TRUE
+      ),
       error = function(e) NA_character_
     )
+
+    if (!is.na(active_file)) {
+      candidates <- c(candidates, active_file)
+    }
   }
 
-  if (!is.na(this_file)) {
-    return(normalizePath(file.path(dirname(this_file), ".."), mustWork = FALSE))
+  candidates <- c(candidates, getwd())
+
+  for (candidate in unique(candidates)) {
+    root <- find_repo_root(candidate)
+
+    if (!is.na(root)) {
+      return(root)
+    }
   }
 
-  normalizePath(getwd(), mustWork = FALSE)
+  stop(
+    paste0(
+      "Could not locate repository root. Expected to find ",
+      "R/00_config.R and R/01_utils.R in a parent directory. ",
+      "Set HSP60_ROSMAP_PROJECT_DIR explicitly if needed."
+    )
+  )
 }
 
 cfg <- list()

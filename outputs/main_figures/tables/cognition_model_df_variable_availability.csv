@@ -1,0 +1,13 @@
+variable,n_available,n_total
+Hsp60_client_score,400,400
+cogdx,400,400
+dcfdx_lv,400,400
+mmse_last_valid,400,400
+mmse_first_ad_dx,126,400
+age_death,400,400
+educ,400,400
+sex,400,400
+pmi,398,400
+Braak,400,400
+CERAD,400,400
+batch_factor,400,400

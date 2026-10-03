@@ -1,13 +1,7 @@
 Pathway,facet_label,Stage,x1,x2,y,p_value_raw,label
 Broad mitochondrial background,"Mito
-background",Control,0.9,1.1,0.12226257414896291,0.01706744530550506,*
-Broad mitochondrial background,"Mito
-background",Intermediate,1.9,2.1,0.13175845643303027,0.0474088970326633,*
+background",NCI,0.9,1.1,0.0999035912052465,0.008207192476192384,**
 Hsp60/10 client network,"Hsp60/10
-clients",Control,0.9,1.1,0.17672102832187878,0.03423276589769194,*
-Hsp60/10 client network,"Hsp60/10
-clients",Intermediate,1.9,2.1,0.20418707446086434,0.03466822806624106,*
+clients",NCI,0.9,1.1,0.16551616190054094,0.011274685468046197,*
 TCA/pyruvate metabolism,"TCA/pyruvate
-non-client",Control,0.9,1.1,0.1590987372001328,0.008779854430481775,**
-TCA/pyruvate metabolism,"TCA/pyruvate
-non-client",Intermediate,1.9,2.1,0.18311322737947466,0.039362318052133645,*
+non-client",NCI,0.9,1.1,0.12306948386266903,0.026345514775808536,*

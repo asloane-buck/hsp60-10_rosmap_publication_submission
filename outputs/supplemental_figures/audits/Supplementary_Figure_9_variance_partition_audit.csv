@@ -1,0 +1,6 @@
+check,pass
+summary_file_exists,TRUE
+RNA_sources_present,TRUE
+protein_sources_present,TRUE
+RNA_residual_unique,TRUE
+protein_residual_unique,TRUE

@@ -38,3 +38,28 @@ _font_embed_backup/
 
 # Local workbook metadata-cleanup backup
 *.pre_absPath_cleanup.xlsx
+
+# ============================================================
+# Reviewer-revision working outputs
+# Keep local by default; explicitly force-add only vetted
+# aggregate/public-safe files if needed for the archive.
+# ============================================================
+outputs/reviewer_revisions/**
+outputs/main_figures/reviewer_revisions/**
+outputs/main_figures/pre_submission_sensitivity_checks/**
+outputs/rosmap_cognition_pathology_inventory/**
+outputs/mechanistic_classification_chaperonin_mismatch/**
+outputs/supplemental_figures/rosmap_snrna_client_celltype_expression/**
+
+# Reviewer-derived sample/participant-level tables: local only
+outputs/**/**participant**
+outputs/**/**individual**
+outputs/**/**sample_manifest**
+outputs/**/**participant_lookup**
+outputs/**/**stage_crosswalk**
+outputs/**/**cohort_manifest**
+outputs/**/**metadata_corrected**
+
+# Python cache files
+__pycache__/
+*.py[cod]

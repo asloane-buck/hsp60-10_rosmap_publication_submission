@@ -131,7 +131,7 @@ sf5_fmt_p <- function(p) {
 sf5_wilcox_p <- function(df, value_col) {
   df2 <- df |>
     dplyr::filter(.data$group %in% names(sf5_group_colors)) |>
-    dplyr::select(.data$group, value = dplyr::all_of(value_col)) |>
+    dplyr::select("group", value = dplyr::all_of(value_col)) |>
     tidyr::drop_na()
 
   if (dplyr::n_distinct(df2$group) < 2) return(NA_real_)
@@ -142,33 +142,6 @@ sf5_wilcox_p <- function(df, value_col) {
   )
 }
 
-sf5_wilcox_directional_p <- function(df, value_col) {
-  df2 <- df |>
-    dplyr::filter(.data$group %in% names(sf5_group_colors)) |>
-    dplyr::transmute(
-      group = factor(
-        as.character(.data$group),
-        levels = c(
-          "Hsp60/10 clients",
-          "Non-client mitochondrial proteins"
-        )
-      ),
-      value = suppressWarnings(as.numeric(.data[[value_col]]))
-    ) |>
-    tidyr::drop_na()
-
-  if (dplyr::n_distinct(df2$group) < 2) return(NA_real_)
-
-  tryCatch(
-    stats::wilcox.test(
-      value ~ group,
-      data = df2,
-      alternative = "greater",
-      exact = FALSE
-    )$p.value,
-    error = function(e) NA_real_
-  )
-}
 
 sf5_spearman_test <- function(x, y) {
   ok <- is.finite(x) & is.finite(y)
@@ -366,7 +339,7 @@ sf5_standardize_msbb_inputs <- function(msbb_combined) {
 sf5_prepare_rosmap_tbl <- function(hsp_tbl, background_tbl) {
   hsp_tbl <- hsp_tbl |>
     sf5_validate_tbl(
-      required_cols = c("gene", "inverse_braak_magnitude", "protein_collapse_magnitude"),
+      required_cols = c("gene", "inverse_braak_magnitude", "protein_late_decline_magnitude"),
       label = "hsp_null_tbl"
     ) |>
     dplyr::mutate(
@@ -376,7 +349,7 @@ sf5_prepare_rosmap_tbl <- function(hsp_tbl, background_tbl) {
 
   background_tbl <- background_tbl |>
     sf5_validate_tbl(
-      required_cols = c("gene", "inverse_braak_magnitude", "protein_collapse_magnitude"),
+      required_cols = c("gene", "inverse_braak_magnitude", "protein_late_decline_magnitude"),
       label = "background_null_pool"
     ) |>
     dplyr::mutate(
@@ -390,7 +363,7 @@ sf5_prepare_rosmap_tbl <- function(hsp_tbl, background_tbl) {
       gene = .data$gene,
       group = factor(.data$group, levels = names(sf5_group_colors)),
       rosmap_inverse_braak = suppressWarnings(as.numeric(.data$inverse_braak_magnitude)),
-      rosmap_collapse = suppressWarnings(as.numeric(.data$protein_collapse_magnitude))
+      rosmap_late_decline = suppressWarnings(as.numeric(.data$protein_late_decline_magnitude))
     ) |>
     dplyr::filter(!is.na(.data$gene), nzchar(.data$gene))
 }
@@ -420,10 +393,11 @@ sf5_prepare_msbb_tbl <- function(msbb_braak_effects, msbb_collapse, hsp_genes, b
     dplyr::transmute(
       gene = .data$gene,
       msbb_high_minus_low = suppressWarnings(as.numeric(.data$high_minus_low)),
-      msbb_collapse = dplyr::case_when(
-        "collapse_magnitude_positive" %in% colnames(msbb_collapse) ~ suppressWarnings(as.numeric(.data$collapse_magnitude_positive)),
-        TRUE ~ -suppressWarnings(as.numeric(.data$high_minus_low))
-      ),
+      msbb_late_decline = if ("collapse_magnitude_positive" %in% colnames(msbb_collapse)) {
+        suppressWarnings(as.numeric(.data$collapse_magnitude_positive))
+      } else {
+        -suppressWarnings(as.numeric(.data$high_minus_low))
+      },
       msbb_collapse_n_low = if ("collapse_n_low" %in% colnames(msbb_collapse)) suppressWarnings(as.numeric(.data$collapse_n_low)) else NA_real_,
       msbb_collapse_n_high = if ("collapse_n_high" %in% colnames(msbb_collapse)) suppressWarnings(as.numeric(.data$collapse_n_high)) else NA_real_
     )
@@ -443,16 +417,16 @@ sf5_prepare_msbb_tbl <- function(msbb_braak_effects, msbb_collapse, hsp_genes, b
 
 sf5_prepare_cross_tbl <- function(rosmap_tbl, msbb_tbl) {
   rosmap_tbl |>
-    dplyr::select(.data$gene, .data$group, .data$rosmap_inverse_braak, .data$rosmap_collapse) |>
+    dplyr::select("gene", "group", "rosmap_inverse_braak", "rosmap_late_decline") |>
     dplyr::inner_join(
       msbb_tbl |>
         dplyr::select(
-          .data$gene,
-          .data$msbb_inverse_braak_beta,
-          .data$msbb_inverse_braak_rho,
-          .data$msbb_braak_p,
-          .data$msbb_braak_n,
-          .data$msbb_collapse
+          "gene",
+          "msbb_inverse_braak_beta",
+          "msbb_inverse_braak_rho",
+          "msbb_braak_p",
+          "msbb_braak_n",
+          "msbb_late_decline"
         ),
       by = "gene"
     ) |>
@@ -480,20 +454,7 @@ sf5_distribution_plot <- function(plot_tbl, value_col, title, subtitle, ylab) {
 
   p_two <- sf5_wilcox_p(plot_tbl, value_col)
 
-  p_directional <- if (value_col == "msbb_inverse_braak_beta") {
-    sf5_wilcox_directional_p(plot_tbl, value_col)
-  } else {
-    NA_real_
-  }
-
-  label_txt <- if (value_col == "msbb_inverse_braak_beta") {
-    paste0(
-      "Directional Wilcoxon ", sf5_fmt_p(p_directional),
-      "\nTwo-sided ", sf5_fmt_p(p_two)
-    )
-  } else {
-    paste0("Wilcoxon ", sf5_fmt_p(p_two))
-  }
+  label_txt <- paste0("Two-sided Wilcoxon ", sf5_fmt_p(p_two))
 
   y_max <- max(plot_tbl[[value_col]], na.rm = TRUE)
   y_min <- min(plot_tbl[[value_col]], na.rm = TRUE)
@@ -617,7 +578,6 @@ sf5_cross_cohort_scatter <- function(cross_tbl) {
       vjust = -0.35,
       label = paste0("Spearman rho = ", signif(rho, 3), "\n", sf5_fmt_p(p_cor)),
       size = 2.85,
-      label.size = 0.25,
       fill = "white",
       color = "grey20"
     ) +
@@ -702,6 +662,25 @@ make_supfig5_msbb_cross_cohort_validation <- function(inputs) {
     required = TRUE,
     label = "ROSMAP non-Hsp60/10 mitochondrial background table"
   )
+  frozen <- isTRUE(get0("SUPP_USE_FROZEN_MODELS", ifnotfound = FALSE))
+  if (frozen) {
+    rosmap_tbl <- sf5_prepare_rosmap_tbl(tibble::as_tibble(hsp_input$object),
+      tibble::as_tibble(background_input$object))
+    cross_tbl <- readr::read_csv(file.path(audits_dir, "SuppFig5_cross_cohort_gene_values.csv"), show_col_types = FALSE)
+    required <- c("gene", "group", "rosmap_inverse_braak", "msbb_inverse_braak_beta",
+      "msbb_inverse_braak_rho", "msbb_late_decline", "concordant_inverse_braak")
+    if (!all(required %in% names(cross_tbl)) || nrow(cross_tbl) != 858 || anyDuplicated(cross_tbl$gene) ||
+        sum(cross_tbl$group == "Hsp60/10 clients") != 293 ||
+        sum(cross_tbl$group == "Non-client mitochondrial proteins") != 565) {
+      stop("S5 frozen source does not contain the verified 293-client/565-background overlap.", call. = FALSE)
+    }
+    cross_tbl$group <- factor(cross_tbl$group,
+      levels = c("Non-client mitochondrial proteins", "Hsp60/10 clients"))
+    msbb_tbl <- cross_tbl
+    msbb_braak_input <- list(name = "Frozen SuppFig5_cross_cohort_gene_values.csv")
+    msbb_collapse_input <- msbb_braak_input
+    message("S5: rendering frozen MSBB validation coefficients.")
+  } else {
   msbb_braak_input <- sf5_get_input(
     c("msbb_braak_effects", "msbb_braak_results", "msbb_gene_braak_results"),
     required = FALSE,
@@ -758,6 +737,8 @@ make_supfig5_msbb_cross_cohort_validation <- function(inputs) {
 
   cross_tbl <- sf5_prepare_cross_tbl(rosmap_tbl, msbb_tbl)
 
+  }
+
   if (nrow(msbb_tbl) == 0) {
     stop("MSBB validation table is empty after matching to Hsp60/10/background genes.", call. = FALSE)
   }
@@ -767,14 +748,14 @@ make_supfig5_msbb_cross_cohort_validation <- function(inputs) {
 
   readr::write_csv(rosmap_tbl, file.path(audits_dir, "SuppFig5_rosmap_discovery_values.csv"))
   readr::write_csv(msbb_tbl, file.path(audits_dir, "SuppFig5_msbb_validation_values.csv"))
-  readr::write_csv(cross_tbl, file.path(audits_dir, "SuppFig5_cross_cohort_gene_values.csv"))
+  if (!frozen) readr::write_csv(cross_tbl, file.path(audits_dir, "SuppFig5_cross_cohort_gene_values.csv"))
 
   rosmap_summary <- rosmap_tbl |>
     dplyr::group_by(.data$group) |>
     dplyr::summarise(
       n = dplyr::n(),
       median_inverse_braak = stats::median(.data$rosmap_inverse_braak, na.rm = TRUE),
-      median_collapse = stats::median(.data$rosmap_collapse, na.rm = TRUE),
+      median_late_decline = stats::median(.data$rosmap_late_decline, na.rm = TRUE),
       .groups = "drop"
     )
 
@@ -784,7 +765,7 @@ make_supfig5_msbb_cross_cohort_validation <- function(inputs) {
       n = dplyr::n(),
       median_inverse_braak_beta = stats::median(.data$msbb_inverse_braak_beta, na.rm = TRUE),
       median_inverse_braak_rho = stats::median(.data$msbb_inverse_braak_rho, na.rm = TRUE),
-      median_collapse = stats::median(.data$msbb_collapse, na.rm = TRUE),
+      median_late_decline = stats::median(.data$msbb_late_decline, na.rm = TRUE),
       .groups = "drop"
     )
 
@@ -815,27 +796,20 @@ make_supfig5_msbb_cross_cohort_validation <- function(inputs) {
     )
 
   validation_test_summary <- tibble::tibble(
-    test = c(
-      "MSBB Hsp60/10 vs mitochondrial background, inverse Braak beta, two-sided Wilcoxon",
-      "MSBB Hsp60/10 greater than mitochondrial background, inverse Braak beta, directional Wilcoxon",
-      "ROSMAP-MSBB Hsp60/10 gene-level Spearman correlation, inverse Braak beta"
-    ),
-    statistic = c(
-      NA_real_,
-      NA_real_,
-      concordance_summary$spearman_rho[1]
-    ),
-    p_value = c(
-      sf5_wilcox_p(msbb_tbl, "msbb_inverse_braak_beta"),
-      sf5_wilcox_directional_p(msbb_tbl, "msbb_inverse_braak_beta"),
-      concordance_summary$spearman_p[1]
-    ),
-    interpretation = c(
-      "Borderline two-sided group shift",
-      "Pre-specified directional validation test",
-      "Modest gene-level cross-cohort concordance"
-    )
+    test = c("MSBB client vs background, two-sided Wilcoxon",
+      "ROSMAP-MSBB shared clients, Spearman"),
+    statistic = c(NA_real_, concordance_summary$spearman_rho[1]),
+    p_value = c(sf5_wilcox_p(msbb_tbl, "msbb_inverse_braak_beta"),
+      concordance_summary$spearman_p[1])
   )
+
+  if (frozen && (nrow(rosmap_tbl) != 915 ||
+      abs(validation_test_summary$p_value[1] - .03598732731304067) > 1e-8 ||
+      abs(concordance_summary$spearman_rho[1] - .21203457202402365) > 1e-8 ||
+      abs(concordance_summary$spearman_p[1] - .0002565967923049968) > 1e-8 ||
+      concordance_summary$n_concordant_inverse_braak[1] != 165)) {
+    stop("S5 frozen sources differ from the verified caption statistics.", call. = FALSE)
+  }
 
   readr::write_csv(rosmap_summary, file.path(audits_dir, "SuppFig5_rosmap_group_summary.csv"))
   readr::write_csv(msbb_summary, file.path(audits_dir, "SuppFig5_msbb_group_summary.csv"))
@@ -899,7 +873,7 @@ make_supfig5_msbb_cross_cohort_validation <- function(inputs) {
     paste0("ROSMAP Hsp60/10 input: ", hsp_input$name),
     paste0("ROSMAP background input: ", background_input$name),
     paste0("MSBB Braak input: ", msbb_braak_input$name),
-    paste0("MSBB collapse input: ", msbb_collapse_input$name),
+    paste0("MSBB late-decline input: ", msbb_collapse_input$name),
     paste0("ROSMAP genes: ", nrow(rosmap_tbl)),
     paste0("MSBB matched genes: ", nrow(msbb_tbl)),
     paste0("Cross-cohort genes: ", nrow(cross_tbl)),
@@ -908,7 +882,7 @@ make_supfig5_msbb_cross_cohort_validation <- function(inputs) {
       "  - ", rosmap_summary$group,
       ": n=", rosmap_summary$n,
       ", median inverse Braak=", signif(rosmap_summary$median_inverse_braak, 4),
-      ", median collapse=", signif(rosmap_summary$median_collapse, 4),
+      ", median late decline=", signif(rosmap_summary$median_late_decline, 4),
       collapse = "
 "
     ),
@@ -918,7 +892,7 @@ make_supfig5_msbb_cross_cohort_validation <- function(inputs) {
       ": n=", msbb_summary$n,
       ", median inverse Braak beta=", signif(msbb_summary$median_inverse_braak_beta, 4),
       ", median inverse Braak rho=", signif(msbb_summary$median_inverse_braak_rho, 4),
-      ", median collapse=", signif(msbb_summary$median_collapse, 4),
+      ", median late decline=", signif(msbb_summary$median_late_decline, 4),
       collapse = "
 "
     ),

@@ -209,6 +209,61 @@ standardize_common_aliases <- function(df, context = "alias standardization",
   df
 }
 
+
+############################################################
+## ROSMAP clinical-stage and TMT identifier helpers
+############################################################
+
+canonical_batch_channel <- function(x) {
+  x <- stringr::str_trim(as.character(x))
+
+  hit <- stringr::str_match(
+    x,
+    stringr::regex("^b0*([0-9]+)\\.(.+)$", ignore_case = TRUE)
+  )
+
+  out <- x
+  matched <- !is.na(hit[, 1])
+
+  out[matched] <- paste0(
+    "b",
+    as.integer(hit[matched, 2]),
+    ".",
+    hit[matched, 3]
+  )
+
+  out
+}
+
+protein_batch_from_channel <- function(x) {
+  canonical <- canonical_batch_channel(x)
+  stringr::str_remove(canonical, "\\..*$")
+}
+
+clinical_stage_primary <- function(x) {
+  x_chr <- stringr::str_trim(as.character(x))
+  x_num <- safe_num(x_chr)
+
+  dplyr::case_when(
+    x_num == 1 | x_chr %in% c("NCI", "Control") ~ "NCI",
+    x_num == 2 | x_chr %in% c("MCI", "Early_AD", "Early AD") ~ "MCI",
+    x_num == 4 | x_chr == "AD" ~ "AD",
+    TRUE ~ NA_character_
+  )
+}
+
+clinical_stage_broad <- function(x) {
+  x_chr <- stringr::str_trim(as.character(x))
+  x_num <- safe_num(x_chr)
+
+  dplyr::case_when(
+    x_num == 1 | x_chr %in% c("NCI", "Control") ~ "NCI",
+    x_num %in% c(2, 3) | x_chr %in% c("MCI", "Early_AD", "Early AD") ~ "MCI",
+    x_num %in% c(4, 5) | x_chr == "AD" ~ "AD",
+    TRUE ~ NA_character_
+  )
+}
+
 join_key_pairs <- function(by) {
   if (is.null(names(by))) {
     tibble::tibble(left = by, right = by)
@@ -648,7 +703,14 @@ fit_adjusted_cerad_beta <- function(mat, meta_df, sample_col, genes, covars, min
       cerad_beta = hit$estimate,
       cerad_p = hit$p.value,
       cerad_n = sum(keep),
-      adjusted_inverse_cerad_beta = dplyr::if_else(hit$estimate < 0, abs(hit$estimate), 0)
+      ## In this ROSMAP CERAD coding, lower scores indicate worse pathology.
+      ## Therefore a positive CERAD beta means protein abundance is lower
+      ## with worse pathology. Retain that pathology-aligned direction.
+      adjusted_inverse_cerad_beta = dplyr::if_else(
+        hit$estimate > 0,
+        hit$estimate,
+        0
+      )
     )
   }) |>
     dplyr::mutate(cerad_padj = p.adjust(cerad_p, method = "BH"))

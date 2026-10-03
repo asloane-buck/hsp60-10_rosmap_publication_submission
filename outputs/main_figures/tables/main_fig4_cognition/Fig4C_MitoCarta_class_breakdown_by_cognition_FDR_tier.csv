@@ -1,68 +1,61 @@
 cognition_support_tier,functional_class,functional_class_short,n,tier_total,fraction_within_tier
 FDR in 3/3,Mito translation / ribosome,"Translation /
-ribosome",18,60,0.3
+ribosome",39,92,0.42391304347826086
 FDR in 3/3,TCA / pyruvate / redox metabolism,"TCA / pyruvate /
-redox",25,60,0.4166666666666667
+redox",29,92,0.31521739130434784
 FDR in 3/3,OXPHOS / ETC,"OXPHOS /
-ETC",5,60,0.08333333333333333
+ETC",4,92,0.043478260869565216
 FDR in 3/3,FAO / lipid metabolism,"FAO /
-lipid",2,60,0.03333333333333333
+lipid",2,92,0.021739130434782608
 FDR in 3/3,Proteostasis / stress,"Proteostasis /
-stress",3,60,0.05
+stress",10,92,0.10869565217391304
 FDR in 3/3,Transport / membrane / signaling,"Transport /
 membrane /
-signaling",2,60,0.03333333333333333
+signaling",2,92,0.021739130434782608
 FDR in 3/3,Other mitochondrial metabolism,"Other mito
-metabolism",1,60,0.016666666666666666
+metabolism",4,92,0.043478260869565216
+FDR in 3/3,Other MitoCarta-annotated clients,"Other
+MitoCarta",1,92,0.010869565217391304
 FDR in 3/3,No MitoCarta annotation,"No MitoCarta
-annotation",4,60,0.06666666666666667
+annotation",1,92,0.010869565217391304
 FDR in 2/3,Mito translation / ribosome,"Translation /
-ribosome",23,42,0.5476190476190477
+ribosome",10,21,0.47619047619047616
 FDR in 2/3,TCA / pyruvate / redox metabolism,"TCA / pyruvate /
-redox",8,42,0.19047619047619047
+redox",6,21,0.2857142857142857
 FDR in 2/3,OXPHOS / ETC,"OXPHOS /
-ETC",2,42,0.047619047619047616
+ETC",1,21,0.047619047619047616
 FDR in 2/3,FAO / lipid metabolism,"FAO /
-lipid",1,42,0.023809523809523808
-FDR in 2/3,Proteostasis / stress,"Proteostasis /
-stress",5,42,0.11904761904761904
-FDR in 2/3,Transport / membrane / signaling,"Transport /
-membrane /
-signaling",1,42,0.023809523809523808
+lipid",2,21,0.09523809523809523
 FDR in 2/3,Other mitochondrial metabolism,"Other mito
-metabolism",1,42,0.023809523809523808
-FDR in 2/3,No MitoCarta annotation,"No MitoCarta
-annotation",1,42,0.023809523809523808
+metabolism",1,21,0.047619047619047616
+FDR in 2/3,Other MitoCarta-annotated clients,"Other
+MitoCarta",1,21,0.047619047619047616
 FDR in 1/3,Mito translation / ribosome,"Translation /
-ribosome",10,24,0.4166666666666667
+ribosome",9,27,0.3333333333333333
 FDR in 1/3,TCA / pyruvate / redox metabolism,"TCA / pyruvate /
-redox",6,24,0.25
+redox",10,27,0.37037037037037035
 FDR in 1/3,OXPHOS / ETC,"OXPHOS /
-ETC",2,24,0.08333333333333333
+ETC",2,27,0.07407407407407407
 FDR in 1/3,FAO / lipid metabolism,"FAO /
-lipid",2,24,0.08333333333333333
-FDR in 1/3,Proteostasis / stress,"Proteostasis /
-stress",1,24,0.041666666666666664
+lipid",3,27,0.1111111111111111
 FDR in 1/3,Other mitochondrial metabolism,"Other mito
-metabolism",2,24,0.08333333333333333
-FDR in 1/3,Other MitoCarta-annotated clients,"Other
-MitoCarta",1,24,0.041666666666666664
+metabolism",3,27,0.1111111111111111
 Not FDR-supported,Mito translation / ribosome,"Translation /
-ribosome",52,180,0.28888888888888886
+ribosome",45,166,0.2710843373493976
 Not FDR-supported,TCA / pyruvate / redox metabolism,"TCA / pyruvate /
-redox",45,180,0.25
+redox",39,166,0.23493975903614459
 Not FDR-supported,OXPHOS / ETC,"OXPHOS /
-ETC",5,180,0.027777777777777776
+ETC",7,166,0.04216867469879518
 Not FDR-supported,FAO / lipid metabolism,"FAO /
-lipid",10,180,0.05555555555555555
+lipid",8,166,0.04819277108433735
 Not FDR-supported,Proteostasis / stress,"Proteostasis /
-stress",17,180,0.09444444444444444
+stress",16,166,0.0963855421686747
 Not FDR-supported,Transport / membrane / signaling,"Transport /
 membrane /
-signaling",7,180,0.03888888888888889
+signaling",8,166,0.04819277108433735
 Not FDR-supported,Other mitochondrial metabolism,"Other mito
-metabolism",12,180,0.06666666666666667
+metabolism",8,166,0.04819277108433735
 Not FDR-supported,Other MitoCarta-annotated clients,"Other
-MitoCarta",23,180,0.12777777777777777
+MitoCarta",22,166,0.13253012048192772
 Not FDR-supported,No MitoCarta annotation,"No MitoCarta
-annotation",9,180,0.05
+annotation",13,166,0.0783132530120482

@@ -1,9 +1,10 @@
 candidate_layer,functional_class,n,layer_total,fraction_within_layer
 Pareto frontier + AGORA,Mito translation / ribosome,4,5,0.8
 Pareto frontier + AGORA,TCA / pyruvate / redox metabolism,1,5,0.2
-Pareto frontier,Mito translation / ribosome,6,9,0.6666666666666666
-Pareto frontier,TCA / pyruvate / redox metabolism,2,9,0.2222222222222222
-Pareto frontier,Other mitochondrial metabolism,1,9,0.1111111111111111
+Pareto frontier,Mito translation / ribosome,3,6,0.5
+Pareto frontier,TCA / pyruvate / redox metabolism,1,6,0.16666666666666666
+Pareto frontier,Proteostasis / stress,1,6,0.16666666666666666
+Pareto frontier,Other mitochondrial metabolism,1,6,0.16666666666666666
 AGORA-supported,Mito translation / ribosome,13,44,0.29545454545454547
 AGORA-supported,TCA / pyruvate / redox metabolism,19,44,0.4318181818181818
 AGORA-supported,OXPHOS / ETC,4,44,0.09090909090909091

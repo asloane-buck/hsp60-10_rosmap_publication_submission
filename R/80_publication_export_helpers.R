@@ -87,7 +87,7 @@ mr_outer_cleanup_theme <- function(tag_size = 12, figure = NA_integer_) {
     as.character(figure),
     `1` = ggplot2::margin(10, 14, 10, 14),
     `2` = ggplot2::margin(10, 12, 10, 12),
-    `3` = ggplot2::margin(14, 18, 12, 18),
+    `3` = ggplot2::margin(9, 11, 9, 11),
     `4` = ggplot2::margin(14, 18, 14, 18),
     `5` = ggplot2::margin(14, 18, 16, 18),
     `6` = ggplot2::margin(14, 18, 16, 18),
@@ -164,9 +164,31 @@ mr_apply_figure_export_layout <- function(plot, figure = NA_integer_) {
       plot.margin = ggplot2::margin(8, 10, 8, 10)
     ),
     `3` = ggplot2::theme(
-      legend.margin = ggplot2::margin(4, 4, 4, 4),
-      legend.text = ggplot2::element_text(size = 8.6),
-      legend.title = ggplot2::element_text(face = "bold", size = 8.8)
+      axis.title = ggplot2::element_text(
+        face = "bold",
+        size = 8.3
+      ),
+      axis.text = ggplot2::element_text(
+        size = 7.4
+      ),
+      legend.margin = ggplot2::margin(
+        1, 1, 1, 1
+      ),
+      legend.text = ggplot2::element_text(
+        size = 7.2
+      ),
+      legend.title = ggplot2::element_text(
+        face = "bold",
+        size = 7.4
+      ),
+      legend.key.size = grid::unit(
+        0.17,
+        "cm"
+      ),
+      legend.spacing.x = grid::unit(
+        1.5,
+        "pt"
+      )
     ),
     `4` = ggplot2::theme(
       legend.margin = ggplot2::margin(4, 4, 4, 4),
@@ -230,57 +252,102 @@ mr_try_embed_fonts <- function(pdf_path) {
     ))
   }
 
-  old_gscmd <- Sys.getenv("R_GSCMD", unset = NA_character_)
-  Sys.setenv(R_GSCMD = gs)
-  on.exit({
-    if (is.na(old_gscmd)) {
-      Sys.unsetenv("R_GSCMD")
-    } else {
-      Sys.setenv(R_GSCMD = old_gscmd)
-    }
-  }, add = TRUE)
-
   embedded_path <- tempfile(fileext = ".pdf")
-  warnings_seen <- character()
 
-  result <- tryCatch(
-    {
-      withCallingHandlers(
-        tools::embedFonts(pdf_path, outfile = embedded_path),
-        warning = function(w) {
-          warnings_seen <<- c(warnings_seen, conditionMessage(w))
-          invokeRestart("muffleWarning")
-        }
-      )
+  gs_args <- c(
+    "-q",
+    "-dNOPAUSE",
+    "-dBATCH",
+    "-dSAFER",
+    "-sDEVICE=pdfwrite",
+    "-dPDFSETTINGS=/prepress",
+    paste0(
+      "-sOutputFile=",
+      shQuote(embedded_path)
+    ),
+    "-c",
+    shQuote(
+      "<</EmbedAllFonts true /SubsetFonts true /NeverEmbed []>> setdistillerparams"
+    ),
+    "-f",
+    shQuote(pdf_path)
+  )
 
-      if (!file.exists(embedded_path) || is.na(file.info(embedded_path)$size) || file.info(embedded_path)$size <= 0) {
-        stop("tools::embedFonts did not produce a usable PDF.", call. = FALSE)
-      }
-
-      file.copy(embedded_path, pdf_path, overwrite = TRUE)
-    },
+  output <- tryCatch(
+    system2(
+      gs,
+      args = gs_args,
+      stdout = TRUE,
+      stderr = TRUE
+    ),
     error = function(e) e
   )
 
-  if (inherits(result, "error")) {
+  if (inherits(output, "error")) {
     return(list(
       attempted = TRUE,
       status = "failed",
-      message = paste("Ghostscript font embedding failed:", conditionMessage(result))
+      message = paste(
+        "Ghostscript font embedding failed:",
+        conditionMessage(output)
+      )
     ))
   }
 
-  msg <- "Ghostscript font embedding completed."
-  if (length(warnings_seen) > 0) {
-    msg <- paste(msg, "Warnings:", paste(unique(warnings_seen), collapse = " | "))
+  status <- attr(output, "status")
+
+  if (is.null(status)) {
+    status <- 0L
+  }
+
+  if (!identical(as.integer(status), 0L)) {
+    return(list(
+      attempted = TRUE,
+      status = "failed",
+      message = paste(
+        "Ghostscript font embedding exited with status",
+        status,
+        paste(output, collapse = " | ")
+      )
+    ))
+  }
+
+  if (
+    !file.exists(embedded_path) ||
+    is.na(file.info(embedded_path)$size) ||
+    file.info(embedded_path)$size <= 0
+  ) {
+    return(list(
+      attempted = TRUE,
+      status = "failed",
+      message = "Ghostscript did not produce a usable embedded PDF."
+    ))
+  }
+
+  copied <- file.copy(
+    embedded_path,
+    pdf_path,
+    overwrite = TRUE
+  )
+
+  if (!isTRUE(copied)) {
+    return(list(
+      attempted = TRUE,
+      status = "failed",
+      message = "Could not replace the source PDF with the embedded PDF."
+    ))
   }
 
   list(
     attempted = TRUE,
     status = "completed",
-    message = msg
+    message = paste(
+      "Ghostscript font embedding completed with",
+      "EmbedAllFonts=true, SubsetFonts=true, and NeverEmbed=[]."
+    )
   )
 }
+
 
 mr_audit_pdfinfo <- function(pdf_path) {
   pdfinfo <- mr_first_existing_tool("pdfinfo")
@@ -295,7 +362,12 @@ mr_audit_pdfinfo <- function(pdf_path) {
   }
 
   output <- tryCatch(
-    system2(pdfinfo, args = pdf_path, stdout = TRUE, stderr = TRUE),
+    system2(
+      pdfinfo,
+      args = shQuote(pdf_path),
+      stdout = TRUE,
+      stderr = TRUE
+    ),
     error = function(e) e
   )
 
@@ -332,7 +404,12 @@ mr_audit_pdffonts <- function(pdf_path) {
   }
 
   output <- tryCatch(
-    system2(pdffonts, args = pdf_path, stdout = TRUE, stderr = TRUE),
+    system2(
+      pdffonts,
+      args = shQuote(pdf_path),
+      stdout = TRUE,
+      stderr = TRUE
+    ),
     error = function(e) e
   )
 

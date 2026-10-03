@@ -1,5 +1,8 @@
 metric,metric_label,metric_type,observed_mean,observed_n
-protein_collapse_magnitude,Late-stage protein collapse,continuous,0.08134115708652923,292
-inverse_braak_magnitude,Inverse Braak association,continuous,0.03558068628900412,292
-cognition_composite_score,Cognition association score,continuous,4.022260273972603,292
-agora_nominated_target,AGORA target fraction,fraction,0.16780821917808222,292
+protein_late_decline_magnitude,Late-stage protein decline,continuous,0.023021425900610556,306
+braak_pathology_magnitude,Inverse Braak association,continuous,0.05638645644472039,306
+cognition_priority_score,Cognition association score,continuous,4.97222222222222,306
+agora_nominated_target,AGORA target fraction,fraction,0.16013071895424832,306
+joint_pathology_magnitude,Joint AD pathology association,continuous,0.059725408103878184,306
+cerad_pathology_magnitude,CERAD/amyloid pathology association,continuous,0.06306435976303598,306
+strict_joint_pathology_magnitude,Strict joint pathology association,continuous,0.043696773767273565,306

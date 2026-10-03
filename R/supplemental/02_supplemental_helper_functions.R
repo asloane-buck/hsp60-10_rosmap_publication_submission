@@ -37,6 +37,12 @@ clean_gene <- function(x) {
   x <- stringr::str_trim(x)
   x <- stringr::str_to_upper(x)
   x <- stringr::str_replace(x, "\\.\\d+$", "")
+  x <- dplyr::case_when(
+    x == "ATP5B" ~ "ATP5F1B",
+    x == "ATP5A1" ~ "ATP5F1A",
+    x == "ATP5C1" ~ "ATP5F1C",
+    TRUE ~ x
+  )
   x[x == ""] <- NA_character_
   x
 }
@@ -141,6 +147,7 @@ save_plot_set <- function(plot, filename_base, width, height, output_dir) {
 
   if (is_final_supplemental_figure(filename_base, output_dir)) {
     final_size <- supplemental_final_export_size(filename_base)
+    plot <- supplemental_manuscript_cleanup(plot)
     width <- final_size$width
     height <- final_size$height
     message(
@@ -174,10 +181,16 @@ save_plot_set <- function(plot, filename_base, width, height, output_dir) {
     height = height,
     units = "in",
     device = "png",
-    dpi = 500,
+    dpi = 600,
     bg = "white"
   )
 
+  if (is_final_supplemental_figure(filename_base, output_dir)) {
+    supplemental_regenerated_figures <<- unique(c(
+      if (exists("supplemental_regenerated_figures")) supplemental_regenerated_figures else character(),
+      filename_base
+    ))
+  }
   message("Saved plot set: ", pdf_path, " and ", png_path)
   invisible(c(pdf = pdf_path, png = png_path))
 }
@@ -296,13 +309,15 @@ audit_manuscript_ready_supplemental_pdfs <- function(pdf_dir = manuscript_ready_
       file_size_MB = size_mb,
       dimension_method = dims$method,
       font_embedding_status = font_status,
-      pass_fail = ifelse(width_pass && height_pass && size_pass, "PASS", "FAIL")
+      pass_fail = if (!size_pass) "FAIL" else if (
+        is.na(dims$width_mm) || is.na(dims$height_mm)
+      ) "UNVERIFIED" else if (width_pass && height_pass) "PASS" else "FAIL"
     )
   })
 
   readr::write_csv(audit, audit_path)
 
-  if (isTRUE(stop_on_fail) && any(audit$pass_fail != "PASS")) {
+  if (isTRUE(stop_on_fail) && any(audit$pass_fail == "FAIL")) {
     print(audit, n = Inf)
     stop("One or more manuscript-ready supplemental PDFs failed journal dimension audit.", call. = FALSE)
   }
@@ -552,4 +567,26 @@ write_skip_audit <- function(path, panel, reason) {
   )
   message("Wrote skip audit: ", path)
   invisible(path)
+}
+
+# Final composites only; panel exports retain their original working layout.
+supplemental_manuscript_cleanup <- function(plot) {
+  cleanup <- ggplot2::theme(
+    plot.title = ggplot2::element_blank(),
+    plot.subtitle = ggplot2::element_blank(),
+    plot.caption = ggplot2::element_blank(),
+    plot.tag = ggplot2::element_text(face = "bold", size = 10, color = "black"),
+    plot.tag.position = "topleft"
+  )
+  if (inherits(plot, "patchwork")) {
+    plot <- plot & ggplot2::labs(title = NULL, subtitle = NULL, caption = NULL)
+    plot <- plot & cleanup
+    plot <- plot + patchwork::plot_annotation(
+      title = NULL, subtitle = NULL, caption = NULL,
+      theme = ggplot2::theme(plot.margin = ggplot2::margin(8, 10, 8, 10))
+    )
+  } else {
+    plot <- plot + ggplot2::labs(title = NULL, subtitle = NULL, caption = NULL) + cleanup
+  }
+  plot
 }

@@ -82,6 +82,12 @@ clean_gene_for_loading <- function(x) {
   x <- stringr::str_trim(x)
   x <- stringr::str_to_upper(x)
   x <- stringr::str_replace(x, "\\.\\d+$", "")
+  x <- dplyr::case_when(
+    x == "ATP5B" ~ "ATP5F1B",
+    x == "ATP5A1" ~ "ATP5F1A",
+    x == "ATP5C1" ~ "ATP5F1C",
+    TRUE ~ x
+  )
   x[x == ""] <- NA_character_
   x
 }
@@ -353,15 +359,12 @@ protein_metadata_id_candidates <- c(
 )
 
 protein_stage_candidates <- c(
-  "diagnosis_stage",
-  "stage3",
-  "EmoryStrictDx.2019",
-  "diagnosis",
-  "cogdx",
+  "clinical_stage",
+  "clinical_stage_broad",
   "cogdx_num",
-  "dx",
-  "dx_numeric",
-  "Dx"
+  "cogdx",
+  "diagnosis_stage",
+  "diagnosis"
 )
 
 protein_covariate_candidates <- list(

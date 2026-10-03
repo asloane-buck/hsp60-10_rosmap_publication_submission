@@ -1,0 +1,7 @@
+modality,stage,n_samples,source_file,population
+Protein,NCI,167,outputs/main_figures/tables/main_fig1_all_clients/Fig1A_all_clients_overlay_summary.csv,Analyzable primary Hsp60/10 client-score samples
+Protein,MCI,96,outputs/main_figures/tables/main_fig1_all_clients/Fig1A_all_clients_overlay_summary.csv,Analyzable primary Hsp60/10 client-score samples
+Protein,AD,109,outputs/main_figures/tables/main_fig1_all_clients/Fig1A_all_clients_overlay_summary.csv,Analyzable primary Hsp60/10 client-score samples
+RNA,NCI,200,outputs/main_figures/tables/main_fig1_all_clients/Fig1A_all_clients_overlay_summary.csv,Analyzable primary Hsp60/10 client-score samples
+RNA,MCI,158,outputs/main_figures/tables/main_fig1_all_clients/Fig1A_all_clients_overlay_summary.csv,Analyzable primary Hsp60/10 client-score samples
+RNA,AD,219,outputs/main_figures/tables/main_fig1_all_clients/Fig1A_all_clients_overlay_summary.csv,Analyzable primary Hsp60/10 client-score samples

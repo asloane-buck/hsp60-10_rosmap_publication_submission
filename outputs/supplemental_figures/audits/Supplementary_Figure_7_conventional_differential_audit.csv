@@ -1,0 +1,7 @@
+check,pass
+summary_file_exists,TRUE
+side_by_side_file_exists,TRUE
+three_primary_contrasts,TRUE
+shared_clients_257_each,TRUE
+category_counts_sum_to_257,TRUE
+side_by_side_rows_257_each,TRUE

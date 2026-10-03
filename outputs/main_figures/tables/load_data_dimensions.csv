@@ -1,5 +1,5 @@
 object,nrow,ncol
-rna_mat_raw,21433,578
-prot_mat_raw,8252,279
-rna_meta,578,20
-prot_meta_path,279,23
+rna_mat_raw,21433,577
+prot_mat_raw,8252,400
+rna_meta,577,23
+prot_meta_path,400,28

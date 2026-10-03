@@ -1,0 +1,4 @@
+stage,n_phenotype_eligible,n_nuisance_complete,n_adjusted_data_available,n_analyzable
+NCI,168,167,167,167
+MCI,101,100,100,100
+AD,123,123,123,123

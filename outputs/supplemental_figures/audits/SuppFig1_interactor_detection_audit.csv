@@ -27,9 +27,9 @@ ALYREF,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE
 ARL2,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
 ATAD3A,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
 ATAD3B,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,FALSE,RNA only
-ATP5A1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,FALSE,FALSE,Neither
-ATP5B,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,FALSE,FALSE,Neither
-ATP5C1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,FALSE,FALSE,Neither
+ATP5F1A,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+ATP5F1B,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
+ATP5F1C,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,TRUE,TRUE,Both RNA and protein
 ATP5D,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,FALSE,TRUE,Protein only
 ATP5F1,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,FALSE,TRUE,Protein only
 ATP5H,Bie et al. 2020 Hsp60/10 interactor inventory,323,321,TRUE,TRUE,FALSE,TRUE,Protein only

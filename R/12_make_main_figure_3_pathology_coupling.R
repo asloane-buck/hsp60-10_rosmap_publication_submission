@@ -2,15 +2,18 @@
 ## 12_make_main_figure_3_pathology_coupling.R
 ## MAIN FIGURE 3 — ALL HSP60/10 CLIENTS
 ##
-## Reframed pathology-coupling figure:
-##   A. Paired inverse Braak/tau vs inverse CERAD/amyloid coupling
-##   B. Late-stage collapse vs inverse Braak/tau coupling
-##   C. Distribution of Braak-minus-CERAD pathology-coupling bias
+## Corrected pathology-coupling figure:
+##   A. Paired signed Braak/tau vs CERAD/amyloid pathology associations
+##   B. Late-stage decline vs signed Braak/tau-aligned association
+##   C. Late-stage decline vs signed CERAD/amyloid-aligned association
 ##
-## Key interpretation:
-##   Protein-level pathology metrics are covariate-adjusted upstream
-##   and modeled separately. Braak/tau coupling is direct and is not
-##   CERAD-residualized.
+## Positive pathology-aligned beta means lower protein abundance
+## with worse pathology for BOTH endpoints:
+##   Braak: -braak_beta
+##   CERAD: +cerad_beta
+##
+## Braak and CERAD are modeled separately using the same protein
+## covariate structure. No zero-truncation is used in this figure.
 ############################################################
 
 suppressPackageStartupMessages({
@@ -191,6 +194,9 @@ theme_fig3_clean <- function(base_size = 11) {
 ############################################################
 ## 2. Build Figure 3 table
 ############################################################
+############################################################
+## 2. Build Figure 3 table
+############################################################
 
 require_objects(
   "all_hsp60_10_client_tbl",
@@ -202,9 +208,9 @@ require_columns(
   c(
     "gene",
     "detected_in_protein",
-    "protein_collapse_magnitude",
-    "braak_rho",
-    "cerad_rho"
+    "protein_late_decline_magnitude",
+    "braak_pathology_aligned_beta",
+    "cerad_pathology_aligned_beta"
   ),
   "Figure 3 source all-client table"
 )
@@ -212,69 +218,93 @@ require_columns(
 fig3_tbl <- all_hsp60_10_client_tbl %>%
   mutate(
     gene = clean_gene(gene),
-    detected_in_protein = as.logical(detected_in_protein),
-    
-    ## Late-stage protein collapse:
+
+    detected_in_protein =
+      as.logical(detected_in_protein),
+
+    ## Late-stage protein decline:
     ## more positive = stronger MCI-to-AD protein decline.
-    collapse_value = suppressWarnings(as.numeric(protein_collapse_magnitude)),
-    
-    ## Direct inverse Braak/tau association:
-    ## more positive = stronger negative protein-Braak association.
-    ## Prefer existing inverse_braak_magnitude if available.
-    inverse_braak_value = case_when(
-      "inverse_braak_magnitude" %in% names(.) ~ suppressWarnings(as.numeric(inverse_braak_magnitude)),
-      is.finite(suppressWarnings(as.numeric(braak_rho))) &
-        suppressWarnings(as.numeric(braak_rho)) < 0 ~ abs(suppressWarnings(as.numeric(braak_rho))),
-      TRUE ~ 0
-    ),
-    
-    ## Direct inverse CERAD/amyloid association:
-    ## more positive = stronger negative protein-CERAD association.
-    ## Prefer existing inverse_cerad_magnitude if available.
-    inverse_cerad_value = case_when(
-      "inverse_cerad_magnitude" %in% names(.) ~ suppressWarnings(as.numeric(inverse_cerad_magnitude)),
-      is.finite(suppressWarnings(as.numeric(cerad_rho))) &
-        suppressWarnings(as.numeric(cerad_rho)) < 0 ~ abs(suppressWarnings(as.numeric(cerad_rho))),
-      TRUE ~ 0
-    ),
-    
-    ## Plotting axes.
-    braak_axis = inverse_braak_value,
-    cerad_axis = inverse_cerad_value,
-    braak_minus_cerad_inverse = braak_axis - cerad_axis
+    late_decline_value =
+      suppressWarnings(
+        as.numeric(
+          protein_late_decline_magnitude
+        )
+      ),
+
+    ## FULL SIGNED pathology-aligned coefficients.
+    ##
+    ## Positive values have the same biological direction
+    ## for both endpoints:
+    ## lower protein abundance with worse pathology.
+    braak_aligned_beta =
+      suppressWarnings(
+        as.numeric(
+          braak_pathology_aligned_beta
+        )
+      ),
+
+    cerad_aligned_beta =
+      suppressWarnings(
+        as.numeric(
+          cerad_pathology_aligned_beta
+        )
+      ),
+
+    braak_minus_cerad_beta =
+      braak_aligned_beta -
+        cerad_aligned_beta
   ) %>%
   filter(
     detected_in_protein == TRUE,
-    is.finite(collapse_value),
-    is.finite(braak_axis),
-    is.finite(cerad_axis),
-    is.finite(braak_minus_cerad_inverse)
+    is.finite(late_decline_value),
+    is.finite(braak_aligned_beta),
+    is.finite(cerad_aligned_beta)
   ) %>%
-  arrange(desc(collapse_value)) %>%
+  arrange(
+    desc(late_decline_value)
+  ) %>%
   mutate(
-    collapse_rank = row_number(),
-    n_detected_clients = n(),
-    collapse_group = if_else(
-      collapse_rank <= ceiling(0.25 * n_detected_clients),
-      "Top-quartile collapse",
-      "Other detected Hsp60/10 clients"
-    ),
-    collapse_group = factor(
-      collapse_group,
-      levels = c(
-        "Top-quartile collapse",
+    late_decline_rank =
+      row_number(),
+
+    n_detected_clients =
+      n(),
+
+    late_decline_group =
+      if_else(
+        late_decline_rank <=
+          ceiling(
+            0.25 *
+              n_detected_clients
+          ),
+        "Top-quartile late decline",
         "Other detected Hsp60/10 clients"
+      ),
+
+    late_decline_group =
+      factor(
+        late_decline_group,
+        levels = c(
+          "Top-quartile late decline",
+          "Other detected Hsp60/10 clients"
+        )
       )
-    )
   )
 
-write_fig3_all_table(fig3_tbl, "Fig3_all_clients_pathology_table")
+write_fig3_all_table(
+  fig3_tbl,
+  "Fig3_all_clients_pathology_table"
+)
 
 cat("\nFigure 3 table dimensions:\n")
 print(dim(fig3_tbl))
 
-cat("\nFigure 3 collapse group counts:\n")
-print(table(fig3_tbl$collapse_group))
+cat("\nFigure 3 late-decline group counts:\n")
+print(
+  table(
+    fig3_tbl$late_decline_group
+  )
+)
 
 ############################################################
 ## 3. Statistics
@@ -282,175 +312,472 @@ print(table(fig3_tbl$collapse_group))
 
 pathology_pair_tbl <- fig3_tbl %>%
   filter(
-    is.finite(braak_axis),
-    is.finite(cerad_axis),
-    is.finite(braak_minus_cerad_inverse)
+    is.finite(braak_aligned_beta),
+    is.finite(cerad_aligned_beta),
+    is.finite(braak_minus_cerad_beta)
   )
 
 pathology_axis_stats <- pathology_pair_tbl %>%
   summarise(
     n_genes = n(),
-    median_inverse_braak = median(braak_axis, na.rm = TRUE),
-    median_inverse_cerad = median(cerad_axis, na.rm = TRUE),
-    mean_inverse_braak = mean(braak_axis, na.rm = TRUE),
-    mean_inverse_cerad = mean(cerad_axis, na.rm = TRUE),
-    median_braak_minus_cerad = median(braak_minus_cerad_inverse, na.rm = TRUE),
-    mean_braak_minus_cerad = mean(braak_minus_cerad_inverse, na.rm = TRUE),
-    n_braak_gt_cerad = sum(braak_minus_cerad_inverse > 0, na.rm = TRUE),
-    n_equal = sum(braak_minus_cerad_inverse == 0, na.rm = TRUE),
-    n_cerad_gt_braak = sum(braak_minus_cerad_inverse < 0, na.rm = TRUE),
-    p_value = safe_wilcox_paired(braak_axis, cerad_axis),
-    p_label = p_to_label(p_value),
-    star = star_label(p_value)
+
+    median_braak_aligned_beta =
+      median(
+        braak_aligned_beta,
+        na.rm = TRUE
+      ),
+
+    median_cerad_aligned_beta =
+      median(
+        cerad_aligned_beta,
+        na.rm = TRUE
+      ),
+
+    mean_braak_aligned_beta =
+      mean(
+        braak_aligned_beta,
+        na.rm = TRUE
+      ),
+
+    mean_cerad_aligned_beta =
+      mean(
+        cerad_aligned_beta,
+        na.rm = TRUE
+      ),
+
+    median_braak_minus_cerad =
+      median(
+        braak_minus_cerad_beta,
+        na.rm = TRUE
+      ),
+
+    mean_braak_minus_cerad =
+      mean(
+        braak_minus_cerad_beta,
+        na.rm = TRUE
+      ),
+
+    n_braak_positive =
+      sum(
+        braak_aligned_beta > 0,
+        na.rm = TRUE
+      ),
+
+    n_braak_negative =
+      sum(
+        braak_aligned_beta < 0,
+        na.rm = TRUE
+      ),
+
+    n_cerad_positive =
+      sum(
+        cerad_aligned_beta > 0,
+        na.rm = TRUE
+      ),
+
+    n_cerad_negative =
+      sum(
+        cerad_aligned_beta < 0,
+        na.rm = TRUE
+      ),
+
+    n_braak_gt_cerad =
+      sum(
+        braak_minus_cerad_beta > 0,
+        na.rm = TRUE
+      ),
+
+    n_equal =
+      sum(
+        braak_minus_cerad_beta == 0,
+        na.rm = TRUE
+      ),
+
+    n_cerad_gt_braak =
+      sum(
+        braak_minus_cerad_beta < 0,
+        na.rm = TRUE
+      ),
+
+    p_value =
+      safe_wilcox_paired(
+        braak_aligned_beta,
+        cerad_aligned_beta
+      ),
+
+    p_label =
+      p_to_label(p_value),
+
+    star =
+      star_label(p_value)
   )
 
-collapse_braak_tbl <- fig3_tbl %>%
+############################################################
+## Late decline vs Braak
+############################################################
+
+late_decline_braak_tbl <- fig3_tbl %>%
   filter(
-    is.finite(collapse_value),
-    is.finite(braak_axis)
+    is.finite(late_decline_value),
+    is.finite(braak_aligned_beta)
   )
 
-collapse_braak_cor <- suppressWarnings(
+late_decline_braak_cor <- suppressWarnings(
   cor.test(
-    collapse_braak_tbl$collapse_value,
-    collapse_braak_tbl$braak_axis,
+    late_decline_braak_tbl$late_decline_value,
+    late_decline_braak_tbl$braak_aligned_beta,
     method = "spearman",
     exact = FALSE
   )
 )
 
-collapse_braak_stats <- tibble(
-  n_genes = nrow(collapse_braak_tbl),
-  spearman_rho = unname(collapse_braak_cor$estimate),
-  p_value = collapse_braak_cor$p.value,
-  p_label = p_to_label(p_value),
-  star = star_label(p_value)
+late_decline_braak_stats <- tibble(
+  n_genes =
+    nrow(late_decline_braak_tbl),
+
+  spearman_rho =
+    unname(
+      late_decline_braak_cor$estimate
+    ),
+
+  p_value =
+    late_decline_braak_cor$p.value,
+
+  p_label =
+    p_to_label(p_value),
+
+  star =
+    star_label(p_value)
 )
 
-braak_group_stats <- fig3_tbl %>%
-  filter(is.finite(braak_axis)) %>%
-  summarise(
-    n_top = sum(collapse_group == "Top-quartile collapse"),
-    n_other = sum(collapse_group == "Other detected Hsp60/10 clients"),
-    median_top = median(braak_axis[collapse_group == "Top-quartile collapse"], na.rm = TRUE),
-    median_other = median(braak_axis[collapse_group == "Other detected Hsp60/10 clients"], na.rm = TRUE),
-    p_value = safe_wilcox_unpaired(
-      braak_axis[collapse_group == "Top-quartile collapse"],
-      braak_axis[collapse_group == "Other detected Hsp60/10 clients"]
-    ),
-    p_label = p_to_label(p_value),
-    star = star_label(p_value)
+############################################################
+## Late decline vs CERAD
+############################################################
+
+late_decline_cerad_tbl <- fig3_tbl %>%
+  filter(
+    is.finite(late_decline_value),
+    is.finite(cerad_aligned_beta)
   )
 
-delta_summary_tbl <- pathology_pair_tbl %>%
+late_decline_cerad_cor <- suppressWarnings(
+  cor.test(
+    late_decline_cerad_tbl$late_decline_value,
+    late_decline_cerad_tbl$cerad_aligned_beta,
+    method = "spearman",
+    exact = FALSE
+  )
+)
+
+late_decline_cerad_stats <- tibble(
+  n_genes =
+    nrow(late_decline_cerad_tbl),
+
+  spearman_rho =
+    unname(
+      late_decline_cerad_cor$estimate
+    ),
+
+  p_value =
+    late_decline_cerad_cor$p.value,
+
+  p_label =
+    p_to_label(p_value),
+
+  star =
+    star_label(p_value)
+)
+
+############################################################
+## Top-quartile late-decline descriptive comparisons
+############################################################
+
+braak_group_stats <- fig3_tbl %>%
   summarise(
-    n_genes = n(),
-    median_braak_minus_cerad = median(braak_minus_cerad_inverse, na.rm = TRUE),
-    mean_braak_minus_cerad = mean(braak_minus_cerad_inverse, na.rm = TRUE),
-    n_braak_gt_cerad = sum(braak_minus_cerad_inverse > 0, na.rm = TRUE),
-    n_equal = sum(braak_minus_cerad_inverse == 0, na.rm = TRUE),
-    n_cerad_gt_braak = sum(braak_minus_cerad_inverse < 0, na.rm = TRUE),
-    p_value = pathology_axis_stats$p_value,
-    p_label = pathology_axis_stats$p_label,
-    star = pathology_axis_stats$star
+    n_top =
+      sum(
+        late_decline_group ==
+          "Top-quartile late decline"
+      ),
+
+    n_other =
+      sum(
+        late_decline_group ==
+          "Other detected Hsp60/10 clients"
+      ),
+
+    median_top =
+      median(
+        braak_aligned_beta[
+          late_decline_group ==
+            "Top-quartile late decline"
+        ],
+        na.rm = TRUE
+      ),
+
+    median_other =
+      median(
+        braak_aligned_beta[
+          late_decline_group ==
+            "Other detected Hsp60/10 clients"
+        ],
+        na.rm = TRUE
+      ),
+
+    p_value =
+      safe_wilcox_unpaired(
+        braak_aligned_beta[
+          late_decline_group ==
+            "Top-quartile late decline"
+        ],
+        braak_aligned_beta[
+          late_decline_group ==
+            "Other detected Hsp60/10 clients"
+        ]
+      ),
+
+    p_label =
+      p_to_label(p_value),
+
+    star =
+      star_label(p_value)
+  )
+
+cerad_group_stats <- fig3_tbl %>%
+  summarise(
+    n_top =
+      sum(
+        late_decline_group ==
+          "Top-quartile late decline"
+      ),
+
+    n_other =
+      sum(
+        late_decline_group ==
+          "Other detected Hsp60/10 clients"
+      ),
+
+    median_top =
+      median(
+        cerad_aligned_beta[
+          late_decline_group ==
+            "Top-quartile late decline"
+        ],
+        na.rm = TRUE
+      ),
+
+    median_other =
+      median(
+        cerad_aligned_beta[
+          late_decline_group ==
+            "Other detected Hsp60/10 clients"
+        ],
+        na.rm = TRUE
+      ),
+
+    p_value =
+      safe_wilcox_unpaired(
+        cerad_aligned_beta[
+          late_decline_group ==
+            "Top-quartile late decline"
+        ],
+        cerad_aligned_beta[
+          late_decline_group ==
+            "Other detected Hsp60/10 clients"
+        ]
+      ),
+
+    p_label =
+      p_to_label(p_value),
+
+    star =
+      star_label(p_value)
   )
 
 fig3_stats_tbl <- bind_rows(
   pathology_axis_stats %>%
-    mutate(test = "paired_inverse_braak_vs_inverse_cerad"),
-  collapse_braak_stats %>%
-    mutate(test = "collapse_vs_inverse_braak_spearman"),
+    mutate(
+      test =
+        "paired_signed_braak_vs_cerad"
+    ),
+
+  late_decline_braak_stats %>%
+    mutate(
+      test =
+        "late_decline_vs_signed_braak_spearman"
+    ),
+
+  late_decline_cerad_stats %>%
+    mutate(
+      test =
+        "late_decline_vs_signed_cerad_spearman"
+    ),
+
   braak_group_stats %>%
-    mutate(test = "inverse_braak_top_quartile_vs_other"),
-  delta_summary_tbl %>%
-    mutate(test = "braak_minus_cerad_delta_summary")
-)
-
-write_fig3_all_table(pathology_axis_stats, "Fig3A_inverse_braak_vs_inverse_cerad_stats")
-write_fig3_all_table(collapse_braak_stats, "Fig3B_collapse_vs_inverse_braak_correlation_stats")
-write_fig3_all_table(braak_group_stats, "Fig3_inverse_braak_group_stats_audit")
-write_fig3_all_table(delta_summary_tbl, "Fig3C_braak_minus_cerad_delta_summary")
-write_fig3_all_table(fig3_stats_tbl, "Fig3_all_clients_stats_combined")
-
-print(fig3_stats_tbl)
-
-############################################################
-## 4. Labels and colors
-############################################################
-
-collapse_colors <- c(
-  "Top-quartile collapse" = "#9E4A4A",
-  "Other detected Hsp60/10 clients" = "grey75"
-)
-
-collapse_edge_colors <- c(
-  "Top-quartile collapse" = "#9E4A4A",
-  "Other detected Hsp60/10 clients" = "grey55"
-)
-
-## Panel B labels: requested high-priority genes only.
-fig3_label_genes_B <- c(
-  "DAP3", "MRPS35", "MRPS22", "MRPS16", "MRPS9", "MRPL48",
-  "MRPS23", "NDUFAF7", "PTCD3", "LRPPRC", "MRPS33"
-)
-
-fig3_label_tbl_B <- fig3_tbl %>%
-  filter(gene %in% fig3_label_genes_B) %>%
-  mutate(
-    label_gene_B = gene,
-    label_x = case_when(
-      gene == "MRPS33" ~ 0.096,
-      gene == "LRPPRC" ~ 0.086,
-      gene == "DAP3" ~ 0.104,
-      gene == "MRPS35" ~ 0.098,
-      gene == "PTCD3" ~ 0.101,
-      gene == "NDUFAF7" ~ 0.096,
-      gene == "MRPS22" ~ 0.086,
-      gene == "MRPS16" ~ 0.058,
-      gene == "MRPS9" ~ 0.038,
-      gene == "MRPL48" ~ 0.058,
-      gene == "MRPS23" ~ 0.058,
-      TRUE ~ collapse_value
+    mutate(
+      test =
+        "signed_braak_top_late_decline_vs_other"
     ),
-    label_y = case_when(
-      gene == "MRPS33" ~ 0.415,
-      gene == "LRPPRC" ~ 0.382,
-      gene == "DAP3" ~ 0.338,
-      gene == "MRPS35" ~ 0.298,
-      gene == "PTCD3" ~ 0.258,
-      gene == "NDUFAF7" ~ 0.096,
-      gene == "MRPS22" ~ 0.158,
-      gene == "MRPS16" ~ 0.336,
-      gene == "MRPS9" ~ 0.282,
-      gene == "MRPL48" ~ 0.202,
-      gene == "MRPS23" ~ 0.132,
-      TRUE ~ braak_axis
-    ),
-    label_hjust = if_else(label_x < collapse_value, 1, 0)
-  ) %>%
-  arrange(match(gene, fig3_label_genes_B))
+
+  cerad_group_stats %>%
+    mutate(
+      test =
+        "signed_cerad_top_late_decline_vs_other"
+    )
+)
+
+write_fig3_all_table(
+  pathology_axis_stats,
+  "Fig3A_signed_braak_vs_cerad_stats"
+)
+
+write_fig3_all_table(
+  late_decline_braak_stats,
+  "Fig3B_late_decline_vs_signed_braak_correlation_stats"
+)
+
+write_fig3_all_table(
+  late_decline_cerad_stats,
+  "Fig3C_late_decline_vs_signed_cerad_correlation_stats"
+)
+
+write_fig3_all_table(
+  braak_group_stats,
+  "Fig3_signed_braak_group_stats_audit"
+)
+
+write_fig3_all_table(
+  cerad_group_stats,
+  "Fig3_signed_cerad_group_stats_audit"
+)
+
+write_fig3_all_table(
+  fig3_stats_tbl,
+  "Fig3_all_clients_stats_combined"
+)
+
+cat("\n===== FIGURE 3 PATHOLOGY STATISTICS =====\n")
+print(
+  pathology_axis_stats,
+  width = Inf
+)
+
+cat("\n===== LATE DECLINE VS BRAAK =====\n")
+print(
+  late_decline_braak_stats,
+  width = Inf
+)
+
+cat("\n===== LATE DECLINE VS CERAD =====\n")
+print(
+  late_decline_cerad_stats,
+  width = Inf
+)
+
+cat("\n===== BRAAK TOP-LATE-DECLINE GROUP =====\n")
+print(
+  braak_group_stats,
+  width = Inf
+)
+
+cat("\n===== CERAD TOP-LATE-DECLINE GROUP =====\n")
+print(
+  cerad_group_stats,
+  width = Inf
+)
 
 ############################################################
-## 5. Panel A — paired summary with all gene-level points
+## 4. Labels, colors, and shared pathology scale
+############################################################
+
+late_decline_colors <- c(
+  "Top-quartile late decline" =
+    "#9E4A4A",
+
+  "Other detected Hsp60/10 clients" =
+    "grey75"
+)
+
+fig3_label_genes <- c(
+  "DAP3",
+  "LRPPRC",
+  "PDHA1",
+  "TUFM",
+  "MRPL48",
+  "NDUFAF7",
+  "PTCD3",
+  "MRPS35"
+)
+
+fig3_label_tbl <- fig3_tbl %>%
+  filter(
+    gene %in% fig3_label_genes
+  )
+
+pathology_range <- range(
+  c(
+    fig3_tbl$braak_aligned_beta,
+    fig3_tbl$cerad_aligned_beta
+  ),
+  na.rm = TRUE
+)
+
+pathology_pad <-
+  diff(pathology_range) * 0.08
+
+if (
+  !is.finite(pathology_pad) ||
+  pathology_pad <= 0
+) {
+  pathology_pad <- 0.05
+}
+
+pathology_y_limits <- c(
+  pathology_range[[1]] -
+    pathology_pad,
+  pathology_range[[2]] +
+    pathology_pad
+)
+
+############################################################
+## 5. Panel A — paired signed pathology associations
 ############################################################
 
 panelA_long <- fig3_tbl %>%
-  select(gene, collapse_group, braak_axis, cerad_axis) %>%
+  select(
+    gene,
+    late_decline_group,
+    braak_aligned_beta,
+    cerad_aligned_beta
+  ) %>%
   pivot_longer(
-    cols = c(cerad_axis, braak_axis),
-    names_to = "pathology_axis",
-    values_to = "inverse_association"
+    cols = c(
+      braak_aligned_beta,
+      cerad_aligned_beta
+    ),
+    names_to =
+      "pathology_axis",
+    values_to =
+      "pathology_aligned_beta"
   ) %>%
   mutate(
-    pathology_axis = recode(
-      pathology_axis,
-      cerad_axis = "CERAD/amyloid",
-      braak_axis = "Braak/tau"
-    ),
-    pathology_axis = factor(
-      pathology_axis,
-      levels = c("CERAD/amyloid", "Braak/tau")
-    )
+    pathology_axis =
+      recode(
+        pathology_axis,
+        braak_aligned_beta =
+          "Braak/tau",
+        cerad_aligned_beta =
+          "CERAD/amyloid"
+      ),
+
+    pathology_axis =
+      factor(
+        pathology_axis,
+        levels = c(
+          "Braak/tau",
+          "CERAD/amyloid"
+        )
+      )
   )
 
 panelA_label <- paste0(
@@ -462,8 +789,17 @@ panelA_label <- paste0(
 
 pA <- ggplot(
   panelA_long,
-  aes(x = pathology_axis, y = inverse_association)
+  aes(
+    x = pathology_axis,
+    y = pathology_aligned_beta
+  )
 ) +
+  geom_hline(
+    yintercept = 0,
+    linetype = "dashed",
+    color = "grey70",
+    linewidth = 0.4
+  ) +
   geom_violin(
     width = 0.72,
     fill = "grey92",
@@ -480,8 +816,15 @@ pA <- ggplot(
     linewidth = 0.40
   ) +
   geom_point(
-    aes(fill = collapse_group),
-    position = position_jitter(width = 0.05, height = 0, seed = 1),
+    aes(
+      fill = late_decline_group
+    ),
+    position =
+      position_jitter(
+        width = 0.05,
+        height = 0,
+        seed = 1
+      ),
     shape = 21,
     size = 1.7,
     stroke = 0.18,
@@ -495,46 +838,66 @@ pA <- ggplot(
     label = panelA_label,
     hjust = -0.02,
     vjust = 1.10,
-    size = 2.7,
-    label.size = 0.25,
+    size = 2.35,
+    linewidth = 0.25,
     fill = "white",
     color = "grey20"
   ) +
   scale_fill_manual(
-    values = collapse_colors,
-    name = "Collapse group",
-    labels = c("Top-quartile collapse", "Other clients")
+    values =
+      late_decline_colors,
+    name =
+      "Late-decline group",
+    labels = c(
+      "Top-quartile late decline",
+      "Other clients"
+    )
   ) +
-  scale_y_continuous(
-    expand = expansion(mult = c(0.06, 0.18))
+  coord_cartesian(
+    ylim =
+      pathology_y_limits,
+    clip = "off"
   ) +
   labs(
-    title = "A. Inverse pathology coupling is stronger for Braak/tau than CERAD/amyloid",
-    subtitle = "Covariate-adjusted Braak/tau and CERAD/amyloid associations were modeled separately for each client.",
+    title =
+      "A. Pathology-aligned protein associations span both AD neuropathologic measures",
+
+    subtitle =
+      "Positive beta indicates lower protein abundance with worse pathology.",
+
     x = NULL,
-    y = "Inverse pathology association"
+
+    y =
+      "Pathology-aligned beta"
   ) +
   theme_fig3_clean(11) +
   theme(
-    legend.position = "top"
+    legend.position = "top",
+    axis.text.x = element_text(size = 9.2)
   )
 
 ############################################################
-## 6. Panel B — collapse vs inverse Braak/tau coupling
+## 6. Panel B — late decline vs signed Braak/tau
 ############################################################
 
 cor_label_B <- paste0(
   "Spearman rho = ",
-  signif(collapse_braak_stats$spearman_rho, 2),
+  signif(
+    late_decline_braak_stats$spearman_rho,
+    2
+  ),
   "\n",
-  collapse_braak_stats$p_label,
+  late_decline_braak_stats$p_label,
   "\nn = ",
-  collapse_braak_stats$n_genes
+  late_decline_braak_stats$n_genes
 )
 
 pB <- ggplot(
-  collapse_braak_tbl,
-  aes(x = collapse_value, y = braak_axis)
+  late_decline_braak_tbl,
+  aes(
+    x = late_decline_value,
+    y = braak_aligned_beta
+  )
 ) +
   geom_hline(
     yintercept = 0,
@@ -544,34 +907,44 @@ pB <- ggplot(
   ) +
   geom_smooth(
     method = "lm",
+    formula = y ~ x,
     se = TRUE,
     color = "grey35",
     fill = "grey82",
     linewidth = 0.75
   ) +
   geom_point(
-    aes(fill = collapse_group),
+    aes(
+      fill =
+        late_decline_group
+    ),
     shape = 21,
     color = "grey35",
     alpha = 0.78,
     size = 2.15,
-    linewidth = 0.22
+    stroke = 0.22
   ) +
-  geom_segment(
-    data = fig3_label_tbl_B,
-    aes(x = collapse_value, y = braak_axis, xend = label_x, yend = label_y),
+  ggrepel::geom_text_repel(
+    data =
+      fig3_label_tbl,
+    aes(
+      x =
+        late_decline_value,
+      y =
+        braak_aligned_beta,
+      label =
+        gene
+    ),
     inherit.aes = FALSE,
-    color = "#7F1D1D",
-    linewidth = 0.18,
-    alpha = 0.95
-  ) +
-  geom_text(
-    data = fig3_label_tbl_B,
-    aes(x = label_x, y = label_y, label = label_gene_B, hjust = label_hjust),
-    inherit.aes = FALSE,
-    size = 2.55,
+    seed = 12,
+    size = 2.15,
     fontface = "bold",
     color = "#7F1D1D",
+    min.segment.length = 0,
+    segment.size = 0.18,
+    box.padding = 0.22,
+    point.padding = 0.12,
+    max.overlaps = Inf,
     show.legend = FALSE
   ) +
   annotate(
@@ -581,19 +954,42 @@ pB <- ggplot(
     label = cor_label_B,
     hjust = -0.02,
     vjust = 1.10,
-    size = 2.7,
-    label.size = 0.25,
+    size = 2.35,
+    linewidth = 0.25,
     fill = "white",
     color = "grey20"
   ) +
-  scale_fill_manual(values = collapse_colors, guide = "none") +
-  scale_x_continuous(expand = expansion(mult = c(0.08, 0.22))) +
-  scale_y_continuous(expand = expansion(mult = c(0.10, 0.34))) +
+  scale_fill_manual(
+    values =
+      late_decline_colors,
+    guide = "none"
+  ) +
+  scale_x_continuous(
+    expand =
+      expansion(
+        mult = c(
+          0.08,
+          0.12
+        )
+      )
+  ) +
+  coord_cartesian(
+    ylim =
+      pathology_y_limits,
+    clip = "off"
+  ) +
   labs(
-    title = "B. Collapse is continuously associated with inverse Braak/tau coupling",
-    subtitle = "Greater late-stage protein decline aligns with stronger direct inverse Braak association.",
-    x = "Late-stage protein collapse",
-    y = "Inverse Braak/tau association"
+    title =
+      "B. Late-stage decline is associated with Braak/tau-aligned protein loss",
+
+    subtitle =
+      "Higher pathology-aligned beta indicates lower protein abundance with worse Braak stage.",
+
+    x =
+      "Late-stage protein decline",
+
+    y =
+      "Braak/tau-aligned beta"
   ) +
   theme_fig3_clean(11) +
   theme(
@@ -601,102 +997,181 @@ pB <- ggplot(
   )
 
 ############################################################
-## 7. Panel C — distribution of Braak-minus-CERAD pathology bias
+## 7. Panel C — late decline vs signed CERAD/amyloid
 ############################################################
 
-delta_label <- paste0(
-  "Median Braak - CERAD = ",
-  signif(delta_summary_tbl$median_braak_minus_cerad, 2),
+cor_label_C <- paste0(
+  "Spearman rho = ",
+  signif(
+    late_decline_cerad_stats$spearman_rho,
+    2
+  ),
   "\n",
-  delta_summary_tbl$p_label,
+  late_decline_cerad_stats$p_label,
   "\nn = ",
-  delta_summary_tbl$n_genes
+  late_decline_cerad_stats$n_genes
 )
 
 pC <- ggplot(
-  pathology_pair_tbl,
-  aes(x = braak_minus_cerad_inverse)
+  late_decline_cerad_tbl,
+  aes(
+    x = late_decline_value,
+    y = cerad_aligned_beta
+  )
 ) +
-  geom_vline(
-    xintercept = 0,
+  geom_hline(
+    yintercept = 0,
     linetype = "dashed",
-    color = "grey45",
-    linewidth = 0.45
+    color = "grey70",
+    linewidth = 0.4
   ) +
-  geom_histogram(
-    bins = 38,
-    fill = "grey78",
-    color = "white",
-    linewidth = 0.20
+  geom_smooth(
+    method = "lm",
+    formula = y ~ x,
+    se = TRUE,
+    color = "grey35",
+    fill = "grey82",
+    linewidth = 0.75
   ) +
-  geom_rug(
-    aes(color = collapse_group),
-    alpha = 0.45,
-    sides = "b",
-    linewidth = 0.35,
-    show.legend = TRUE
+  geom_point(
+    aes(
+      fill =
+        late_decline_group
+    ),
+    shape = 21,
+    color = "grey35",
+    alpha = 0.78,
+    size = 2.15,
+    stroke = 0.22
+  ) +
+  ggrepel::geom_text_repel(
+    data =
+      fig3_label_tbl,
+    aes(
+      x =
+        late_decline_value,
+      y =
+        cerad_aligned_beta,
+      label =
+        gene
+    ),
+    inherit.aes = FALSE,
+    seed = 13,
+    size = 2.15,
+    fontface = "bold",
+    color = "#7F1D1D",
+    min.segment.length = 0,
+    segment.size = 0.18,
+    box.padding = 0.22,
+    point.padding = 0.12,
+    max.overlaps = Inf,
+    show.legend = FALSE
   ) +
   annotate(
     "label",
-    x = Inf,
+    x = -Inf,
     y = Inf,
-    hjust = 1.02,
+    label = cor_label_C,
+    hjust = -0.02,
     vjust = 1.10,
-    label = delta_label,
-    size = 3.0,
-    label.size = 0.22,
+    size = 2.35,
+    linewidth = 0.25,
     fill = "white",
     color = "grey20"
   ) +
-  scale_color_manual(
-    values = collapse_edge_colors,
-    name = "Collapse group",
-    labels = c("Top-quartile collapse", "Other clients")
+  scale_fill_manual(
+    values =
+      late_decline_colors,
+    guide = "none"
   ) +
   scale_x_continuous(
-    expand = expansion(mult = c(0.04, 0.12))
+    expand =
+      expansion(
+        mult = c(
+          0.08,
+          0.12
+        )
+      )
+  ) +
+  coord_cartesian(
+    ylim =
+      pathology_y_limits,
+    clip = "off"
   ) +
   labs(
-    title = "C. Braak/tau coupling exceeds CERAD/amyloid coupling across the client network",
-    subtitle = "Positive values indicate stronger inverse Braak/tau coupling than inverse CERAD/amyloid coupling for the same client.",
-    x = "Inverse Braak/tau association - inverse CERAD/amyloid association",
-    y = "Number of Hsp60/10 clients"
+    title =
+      "C. Late-stage decline is associated with CERAD/amyloid-aligned protein loss",
+
+    subtitle =
+      "Because lower CERAD scores indicate worse pathology, positive beta is the pathology-aligned decline direction.",
+
+    x =
+      "Late-stage protein decline",
+
+    y =
+      "CERAD/amyloid-aligned beta"
   ) +
   theme_fig3_clean(11) +
   theme(
-    legend.position = "top"
+    legend.position = "none"
   )
 
 ############################################################
 ## 8. Assemble and save Figure 3
 ############################################################
 
-fig3_all_clients <- (pA | pB) / pC +
-  plot_layout(
-    heights = c(1.00, 0.92),
-    widths = c(1.0, 1.0),
-    guides = "collect"
-  ) +
-  plot_annotation(
-    title = "Hsp60/10 client vulnerability is preferentially coupled to Braak/tau pathology",
-    subtitle = "Covariate-adjusted Braak/tau and CERAD/amyloid associations were modeled separately across detected Hsp60/10 clients.",
-    theme = theme(
-      plot.title = element_text(face = "bold", hjust = 0.5, size = 17),
-      plot.subtitle = element_text(hjust = 0.5, size = 11, color = "grey35"),
-      plot.margin = margin(8, 12, 8, 12)
+fig3_all_clients <-
+  (pA | pB) /
+    pC +
+    plot_layout(
+      heights = c(
+        1.00,
+        0.95
+      ),
+      widths = c(
+        1.0,
+        1.0
+      ),
+      guides = "collect"
+    ) +
+    plot_annotation(
+      title =
+        "Late-stage Hsp60/10 client decline is associated with both tau and amyloid pathology",
+
+      subtitle =
+        paste0(
+          "Braak/tau and CERAD/amyloid were modeled separately. ",
+          "Positive pathology-aligned beta indicates lower protein abundance with worse pathology."
+        ),
+
+      theme =
+        theme(
+          plot.title = element_text(face = "bold", hjust = 0.5, size = 16),
+
+          plot.subtitle = element_text(hjust = 0.5, size = 10.5, color = "grey35"),
+
+          plot.margin =
+            margin(
+              8,
+              12,
+              8,
+              12
+            )
+        )
+    ) &
+    theme(
+      legend.position = "top"
     )
-  ) &
-  theme(
-    legend.position = "top"
-  )
 
 save_fig3_all_plot(
   fig3_all_clients,
-  "Main_Fig3_all_clients_adjusted_pathology_coupling_REFRAMED",
-  width = 15.5,
-  height = 9.2
+  "Main_Fig3_all_clients_signed_braak_cerad_pathology_coupling",
+  width = 7.1,
+  height = 5.6
 )
 
 fig3_all_clients
 
-message("Loaded 12_make_main_figure_3_pathology_coupling.R")
+message(
+  "Loaded 12_make_main_figure_3_pathology_coupling.R"
+)

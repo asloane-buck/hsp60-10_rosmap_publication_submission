@@ -72,7 +72,12 @@ read_mitocarta_sets <- function() {
   }
 
   mito_raw <- tryCatch(
-    readxl::read_excel(cfg$mitocarta_xls, sheet = "A Human MitoCarta3.0"),
+    readxl::read_excel(
+      cfg$mitocarta_xls,
+      sheet = "A Human MitoCarta3.0",
+      col_types = "text",
+      na = c("", "NA")
+    ),
     error = function(e) {
       warning(
         "Could not read MitoCarta file. Comparator pathway sets will use fallbacks only:\n",
@@ -157,9 +162,16 @@ prot_scores <- compute_pathway_scores(
 ) |>
   checked_left_join(
     prot_meta_adj |>
-      select(SampleID, any_of(c("IndividualID", "EmoryStrictDx.2019"))),
+      dplyr::select(
+        SampleID,
+        IndividualID,
+        cogdx_num,
+        clinical_stage,
+        clinical_stage_broad,
+        protein_legacy_dx
+      ),
     by = "SampleID",
-    label = "protein pathway scores to metadata"
+    label = "protein pathway scores to canonical clinical metadata"
   )
 
 rna_scores <- compute_pathway_scores(
@@ -169,9 +181,15 @@ rna_scores <- compute_pathway_scores(
 ) |>
   checked_left_join(
     rna_meta_adj |>
-      select(sample_id, any_of(c("individual_id", "diagnosis_stage"))),
+      dplyr::select(
+        sample_id,
+        individual_id,
+        cogdx_num,
+        clinical_stage,
+        clinical_stage_broad
+      ),
     by = "sample_id",
-    label = "RNA pathway scores to metadata"
+    label = "RNA pathway scores to canonical clinical metadata"
   )
 
 pathway_overlap_audit <- imap_dfr(pathway_gene_sets, function(genes, pathway) {
