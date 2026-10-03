@@ -63,7 +63,7 @@ R <- data.frame(
   primary = c(
     "outputs/reviewer_revisions/conventional_stage_differential_final/04_RNA_DESeq2_all_contrasts.csv",
     "outputs/reviewer_revisions/conventional_stage_differential_final/07_protein_PRIMARY_complete400_limma.csv",
-    "outputs/main_figures/tables/main_fig1_all_clients/Fig1B_all_clients_clean_effect_summary.csv",
+    "outputs/main_figures/tables/main_fig1_all_clients/Fig1B_all_clients_side_by_side_modality_effects.csv",
     "outputs/main_figures/tables/main_fig3_all_clients/Fig3_all_clients_pathology_table.csv",
     "outputs/main_figures/tables/main_fig3_all_clients/Fig3_all_clients_pathology_table.csv",
     "outputs/reviewer_revisions/corrected_cognition_production_validation/corrected_network_cognition_models.csv",
@@ -82,7 +82,7 @@ R <- data.frame(
   support = c(
     "outputs/reviewer_revisions/conventional_stage_differential_final/20_sample_stage_audit.csv",
     "outputs/reviewer_revisions/conventional_stage_differential_final/20_sample_stage_audit.csv",
-    "outputs/main_figures/tables/main_fig1_all_clients/Fig1B_all_clients_bootstrap_significance_FIXED.csv;outputs/main_figures/tables/clinical_stage_sample_counts_before_abundance_missingness.csv",
+    "outputs/main_figures/tables/clinical_stage_sample_counts_before_abundance_missingness.csv",
     "outputs/main_figures/tables/main_fig3_all_clients/Fig3_all_clients_stats_combined.csv",
     "outputs/main_figures/tables/main_fig3_all_clients/Fig3_all_clients_stats_combined.csv",
     "outputs/main_figures/tables/main_fig4_cognition/Fig4_network_level_cognition_models_source_data.csv",
@@ -121,15 +121,20 @@ R$se_req <- c(
   "not_applicable","not_applicable"
 )
 R$ci_req <- c(
-  "required","required","required","required","required",
+  "required","required","not_applicable","required","required",
   "required","required","required","required","required","required",
   "required","required","required","required",
   "not_applicable","not_applicable"
 )
 R$n_req <- "required"
-R$p_req <- "required"
+R$p_req <- c(
+  "required","required","not_applicable","required","required",
+  "required","required","required","required","required","required",
+  "required","required","required","required",
+  "required","required"
+)
 R$fdr_req <- c(
-  "required","required","policy_review","required","required",
+  "required","required","not_applicable","required","required",
   "policy_review","required","required","required","required",
   "policy_review","required","required","required","required",
   "policy_review","policy_review"
@@ -177,7 +182,7 @@ detect <- function(cols, metric) {
       "^log2foldchange$","^logfc$","^delta$",
       "_effect$","^effect_","_beta$","^beta_",
       "estimate","log2_fold","log2fold","log_fc",
-      "correlation","^rho$","region_x_predictor"
+      "correlation","^rho$","region_x_predictor","^stage_change$"
     ), collapse = "|"),
     se = paste(c(
       "^se$","^std_error$","^std_err$","^stderr$","^lfcse$",

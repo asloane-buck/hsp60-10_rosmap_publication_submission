@@ -15,7 +15,8 @@
 
 options(stringsAsFactors = FALSE)
 
-message("Starting corrected supplemental figure pipeline.")
+message("Starting corrected supplemental figure pipeline (S1-S10).")
+supplemental_regenerated_figures <- character()
 
 script_dir <- normalizePath(
   file.path(getwd(), "R", "supplemental"),
@@ -31,7 +32,11 @@ required_scripts <- c(
   "12_make_supplementary_figure_3_mitochondrial_specificity.R",
   "13_make_supplementary_figure_4_pathology_model_robustness.R",
   "14_make_supplementary_figure_5_msbb_cross_cohort_validation.R",
-  "15_make_supplementary_figure_6_regional_proteomics_validation.R"
+  "15_make_supplementary_figure_6_regional_proteomics_validation.R",
+  "16_make_supplementary_figure_7_conventional_differential.R",
+  "17_make_supplementary_figure_8_PC1_sensitivity.R",
+  "18_make_supplementary_figure_9_variance_partition.R",
+  "19_make_supplementary_figure_10_marker_sensitivity.R"
 )
 
 missing_scripts <- required_scripts[
@@ -95,8 +100,10 @@ required_null_cols <- c(
   "gene",
   "is_hsp60_10_client",
   "protein_late_decline_magnitude",
-  "inverse_braak_magnitude",
-  "pathology_vulnerability_score",
+  "braak_pathology_magnitude",
+  "cerad_pathology_magnitude",
+  "joint_pathology_magnitude",
+  "strict_joint_pathology_magnitude",
   "matching_abundance",
   "abundance_bin",
   "agora_nominated_target"
@@ -258,6 +265,27 @@ source(file.path(
   "11_make_supplementary_figure_2_matched_individual_sensitivity.R"
 ))
 
+# Freeze the revised cohort/detection and strictly matched-panel populations.
+if (isTRUE(get0("SUPP_USE_FROZEN_MODELS", ifnotfound = FALSE))) {
+  detected <- readr::read_csv(file.path(audits_dir, "SuppFig1_interactor_detection_audit.csv"), show_col_types = FALSE)
+  if (nrow(detected) != 321 || sum(detected$detected_rna, na.rm = TRUE) != 297 ||
+      sum(detected$detected_protein, na.rm = TRUE) != 306 ||
+      sum(detected$detected_rna & detected$detected_protein, na.rm = TRUE) != 285) {
+    stop("S1 detected coverage differs from the verified 321-reference/297-RNA/306-protein inventory.", call. = FALSE)
+  }
+  stages <- readr::read_csv(file.path(audits_dir, "SuppFig1_plotted_primary_stage_counts.csv"), show_col_types = FALSE)
+  expected <- c(RNA_NCI = 200, RNA_MCI = 158, RNA_AD = 219,
+    Protein_NCI = 167, Protein_MCI = 96, Protein_AD = 109)
+  actual <- setNames(stages$n_samples, paste(stages$modality, stages$stage, sep = "_"))[names(expected)]
+  if (anyNA(actual) || any(actual != expected)) stop("S1 primary stage counts differ from the frozen analysis.", call. = FALSE)
+  matched <- supfig2_outputs$matched_summary
+  expected_n <- c(NCI = 94, MCI = 56, AD = 48)
+  if (length(supfig2_outputs$overlap_ids) != 198 || nrow(matched) != 18 ||
+      anyNA(matched$n) || any(matched$n != expected_n[as.character(matched$Stage)])) {
+    stop("S2 must plot the same 198 matched participants (94 NCI/56 MCI/48 AD) in every pathway and modality.", call. = FALSE)
+  }
+}
+
 source(file.path(
   script_dir,
   "12_make_supplementary_figure_3_mitochondrial_specificity.R"
@@ -278,13 +306,19 @@ source(file.path(
   "15_make_supplementary_figure_6_regional_proteomics_validation.R"
 ))
 
+source(file.path(script_dir, "16_make_supplementary_figure_7_conventional_differential.R"))
+source(file.path(script_dir, "17_make_supplementary_figure_8_PC1_sensitivity.R"))
+source(file.path(script_dir, "18_make_supplementary_figure_9_variance_partition.R"))
+source(file.path(script_dir, "19_make_supplementary_figure_10_marker_sensitivity.R"))
+
 required_output_objects <- c(
   "supfig1_outputs",
   "supfig2_outputs",
   "supfig3_outputs",
   "supfig4_outputs",
   "supfig5_outputs",
-  "supfig6_outputs"
+  "supfig6_outputs", "supfig7_outputs", "supfig8_outputs",
+  "supfig9_outputs", "supfig10_outputs"
 )
 
 missing_output_objects <- required_output_objects[
@@ -316,79 +350,58 @@ if (nrow(supfig5_outputs$rosmap_tbl) != 915) {
   stop("Supp Fig 5 ROSMAP discovery table is not 915 genes.", call. = FALSE)
 }
 
-copy_manuscript_ready_supplemental_pdfs <- function() {
+copy_manuscript_ready_supplemental_figures <- function() {
+  expected <- names(SUPP_FINAL_FIGURE_HEIGHT_MM)
+  if (!setequal(expected, supplemental_regenerated_figures)) {
+    stop("All ten final figures must be freshly exported during this run; missing: ",
+      paste(setdiff(expected, supplemental_regenerated_figures), collapse = ", "), call. = FALSE)
+  }
   ensure_dir(manuscript_ready_pdf_dir)
-
-  final_pdf_names <- c(
-    "Supplementary_Figure_1_cohort_detection.pdf",
-    "Supplementary_Figure_2_matched_individual_sensitivity.pdf",
-    "Supplementary_Figure_3_mitochondrial_specificity.pdf",
-    "Supplementary_Figure_4_pathology_model_robustness.pdf",
-    "Supplementary_Figure_5_msbb_cross_cohort_validation.pdf",
-    "Supplementary_Figure_6_regional_proteomics_validation.pdf"
-  )
-
-  src_paths <- file.path(figures_dir, final_pdf_names)
-  missing_paths <- src_paths[!file.exists(src_paths)]
-
-  if (length(missing_paths) > 0) {
-    stop(
-      "Cannot populate manuscript-ready supplemental PDF folder; ",
-      "missing regenerated PDFs:\n",
-      paste0(" - ", missing_paths, collapse = "\n"),
-      call. = FALSE
-    )
+  ensure_dir(manuscript_ready_png_dir)
+  pdf_names <- paste0(expected, ".pdf")
+  png_names <- paste0(expected, ".png")
+  source_pdf <- file.path(figures_dir, pdf_names)
+  source_png <- file.path(figures_dir, png_names)
+  if (any(!file.exists(c(source_pdf, source_png))) ||
+      any(file.info(c(source_pdf, source_png))$size <= 0)) {
+    stop("Missing or empty newly exported supplemental files.", call. = FALSE)
   }
-
-  stale_pdfs <- list.files(
-    manuscript_ready_pdf_dir,
-    pattern = "\\.pdf$",
-    full.names = TRUE
-  )
-
-  if (length(stale_pdfs) > 0) {
-    unlink(stale_pdfs)
+  # PNG IHDR: verify actual pixel dimensions independently of export arguments.
+  read_png_size <- function(path) {
+    con <- file(path, "rb")
+    on.exit(close(con))
+    header <- readBin(con, "raw", n = 24)
+    if (length(header) != 24 || !identical(header[1:8], as.raw(c(137,80,78,71,13,10,26,10)))) {
+      stop("Invalid PNG: ", path, call. = FALSE)
+    }
+    c(sum(as.numeric(header[17:20]) * 256^(3:0)),
+      sum(as.numeric(header[21:24]) * 256^(3:0)))
   }
-
-  dest_paths <- file.path(
-    manuscript_ready_pdf_dir,
-    final_pdf_names
-  )
-
-  ok <- file.copy(
-    src_paths,
-    dest_paths,
-    overwrite = TRUE
-  )
-
-  if (!all(ok)) {
-    stop(
-      "Failed to copy one or more manuscript-ready supplemental PDFs.",
-      call. = FALSE
-    )
+  dims <- vapply(source_png, read_png_size, numeric(2))
+  expected_width <- 600 * SUPP_FULL_WIDTH_MM / 25.4
+  expected_height <- 600 * unname(SUPP_FINAL_FIGURE_HEIGHT_MM) / 25.4
+  if (any(abs(dims[1,] - expected_width) > 2) || any(abs(dims[2,] - expected_height) > 2)) {
+    stop("Supplemental PNG pixel dimensions do not match 170 mm / 600 dpi exports.", call. = FALSE)
   }
-
+  pdf_path <- file.path(manuscript_ready_pdf_dir, pdf_names)
+  png_path <- file.path(manuscript_ready_png_dir, png_names)
+  # Overwrite only these ten expected filenames; preserve unrelated files.
+  if (!all(file.copy(source_pdf, pdf_path, overwrite = TRUE)) ||
+      !all(file.copy(source_png, png_path, overwrite = TRUE))) {
+    stop("Failed to copy manuscript-ready supplemental exports.", call. = FALSE)
+  }
   manifest <- tibble::tibble(
-    supplemental_figure =
-      paste0("Supplementary Figure ", seq_along(final_pdf_names)),
-    source_pdf = src_paths,
-    pdf_path = dest_paths,
-    size_bytes = file.info(dest_paths)$size
+    supplemental_figure = paste0("S", seq_along(expected)),
+    pdf_path = pdf_path, png_path = png_path,
+    width_mm = SUPP_FULL_WIDTH_MM, height_mm = unname(SUPP_FINAL_FIGURE_HEIGHT_MM),
+    png_dpi = 600, png_width_px = dims[1,], png_height_px = dims[2,],
+    pdf_md5 = unname(tools::md5sum(pdf_path)), png_md5 = unname(tools::md5sum(png_path))
   )
-
-  readr::write_csv(
-    manifest,
-    file.path(
-      manuscript_ready_pdf_dir,
-      "manifest.csv"
-    )
-  )
-
+  readr::write_csv(manifest, file.path(manuscript_ready_pdf_dir, "manifest.csv"))
+  readr::write_csv(manifest, file.path(manuscript_ready_png_dir, "manifest.csv"))
   invisible(manifest)
 }
-
-manuscript_ready_pdf_manifest <-
-  copy_manuscript_ready_supplemental_pdfs()
+manuscript_ready_pdf_manifest <- copy_manuscript_ready_supplemental_figures()
 
 if (exists(
   "audit_manuscript_ready_supplemental_pdfs",
@@ -467,3 +480,4 @@ message("Panels: ", panels_dir)
 message("Audits: ", audits_dir)
 message("Tables: ", tables_dir)
 message("Manuscript-ready PDFs: ", manuscript_ready_pdf_dir)
+message("Manuscript-ready 600 dpi PNGs: ", manuscript_ready_png_dir)

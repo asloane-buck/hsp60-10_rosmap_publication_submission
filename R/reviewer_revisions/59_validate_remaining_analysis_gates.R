@@ -134,8 +134,8 @@ add(
 )
 
 add(
-  "Fig1B_20_rows",
-  nrow(fig1) == 20L,
+  "Fig1B_40_rows",
+  nrow(fig1) == 40L,
   paste0("rows=", nrow(fig1))
 )
 
@@ -149,9 +149,25 @@ add(
 )
 
 add(
-  "Fig1B_zero_arithmetic_error",
-  fig1sum$max_abs_point_arithmetic_error < tol,
-  paste0("max=", fig1sum$max_abs_point_arithmetic_error)
+  "Fig1B_current_10x2x2_design",
+  nrow(fig1sum) == 1L &&
+    fig1sum$n_rows == 40L &&
+    fig1sum$n_pathways == 10L &&
+    fig1sum$n_modalities == 2L &&
+    fig1sum$n_shifts == 2L &&
+    fig1sum$unique_pathway_modality_shift_rows == 40L &&
+    fig1sum$complete_10x2x2_design &&
+    fig1sum$all_stage_change_finite,
+  if (nrow(fig1sum) == 1L) {
+    paste0(
+      "rows=", fig1sum$n_rows,
+      "; pathways=", fig1sum$n_pathways,
+      "; modalities=", fig1sum$n_modalities,
+      "; shifts=", fig1sum$n_shifts
+    )
+  } else {
+    "Fig1B summary row missing"
+  }
 )
 
 add(
@@ -216,17 +232,17 @@ add(
 )
 
 add(
-  "Fig1B_subtraction_explicitly_deemphasized",
+  "Fig1B_current_no_subtraction_output",
   any(
-    subout$classification ==
-      "canonical_Fig1B_descriptive_subtraction_to_deemphasize"
-  ) &&
-    any(grepl(
-      "de-emphasize|remove",
-      subpolicy$manuscript_action_later,
-      ignore.case = TRUE
-    )),
-  "descriptive Fig1B subtraction flagged for later manuscript/figure edit"
+    grepl(
+      "Fig1B_all_clients_side_by_side_modality_effects",
+      subout$file,
+      fixed = TRUE
+    ) &
+      subout$classification ==
+        "preferred_side_by_side_no_subtraction"
+  ),
+  "current Figure 1B side-by-side no-subtraction output is canonical"
 )
 
 add(
@@ -242,15 +258,12 @@ add(
 )
 
 add(
-  "three_fully_revalidated_one_edit_pending",
-  sum(
-    status$analytical_status ==
-      "ANALYTICALLY_REVALIDATED"
-  ) == 3L &&
-    sum(
+  "all_four_gates_revalidated",
+  nrow(status) == 4L &&
+    all(
       status$analytical_status ==
-        "ANALYTICALLY_RESOLVED_MANUSCRIPT_EDIT_PENDING"
-    ) == 1L,
+        "ANALYTICALLY_REVALIDATED"
+    ),
   paste(
     status$gate,
     status$analytical_status,
@@ -310,7 +323,7 @@ cat("\n============================================================\n")
 cat("REMAINING ANALYSIS GATES REVALIDATED / RESOLVED\n")
 cat("============================================================\n")
 cat(
-  "Three gates are analytically revalidated. The subtraction gate is\n",
-  "analytically resolved, with manuscript/figure de-emphasis still pending.\n",
+  "All four remaining analysis gates are analytically revalidated.\n",
+  "Current Figure 1B uses the canonical side-by-side no-subtraction design.\n",
   sep = ""
 )

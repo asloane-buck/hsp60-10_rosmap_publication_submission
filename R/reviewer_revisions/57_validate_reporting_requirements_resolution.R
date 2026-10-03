@@ -70,14 +70,14 @@ getp <- function(item) {
 tol <- 1e-10
 
 add(
-  "eight_original_gaps_accounted_for",
-  nrow(gaps) == 8L,
+  "seven_current_gaps_accounted_for",
+  nrow(gaps) == 7L,
   paste0("observed=", nrow(gaps))
 )
 
 add(
-  "four_false_negatives_four_genuine",
-  sum(gaps$gap_type == "audit_detector_false_negative") == 4L &&
+  "three_false_negatives_four_genuine",
+  sum(gaps$gap_type == "audit_detector_false_negative") == 3L &&
     sum(gaps$gap_type == "genuine_reporting_gap") == 4L,
   paste0(
     "false_negative=",
@@ -154,26 +154,61 @@ add(
 )
 
 add(
-  "Fig1B_20_rows",
-  nrow(fig1) == 20L,
+  "Fig1B_40_rows",
+  nrow(fig1) == 40L,
   paste0("observed=", nrow(fig1))
 )
 
 add(
-  "Fig1B_CI_complete",
-  all(is.finite(fig1$conf_low_95)) &&
-    all(is.finite(fig1$conf_high_95)) &&
-    all(fig1$conf_low_95 <= fig1$conf_high_95),
-  "existing bootstrap CI surfaced"
+  "Fig1B_current_schema",
+  all(
+    c(
+      "pathway", "pathway_label", "pathway_short",
+      "modality", "shift", "effect",
+      "effect_label", "inferential_status",
+      "primary_inference_note"
+    ) %in% names(fig1)
+  ),
+  paste(names(fig1), collapse = ";")
+)
+
+fig1_keys <- paste(
+  fig1$pathway,
+  fig1$modality,
+  fig1$shift,
+  sep = "||"
 )
 
 add(
-  "Fig1B_FDR_valid",
-  all(
-    fig1$fdr_bh_all_20_fig1b_tests >= 0 &
-      fig1$fdr_bh_all_20_fig1b_tests <= 1
-  ),
-  "20-test BH valid"
+  "Fig1B_balanced_10x2x2",
+  length(unique(fig1$pathway)) == 10L &&
+    setequal(unique(fig1$modality), c("RNA", "Protein")) &&
+    setequal(unique(fig1$shift), c("NCI to MCI", "MCI to AD")) &&
+    length(unique(fig1_keys)) == 40L,
+  paste0(
+    "pathways=", length(unique(fig1$pathway)),
+    "; modalities=", length(unique(fig1$modality)),
+    "; shifts=", length(unique(fig1$shift)),
+    "; unique keys=", length(unique(fig1_keys))
+  )
+)
+
+add(
+  "Fig1B_effects_finite",
+  all(is.finite(fig1$effect)),
+  "all current modality-specific stage changes finite"
+)
+
+add(
+  "Fig1B_no_cross_modal_inference",
+  all(fig1$inferential_status == "descriptive_cross_modal_display") &&
+    !any(
+      c(
+        "conf_low_95", "conf_high_95", "p_value",
+        "fdr_bh_all_20_fig1b_tests"
+      ) %in% names(fig1)
+    ),
+  "no RNA-protein subtraction CI/P/FDR fields"
 )
 
 add(

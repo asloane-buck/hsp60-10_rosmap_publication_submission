@@ -215,38 +215,50 @@ run_phase \
 # 4. Reviewer-revision analysis/validation chain
 # ------------------------------------------------------------
 
-revision_prefixes=(
-  23
-  24
-  25
-  28
-  29
-  30
-  31
-  32
-  33
-  34
-  35
-  44
-  45
-  46
-  47
-  48
-  49
-  50
-  51
-  52
-  53
-  54
-  56
-  57
-  58
-  59
+revision_scripts=(
+  "R/reviewer_revisions/23_audit_conventional_stage_differential_warnings.R"
+  "R/reviewer_revisions/24_run_conventional_stage_differential_FINAL.R"
+  "R/reviewer_revisions/25_validate_conventional_stage_differential_FINAL.R"
+
+  "R/reviewer_revisions/28_prepare_regional_joint_pathology_metadata.R"
+  "R/reviewer_revisions/28_run_formal_regional_interaction.R"
+  "R/reviewer_revisions/29_audit_regional_model_convergence.R"
+  "R/reviewer_revisions/30_finalize_regional_interaction_results.R"
+  "R/reviewer_revisions/31_audit_Hsp_regional_conclusion.R"
+
+  "R/reviewer_revisions/32_audit_variancePartition_inputs.R"
+  "R/reviewer_revisions/33_preflight_variancePartition_design.R"
+  "R/reviewer_revisions/34_run_variancePartition_source_of_variation.R"
+  "R/reviewer_revisions/35_audit_variancePartition_results.R"
+
+  "R/reviewer_revisions/44_run_Hsp_pathway_PC1_sensitivity.R"
+  "R/reviewer_revisions/45_validate_Hsp_pathway_PC1_sensitivity.R"
+
+  "R/reviewer_revisions/46_build_alternative_mechanism_marker_manifest.R"
+  "R/reviewer_revisions/47_run_alternative_mechanism_marker_stage_analysis.R"
+  "R/reviewer_revisions/48_validate_alternative_mechanism_marker_stage_analysis.R"
+
+  "R/reviewer_revisions/49_build_APOE_cohort_demographics.R"
+  "R/reviewer_revisions/50_run_APOE_sensitivity.R"
+  "R/reviewer_revisions/51_validate_APOE_sensitivity.R"
+
+  "R/reviewer_revisions/52_build_demographic_tables.R"
+  "R/reviewer_revisions/53_validate_demographic_tables.R"
+
+  "R/reviewer_revisions/54_audit_reporting_requirements.R"
+  "R/reviewer_revisions/56_resolve_reporting_requirements.R"
+  "R/reviewer_revisions/57_validate_reporting_requirements_resolution.R"
+  "R/reviewer_revisions/58_run_remaining_analysis_gates.R"
+  "R/reviewer_revisions/59_validate_remaining_analysis_gates.R"
 )
 
-for prefix in "${revision_prefixes[@]}"; do
-  script="$(find_one_revision_script "$prefix")"
-  label="reviewer_${prefix}_$(basename "$script" .R)"
+for script in "${revision_scripts[@]}"; do
+  if [[ ! -f "$script" ]]; then
+    echo "ERROR: missing reviewer-revision script: $script"
+    exit 1
+  fi
+
+  label="reviewer_$(basename "$script" .R)"
   run_phase "$label" Rscript "$script"
 done
 

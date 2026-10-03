@@ -109,7 +109,7 @@ add(
 
 required_outputs <- c(
   "outputs/main_figures/tables/all_hsp60_10_client_stage_long_COVARIATE_ADJUSTED.csv",
-  "outputs/main_figures/tables/main_fig1_all_clients/Fig1B_all_clients_clean_effect_summary.csv",
+  "outputs/main_figures/tables/main_fig1_all_clients/Fig1B_all_clients_side_by_side_modality_effects.csv",
   "outputs/main_figures/tables/main_fig3_all_clients/Fig3_all_clients_pathology_table.csv",
   "outputs/main_figures/tables/main_fig4_cognition/Fig4_client_level_cognition_all_models.csv",
   "outputs/main_figures/tables/main_fig5_matched_null_specificity/Fig5_gene_universe_cognition_summary_by_gene.csv",
@@ -474,15 +474,10 @@ if (file.exists(gate_file)) {
   add(
     "remaining_analysis_gates_no_failures",
     nrow(gates) == 4L &&
-      !any(gates$analytical_status == "FAILED") &&
-      sum(
+      all(
         gates$analytical_status ==
           "ANALYTICALLY_REVALIDATED"
-      ) == 3L &&
-      sum(
-        gates$analytical_status ==
-          "ANALYTICALLY_RESOLVED_MANUSCRIPT_EDIT_PENDING"
-      ) == 1L,
+      ),
     paste(
       gates$gate,
       gates$analytical_status,
@@ -571,7 +566,7 @@ cat("FINAL ANALYSIS REPRODUCIBILITY GATE PASSED\n")
 cat("============================================================\n")
 cat(
   "All analytical/reproducibility checks passed.\n",
-  "The Fig1B subtraction manuscript/figure edit remains intentionally pending.\n",
+  "Current Figure 1B side-by-side no-subtraction design verified.\n",
   sep = ""
 )
 

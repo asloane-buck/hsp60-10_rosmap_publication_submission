@@ -3,9 +3,11 @@
 # ============================================================
 
 # Purpose:
-# Test whether Hsp60/10 clients show stronger late-stage decline, inverse Braak coupling,
-# cognition association, and AGORA support than abundance-matched
-# non-Hsp60/10 mitochondrial background proteins.
+# Test whether Hsp60/10 clients show stronger late-stage decline,
+# inverse Braak association, cognition association,
+# and AGORA support than abundance-matched non-Hsp60/10 mitochondrial
+# background proteins. Joint, CERAD-only, and strict-joint pathology
+# metrics are retained as sensitivity analyses.
 
 if (!exists("inputs")) {
   stop("Run 01_supplemental_load_inputs.R before 12_make_supplementary_figure_3_mitochondrial_specificity.R.", call. = FALSE)
@@ -86,7 +88,10 @@ sf3_validate_tbl <- function(tbl, label) {
   required_cols <- c(
     "gene",
     "protein_late_decline_magnitude",
-    "inverse_braak_magnitude",
+    "braak_pathology_magnitude",
+    "cerad_pathology_magnitude",
+    "joint_pathology_magnitude",
+    "strict_joint_pathology_magnitude",
     "cognition_priority_score",
     "agora_nominated_target",
     "abundance_bin"
@@ -296,34 +301,44 @@ sf3_reannotate_agora <- function(tbl, inputs) {
 # Matched null generation
 # ============================================================
 
+sf3_primary_metrics <- c(
+  "protein_late_decline_magnitude",
+  "braak_pathology_magnitude",
+  "cognition_priority_score",
+  "agora_nominated_target"
+)
+
 sf3_metric_tbl <- tibble::tibble(
   metric = c(
-    "protein_late_decline_magnitude",
-    "inverse_braak_magnitude",
-    "cognition_priority_score",
-    "agora_nominated_target"
+    sf3_primary_metrics,
+    "joint_pathology_magnitude",
+    "cerad_pathology_magnitude",
+    "strict_joint_pathology_magnitude"
   ),
   metric_label = c(
     "Late-stage protein decline",
     "Inverse Braak association",
     "Cognition association score",
-    "AGORA target fraction"
+    "AGORA target fraction",
+    "Joint AD pathology association",
+    "CERAD/amyloid pathology association",
+    "Strict joint pathology association"
   ),
-  metric_type = c("continuous", "continuous", "continuous", "fraction")
+  metric_type = c(
+    "continuous",
+    "continuous",
+    "continuous",
+    "fraction",
+    "continuous",
+    "continuous",
+    "continuous"
+  )
 )
 
 sf3_format_empirical_p <- function(extreme_count, n_perm) {
-  if (is.na(extreme_count) || is.na(n_perm) || n_perm <= 0) {
-    return("empirical P unavailable")
-  }
-  if (extreme_count == 0) {
-    return(paste0("empirical P < ", formatC(1 / n_perm, format = "e", digits = 1)))
-  }
-  p <- extreme_count / n_perm
-  if (p < 0.001) {
-    return(paste0("empirical P = ", formatC(p, format = "e", digits = 1)))
-  }
-  paste0("empirical P = ", signif(p, 3))
+  if (is.na(extreme_count) || is.na(n_perm) || n_perm <= 0) return("NA")
+  p <- (extreme_count + 1) / (n_perm + 1)
+  paste0("empirical P = ", if (p < 0.001) formatC(p, format = "e", digits = 2) else signif(p, 3))
 }
 
 sf3_format_null_position <- function(extreme_count, n_perm) {
@@ -338,28 +353,15 @@ sf3_format_null_position <- function(extreme_count, n_perm) {
 
 
 sf3_format_emp_p <- function(extreme_count, n_perm) {
-  if (is.na(extreme_count) || is.na(n_perm) || n_perm <= 0) {
-    return("NA")
-  }
-  if (extreme_count == 0) {
-    return(paste0("<1/", scales::comma(n_perm)))
-  }
-  paste0(extreme_count, "/", scales::comma(n_perm))
+  if (is.na(extreme_count) || is.na(n_perm) || n_perm <= 0) return("NA")
+  p <- (extreme_count + 1) / (n_perm + 1)
+  paste0("", if (p < 0.001) formatC(p, format = "e", digits = 2) else signif(p, 3))
 }
 
 sf3_format_emp_p_decimal <- function(extreme_count, n_perm) {
-  if (is.na(extreme_count) || is.na(n_perm) || n_perm <= 0) {
-    return(NA_character_)
-  }
-  if (extreme_count == 0) {
-    return(paste0("<", formatC(1 / n_perm, format = "e", digits = 2)))
-  }
-  p <- extreme_count / n_perm
-  if (p < 0.001) {
-    formatC(p, format = "e", digits = 2)
-  } else {
-    as.character(signif(p, 3))
-  }
+  if (is.na(extreme_count) || is.na(n_perm) || n_perm <= 0) return("NA")
+  p <- (extreme_count + 1) / (n_perm + 1)
+  paste0("", if (p < 0.001) formatC(p, format = "e", digits = 2) else signif(p, 3))
 }
 
 sf3_clean_sci_label <- function(x, digits = 1) {
@@ -370,17 +372,9 @@ sf3_clean_sci_label <- function(x, digits = 1) {
 }
 
 sf3_format_compact_p <- function(extreme_count, n_perm) {
-  if (is.na(extreme_count) || is.na(n_perm) || n_perm <= 0) {
-    return("p = NA")
-  }
-  if (extreme_count == 0) {
-    return(paste0("p < ", sf3_clean_sci_label(1 / n_perm, digits = 1)))
-  }
-  p <- extreme_count / n_perm
-  if (p < 0.001) {
-    return(paste0("p = ", sf3_clean_sci_label(p, digits = 1)))
-  }
-  paste0("p = ", signif(p, 3))
+  if (is.na(extreme_count) || is.na(n_perm) || n_perm <= 0) return("NA")
+  p <- (extreme_count + 1) / (n_perm + 1)
+  paste0("P = ", if (p < 0.001) formatC(p, format = "e", digits = 2) else signif(p, 3))
 }
 
 sf3_null_position_label <- function(extreme_count, n_perm) {
@@ -420,7 +414,7 @@ sf3_make_matched_null <- function(hsp_tbl, background_tbl, n_perm = 5000, seed =
       pool_j <- background_by_bin[[bin_j]]
 
       # Use replacement only when the matched pool in that bin is smaller than required.
-      sampled_idx <- sample(seq_len(nrow(pool_j)), size = n_j, replace = nrow(pool_j) < n_j)
+      sampled_idx <- sample.int(nrow(pool_j), size = n_j, replace = nrow(pool_j) < n_j)
       pool_j[sampled_idx, , drop = FALSE]
     })
 
@@ -613,6 +607,7 @@ sf3_make_null_hist <- function(null_tbl, summary_tbl, metric_name, title, xlab) 
 
 sf3_make_ratio_summary <- function(summary_tbl) {
   plot_tbl <- summary_tbl |>
+    dplyr::filter(.data$metric %in% sf3_primary_metrics) |>
     dplyr::mutate(
       metric_label = factor(
         .data$metric_label,
@@ -624,7 +619,7 @@ sf3_make_ratio_summary <- function(summary_tbl) {
         ))
       ),
       label = paste0(
-        signif(.data$observed_to_null_ratio, 2),
+        formatC(.data$observed_to_null_ratio, format = "f", digits = 2),
         "x, ",
         purrr::map2_chr(.data$extreme_count_greater, .data$n_perm, sf3_format_compact_p)
       )
@@ -677,14 +672,15 @@ make_supfig3_mitochondrial_specificity <- function(inputs, n_perm = 10000, seed 
     label = "non-Hsp60/10 mitochondrial background null pool"
   )
 
-  agora_targets <- sf3_load_agora_targets()
-  
-  hsp_tbl <- sf3_validate_tbl(hsp_input$object, "hsp_null_tbl") |>
-    sf3_reannotate_agora_from_csv(agora_targets)
-  
+  frozen <- isTRUE(get0("SUPP_USE_FROZEN_MODELS", ifnotfound = FALSE))
+  hsp_tbl <- sf3_validate_tbl(hsp_input$object, "hsp_null_tbl")
   background_tbl <- sf3_validate_tbl(background_input$object, "background_null_pool") |>
-    sf3_reannotate_agora_from_csv(agora_targets) |>
     dplyr::filter(!.data$gene %in% hsp_tbl$gene)
+  if (!frozen) {
+    agora_targets <- sf3_load_agora_targets()
+    hsp_tbl <- sf3_reannotate_agora_from_csv(hsp_tbl, agora_targets)
+    background_tbl <- sf3_reannotate_agora_from_csv(background_tbl, agora_targets)
+  }
 
   message("Observed Hsp60/10 table: ", nrow(hsp_tbl), " genes")
   message("Background null pool after excluding Hsp60/10 genes: ", nrow(background_tbl), " genes")
@@ -700,12 +696,65 @@ make_supfig3_mitochondrial_specificity <- function(inputs, n_perm = 10000, seed 
   readr::write_csv(bin_audit, file.path(audits_dir, "SuppFig3_abundance_bin_matching_audit.csv"))
 
   observed_tbl <- sf3_observed_summary(hsp_tbl)
-  null_tbl <- sf3_make_matched_null(hsp_tbl, background_tbl, n_perm = n_perm, seed = seed)
+  if (frozen) {
+    frozen_null_path <- file.path(audits_dir, "SuppFig3_matched_null_permutation_values.csv")
+    null_tbl <- readr::read_csv(frozen_null_path, show_col_types = FALSE)
+    if (!all(c("metric", "perm", "null_mean") %in% names(null_tbl))) {
+      stop("S3 frozen permutation table lacks metric/perm/null_mean.", call. = FALSE)
+    }
+    null_tbl <- null_tbl |>
+      dplyr::mutate(metric = dplyr::recode(.data$metric,
+        inverse_braak_magnitude = "braak_pathology_magnitude")) |>
+      dplyr::select(-dplyr::any_of(c("metric_label", "metric_type"))) |>
+      dplyr::left_join(sf3_metric_tbl, by = "metric") |>
+      dplyr::filter(.data$metric %in% sf3_primary_metrics)
+    for (m in sf3_primary_metrics) {
+      z <- null_tbl[null_tbl$metric == m, ]
+      if (nrow(z) != n_perm || anyDuplicated(z$perm) || any(!is.finite(z$null_mean))) {
+        stop("S3 requires 10,000 unique finite frozen draws for ", m, call. = FALSE)
+      }
+    }
+    observed_tbl <- observed_tbl |>
+      dplyr::filter(.data$metric %in% sf3_primary_metrics)
+    message("S3: rendering the frozen 10,000 matched null sets.")
+  } else {
+    null_tbl <- sf3_make_matched_null(hsp_tbl, background_tbl, n_perm = n_perm, seed = seed)
+  }
   summary_tbl <- sf3_null_summary(null_tbl, observed_tbl)
+  if (frozen) {
+    expected <- c(protein_late_decline_magnitude = 1.265840925881682,
+      braak_pathology_magnitude = 1.247473108461921,
+      cognition_priority_score = 1.5657058251254254,
+      agora_nominated_target = 2.076605555131758)
+    actual <- setNames(summary_tbl$observed_to_null_ratio, summary_tbl$metric)
+    if (any(abs(actual[names(expected)] - expected) > 1e-7) ||
+        any(summary_tbl$extreme_count_greater != 0)) {
+      stop("S3 sources differ from the verified caption; no final export made. Inspect frozen draws and canonical inputs.", call. = FALSE)
+    }
+  }
 
-  readr::write_csv(observed_tbl, file.path(audits_dir, "SuppFig3_observed_hsp60_10_summary.csv"))
-  readr::write_csv(null_tbl, file.path(audits_dir, "SuppFig3_matched_null_permutation_values.csv"))
-  readr::write_csv(summary_tbl, file.path(audits_dir, "SuppFig3_specificity_summary.csv"))
+  if (!frozen) {
+    readr::write_csv(observed_tbl, file.path(audits_dir, "SuppFig3_observed_hsp60_10_summary.csv"))
+    readr::write_csv(null_tbl, file.path(audits_dir, "SuppFig3_matched_null_permutation_values.csv"))
+    readr::write_csv(summary_tbl, file.path(audits_dir, "SuppFig3_specificity_summary.csv"))
+  }
+  readr::write_csv(summary_tbl, file.path(audits_dir, "SuppFig3_manuscript_render_summary.csv"))
+
+  if (!frozen) readr::write_csv(
+    summary_tbl |>
+      dplyr::filter(
+        .data$metric %in% c(
+          "braak_pathology_magnitude",
+          "cerad_pathology_magnitude",
+          "joint_pathology_magnitude",
+          "strict_joint_pathology_magnitude"
+        )
+      ),
+    file.path(
+      audits_dir,
+      "SuppFig3_pathology_metric_sensitivity_summary.csv"
+    )
+  )
 
   panel_a <- sf3_panel_label(sf3_make_schematic(), "A")
   panel_b <- sf3_panel_label(
@@ -722,8 +771,8 @@ make_supfig3_mitochondrial_specificity <- function(inputs, n_perm = 10000, seed 
     sf3_make_null_hist(
       null_tbl,
       summary_tbl,
-      metric_name = "inverse_braak_magnitude",
-      title = "Inverse Braak specificity",
+      metric_name = "braak_pathology_magnitude",
+      title = "Braak-specific pathology association",
       xlab = "Mean inverse Braak magnitude"
     ),
     "C"

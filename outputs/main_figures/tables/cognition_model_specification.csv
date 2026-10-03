@@ -1,0 +1,2 @@
+protein_abundance_source,protein_pre_residualized,direct_model_covariates,note
+prot_mat_raw,FALSE,age_death;sex;educ;pmi;Braak;CERAD;batch_factor,Cognition inference uses processed non-residualized protein abundance with nuisance/pathology covariates and TMT batch included directly in each regression.

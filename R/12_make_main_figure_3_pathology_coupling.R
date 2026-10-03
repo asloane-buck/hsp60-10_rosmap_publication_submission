@@ -881,7 +881,7 @@ pA <- ggplot(
 ############################################################
 
 cor_label_B <- paste0(
-  "Spearman \u03c1 = ",
+  "Spearman rho = ",
   signif(
     late_decline_braak_stats$spearman_rho,
     2
@@ -1001,7 +1001,7 @@ pB <- ggplot(
 ############################################################
 
 cor_label_C <- paste0(
-  "Spearman \u03c1 = ",
+  "Spearman rho = ",
   signif(
     late_decline_cerad_stats$spearman_rho,
     2

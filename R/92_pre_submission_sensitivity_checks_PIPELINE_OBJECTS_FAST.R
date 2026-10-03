@@ -407,7 +407,7 @@ build_fast_row_sampler <- function(selected_tbl, pool_tbl, try_cols_list) {
     sampler = function() {
       idx <- unlist(lapply(names(needed), function(k) {
         candidates <- pool_rows[[k]]
-        sample(candidates, size = as.integer(needed[[k]]), replace = length(candidates) < as.integer(needed[[k]]))
+        candidates[sample.int(length(candidates), size = as.integer(needed[[k]]), replace = length(candidates) < as.integer(needed[[k]]))]
       }), use.names = FALSE)
       pool_tbl[idx, , drop = FALSE]
     }

@@ -1,8 +1,8 @@
 conceptual_variable,detected_column,n_matrix_samples,n_metadata_rows_matched
-sample_id,sample_id,279,279
-braak,braak_num,279,279
-cerad,cerad_num,279,279
-age,age,279,279
-sex,sex_label,279,279
-pmi,pmi,279,279
-diagnosis,diagnosis_stage,279,279
+sample_id,sample_id,400,400
+braak,braak_num,400,400
+cerad,cerad_num,400,400
+age,age_num,400,400
+sex,sex_factor,400,400
+pmi,pmi_num,400,400
+tmt_batch,batch_factor,400,400

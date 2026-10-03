@@ -44,7 +44,7 @@ required_inputs <- c(
     AUDITDIR,
     "04_hard_reporting_gaps.csv"
   ),
-  "outputs/main_figures/tables/main_fig1_all_clients/Fig1B_all_clients_bootstrap_significance_FIXED.csv",
+  "outputs/main_figures/tables/main_fig1_all_clients/Fig1B_all_clients_side_by_side_modality_effects.csv",
   "outputs/main_figures/tables/main_fig3_all_clients/Fig3_all_clients_pathology_table.csv",
   "outputs/reviewer_revisions/corrected_cognition_production_validation/corrected_network_cognition_models.csv",
   "outputs/reviewer_revisions/regional_formal_interaction/hsp_conclusion_audit/Hsp_pathway_score_primary_interactions.csv",
@@ -102,7 +102,6 @@ audit_gaps <- read.csv(
 )
 
 expected_gap_keys <- c(
-  "Hsp_pathway_stage_Fig1|ci",
   "Protein_Braak_clients|se",
   "Protein_Braak_clients|ci",
   "Protein_Braak_clients|fdr",
@@ -119,7 +118,7 @@ observed_gap_keys <- paste(
 )
 
 if (
-  nrow(audit_gaps) != 8L ||
+  nrow(audit_gaps) != 7L ||
   !setequal(observed_gap_keys, expected_gap_keys)
 ) {
   stop(
@@ -142,12 +141,7 @@ for (i in seq_len(nrow(gap_resolution))) {
     sep = "|"
   )
 
-  if (key == "Hsp_pathway_stage_Fig1|ci") {
-    gap_resolution$gap_type[i] <- "audit_detector_false_negative"
-    gap_resolution$resolution[i] <- (
-      "Existing Fig1B bootstrap table already stores ci_lo and ci_hi."
-    )
-  } else if (key == "Protein_Braak_clients|fdr") {
+  if (key == "Protein_Braak_clients|fdr") {
     gap_resolution$gap_type[i] <- "audit_detector_false_negative"
     gap_resolution$resolution[i] <- (
       "Existing pathology table stores braak_padj; production helper uses BH."
@@ -560,39 +554,47 @@ pathology_reporting <- rbind(
 )
 
 ## ---------------------------------------------------------
-## 3. Fig1B: surface existing CI and add explicit BH family
+## 3. Fig1B: current side-by-side modality-specific effects
 ## ---------------------------------------------------------
 
 fig1 <- read.csv(
-  "outputs/main_figures/tables/main_fig1_all_clients/Fig1B_all_clients_bootstrap_significance_FIXED.csv",
+  "outputs/main_figures/tables/main_fig1_all_clients/Fig1B_all_clients_side_by_side_modality_effects.csv",
   stringsAsFactors = FALSE,
   check.names = FALSE
 )
 
 required_fig1 <- c(
-  "Pathway", "Shift", "delta", "ci_lo", "ci_hi", "p_value"
+  "Pathway", "PathwayLabel", "PathwayShort",
+  "Modality", "Shift", "stage_change"
 )
 
 if (!all(required_fig1 %in% names(fig1))) {
-  stop("Fig1B bootstrap table schema changed.")
+  stop("Current Fig1B side-by-side table schema changed.")
+}
+
+if (
+  nrow(fig1) != 40L ||
+  length(unique(fig1$Pathway)) != 10L ||
+  !setequal(unique(fig1$Modality), c("RNA", "Protein")) ||
+  !setequal(unique(fig1$Shift), c("NCI to MCI", "MCI to AD")) ||
+  any(!is.finite(fig1$stage_change))
+) {
+  stop("Current Fig1B side-by-side structure changed.")
 }
 
 fig1_reporting <- data.frame(
   pathway = fig1$Pathway,
+  pathway_label = fig1$PathwayLabel,
+  pathway_short = fig1$PathwayShort,
+  modality = fig1$Modality,
   shift = fig1$Shift,
-  effect = fig1$delta,
+  effect = fig1$stage_change,
   effect_label = (
-    "Existing Fig1B bootstrap transition-difference statistic (delta)"
+    "Within-modality change in mean standardized pathway score"
   ),
-  conf_low_95 = fig1$ci_lo,
-  conf_high_95 = fig1$ci_hi,
-  p_value = fig1$p_value,
-  fdr_bh_all_20_fig1b_tests = stats::p.adjust(
-    fig1$p_value,
-    method = "BH"
-  ),
+  inferential_status = "descriptive_cross_modal_display",
   primary_inference_note = (
-    "Raw bootstrap P retained; BH across all 20 Fig1B tests added as explicit multiplicity sensitivity."
+    "RNA and protein effects are displayed side-by-side on independently standardized modality-specific scales. No RNA-protein subtraction or cross-modal inferential test is performed."
   ),
   stringsAsFactors = FALSE
 )
@@ -727,7 +729,7 @@ multiplicity_policy <- data.frame(
     "Conventional_stage_DE"
   ),
   multiplicity_family = c(
-    "20 Fig1B pathway-by-transition bootstrap tests",
+    "Figure 1B side-by-side modality-specific stage changes",
     "3 prespecified network cognition outcomes",
     "2 primary Hsp pathway regional interaction tests",
     "2 stage contrasts within each score type",
@@ -739,7 +741,7 @@ multiplicity_policy <- data.frame(
     "tested feature universe within each modality/contrast"
   ),
   adjustment = c(
-    "BH sensitivity added; raw bootstrap P retained",
+    "Not applicable: no RNA-protein inferential comparison is performed",
     "BH added across 3 outcomes; raw P retained",
     "Existing BH_FDR_two_primary_tests retained",
     "Existing BH within score retained",
@@ -800,9 +802,18 @@ final_status$se[
 final_status$ci_95[
   final_status$analysis_id %in%
     c(
+      "Hsp_pathway_stage_Fig1",
       "RNA_pathway_PC1_sensitivity",
       "Cognition_matched_null"
     )
+] <- "not_applicable"
+
+final_status$p_value[
+  final_status$analysis_id == "Hsp_pathway_stage_Fig1"
+] <- "not_applicable"
+
+final_status$multiplicity[
+  final_status$analysis_id == "Hsp_pathway_stage_Fig1"
 ] <- "not_applicable"
 
 unresolved <- final_status[

@@ -1,0 +1,12 @@
+metric,value
+AD_models,9005
+AD_genomewide_FDR_lt_0.05,253
+AD_Hsp_tested,300
+AD_Hsp_genomewide_FDR_lt_0.05,6
+Braak_continuous_models,9002
+Braak_continuous_genomewide_FDR_lt_0.05,77
+Braak_continuous_Hsp_tested,300
+Braak_continuous_Hsp_genomewide_FDR_lt_0.05,1
+Braak_bin3_models,9001
+Braak_bin3_global_FDR_lt_0.05,53
+Braak_bin3_Hsp_tested,300

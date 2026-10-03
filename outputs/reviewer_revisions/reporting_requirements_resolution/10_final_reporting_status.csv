@@ -1,7 +1,7 @@
 "analysis_id","effect","se","ci_95","n","p_value","multiplicity","distribution_when_required"
 "RNA_stage_DE","resolved","resolved","resolved","resolved","resolved","resolved","resolved"
 "Protein_stage_DE","resolved","resolved","resolved","resolved","resolved","resolved","resolved"
-"Hsp_pathway_stage_Fig1","resolved","not_applicable","resolved","resolved","resolved","resolved","resolved"
+"Hsp_pathway_stage_Fig1","resolved","not_applicable","not_applicable","resolved","not_applicable","not_applicable","resolved"
 "Protein_Braak_clients","resolved","resolved","resolved","resolved","resolved","resolved","resolved"
 "Protein_CERAD_clients","resolved","resolved","resolved","resolved","resolved","resolved","resolved"
 "Cognition_network","resolved","resolved","resolved","resolved","resolved","resolved","resolved"

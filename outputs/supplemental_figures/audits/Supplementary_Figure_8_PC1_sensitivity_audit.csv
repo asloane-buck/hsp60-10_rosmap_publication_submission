@@ -1,0 +1,9 @@
+check,pass
+participant_file_exists,TRUE
+stage_summary_file_exists,TRUE
+stage_test_file_exists,TRUE
+concordance_file_exists,TRUE
+participant_n_577,TRUE
+pearson_matches_frozen_summary,TRUE
+spearman_matches_frozen_summary,TRUE
+PC1_variance_21_8_percent,TRUE

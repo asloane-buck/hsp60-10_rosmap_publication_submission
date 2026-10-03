@@ -1,0 +1,12 @@
+metric,value
+RNA primary-stage samples,577
+Protein TMT matrix columns,400
+Protein metadata rows mapped to matrix,400
+Unique protein participants,400
+Protein participants matched to ROSMAP clinical,400
+Protein primary cogdx 1/2/4 eligible,374
+Protein broad cogdx 1/(2+3)/(4+5) eligible,392
+Protein legacy Control/AsymAD/AD,340
+Protein legacy Exclude,60
+TMT batches represented,50
+TMT columns requiring batch-number zero-padding normalization,72

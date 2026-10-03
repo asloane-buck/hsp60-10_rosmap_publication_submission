@@ -3,8 +3,11 @@
 # ============================================================
 
 # This script replaces the previous robustness-dashboard design.
-# Purpose: show that RNA/protein remodeling trends are preserved when
-# restricting to individuals with both RNA-seq and proteomics available.
+# Purpose: show RNA and protein remodeling trajectories in the same
+# matched-individual subset while retaining modality-specific inference.
+# Direct RNA-vs-protein significance testing is intentionally avoided because
+# the modality-specific standardized scores are not interpreted as a direct
+# cross-modal effect difference.
 
 if (!exists("inputs")) {
   stop("Run 01_supplemental_load_inputs.R before 11_make_supplementary_figure_2_matched_individual_sensitivity.R.", call. = FALSE)
@@ -32,8 +35,7 @@ fig1_pathway_colors <- c(
 
 modality_colors <- c(
   "Protein" = "#8E1B1B",
-  "RNA" = "#1B4F9C",
-  "Protein vs RNA" = "black"
+  "RNA" = "#1B4F9C"
 )
 
 if (!requireNamespace("ggh4x", quietly = TRUE)) {
@@ -331,28 +333,6 @@ sf2_safe_unpaired_wilcox <- function(df, value_col, group_col, g1, g2) {
   )
 }
 
-sf2_safe_paired_wilcox <- function(df, value_col = "Score", modality_col = "Modality",
-                                   id_col = "individual_id", m1 = "Protein", m2 = "RNA") {
-  wide <- df |>
-    dplyr::select(
-      individual_id = dplyr::all_of(id_col),
-      Modality = dplyr::all_of(modality_col),
-      Score = dplyr::all_of(value_col)
-    ) |>
-    tidyr::drop_na() |>
-    dplyr::distinct(.data$individual_id, .data$Modality, .keep_all = TRUE) |>
-    tidyr::pivot_wider(names_from = "Modality", values_from = "Score") |>
-    tidyr::drop_na(dplyr::all_of(c(m1, m2)))
-
-  if (nrow(wide) < 3) {
-    return(NA_real_)
-  }
-
-  tryCatch(
-    stats::wilcox.test(wide[[m1]], wide[[m2]], paired = TRUE, exact = FALSE)$p.value,
-    error = function(e) NA_real_
-  )
-}
 
 sf2_make_pathway_sets <- function(interactor_tbl, mito_tbl) {
   interactor_genes <- interactor_tbl$gene
@@ -638,46 +618,19 @@ make_supfig2_matched_individual_sensitivity <- function(inputs) {
     dplyr::ungroup() |>
     dplyr::filter(.data$label != "")
 
-  between_sig <- matched_long |>
-    dplyr::group_by(.data$Pathway, .data$facet_label, .data$Stage) |>
-    dplyr::group_modify(~{
-      d <- .x
-      key <- .y
-
-      all_summ <- matched_summary |>
-        dplyr::filter(.data$Pathway == key$Pathway[[1]])
-      local_summ <- matched_summary |>
-        dplyr::filter(.data$Pathway == key$Pathway[[1]], .data$Stage == key$Stage[[1]])
-
-      all_top <- max(all_summ$mean_score + all_summ$sem, na.rm = TRUE)
-      all_bot <- min(all_summ$mean_score - all_summ$sem, na.rm = TRUE)
-      rng <- all_top - all_bot
-      if (!is.finite(rng) || rng == 0) rng <- 0.12
-
-      local_top <- max(local_summ$mean_score + local_summ$sem, na.rm = TRUE)
-      p_pair <- sf2_safe_paired_wilcox(d)
-      stage_x <- as.numeric(key$Stage[[1]])
-
-      tibble::tibble(
-        x1 = stage_x - 0.10,
-        x2 = stage_x + 0.10,
-        y = local_top + 0.06 * rng,
-        p_value_raw = p_pair,
-        label = sf2_p_to_stars(p_pair)
-      )
-    }) |>
-    dplyr::ungroup() |>
-    dplyr::filter(.data$label != "")
-
-  readr::write_csv(within_sig, file.path(audits_dir, "SuppFig2_within_modality_significance.csv"))
-  readr::write_csv(between_sig, file.path(audits_dir, "SuppFig2_protein_vs_RNA_significance.csv"))
+  readr::write_csv(
+    within_sig,
+    file.path(
+      audits_dir,
+      "SuppFig2_within_modality_significance.csv"
+    )
+  )
 
   plot_range <- range(
     c(
       matched_summary$mean_score - matched_summary$sem,
       matched_summary$mean_score + matched_summary$sem,
-      within_sig$y,
-      between_sig$y
+      within_sig$y
     ),
     na.rm = TRUE
   )
@@ -735,39 +688,6 @@ make_supfig2_matched_individual_sensitivity <- function(inputs) {
       inherit.aes = FALSE,
       fontface = "bold",
       size = 3.9,
-      show.legend = FALSE
-    ) +
-    ggplot2::geom_segment(
-      data = between_sig,
-      ggplot2::aes(x = .data$x1, xend = .data$x2, y = .data$y, yend = .data$y),
-      inherit.aes = FALSE,
-      linewidth = 0.65,
-      color = "black",
-      show.legend = FALSE
-    ) +
-    ggplot2::geom_segment(
-      data = between_sig,
-      ggplot2::aes(x = .data$x1, xend = .data$x1, y = .data$y - 0.010, yend = .data$y),
-      inherit.aes = FALSE,
-      linewidth = 0.65,
-      color = "black",
-      show.legend = FALSE
-    ) +
-    ggplot2::geom_segment(
-      data = between_sig,
-      ggplot2::aes(x = .data$x2, xend = .data$x2, y = .data$y - 0.010, yend = .data$y),
-      inherit.aes = FALSE,
-      linewidth = 0.65,
-      color = "black",
-      show.legend = FALSE
-    ) +
-    ggplot2::geom_text(
-      data = between_sig,
-      ggplot2::aes(x = (.data$x1 + .data$x2) / 2, y = .data$y + 0.008, label = .data$label),
-      inherit.aes = FALSE,
-      fontface = "bold",
-      size = 3.9,
-      color = "black",
       show.legend = FALSE
     ) +
     {
@@ -872,7 +792,6 @@ make_supfig2_matched_individual_sensitivity <- function(inputs) {
     matched_long = matched_long,
     matched_summary = matched_summary,
     within_sig = within_sig,
-    between_sig = between_sig,
     pathway_tbl = pathway_tbl,
     rna_meta = rna_meta,
     protein_meta = protein_meta,

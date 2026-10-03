@@ -1,5 +1,6 @@
-n_genes,median_inverse_braak,median_inverse_cerad,mean_inverse_braak,mean_inverse_cerad,median_braak_minus_cerad,mean_braak_minus_cerad,n_braak_gt_cerad,n_equal,n_cerad_gt_braak,p_value,p_label,star,test,spearman_rho,n_top,n_other,median_top,median_other
-306,0.08558570814808256,0,0.09701230587216546,0.018663578441315228,0.08271075460379321,0.07834872743085011,233,11,62,9.363400760679703e-25,P = 9.36e-25,***,paired_inverse_braak_vs_inverse_cerad,NA,NA,NA,NA,NA
-306,NA,NA,NA,NA,NA,NA,NA,NA,NA,4.131740755361168e-18,P = 4.13e-18,***,collapse_vs_inverse_braak_spearman,0.46862139773193195,NA,NA,NA,NA
-NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,2.6492866359057744e-9,P = 2.65e-09,***,inverse_braak_top_quartile_vs_other,NA,77,229,0.13509868821692564,0.06575195380670304
-306,NA,NA,NA,NA,0.08271075460379321,0.07834872743085011,233,11,62,9.363400760679703e-25,P = 9.36e-25,***,braak_minus_cerad_delta_summary,NA,NA,NA,NA,NA
+n_genes,median_braak_aligned_beta,median_cerad_aligned_beta,mean_braak_aligned_beta,mean_cerad_aligned_beta,median_braak_minus_cerad,mean_braak_minus_cerad,n_braak_positive,n_braak_negative,n_cerad_positive,n_cerad_negative,n_braak_gt_cerad,n_equal,n_cerad_gt_braak,p_value,p_label,star,test,spearman_rho,n_top,n_other,median_top,median_other
+306,0.04688895931406184,0.05714843099703078,0.04599119925119547,0.05020876824426888,-0.009624253902679895,-0.0042175689930734,237,69,229,77,132,0,174,0.09748180239859465,P = 0.097,ns,paired_signed_braak_vs_cerad,NA,NA,NA,NA,NA
+306,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,3.340635890630272e-25,P = 3.34e-25,***,late_decline_vs_signed_braak_spearman,0.5462721586315703,NA,NA,NA,NA
+306,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,2.286795761318067e-19,P = 2.29e-19,***,late_decline_vs_signed_cerad_spearman,0.4839081790624302,NA,NA,NA,NA
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,2.131670250657504e-10,P = 2.13e-10,***,signed_braak_top_late_decline_vs_other,NA,77,229,0.08930404803094491,0.03108676661202463
+NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,NA,3.022902177328561e-8,P = 3.02e-08,***,signed_cerad_top_late_decline_vs_other,NA,77,229,0.0946974343422246,0.042214515603942133

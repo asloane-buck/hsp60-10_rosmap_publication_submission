@@ -520,6 +520,40 @@ make_metadata_panels <- function(rna_meta, protein_meta) {
   message("Covariate availability audit:")
   print(covariate_audit)
 
+  # Metadata availability and analyzable primary sample counts are distinct.
+  # Keep stage_audit above unchanged. The manuscript panel uses the same
+  # frozen client-score sample counts as final Main Figure 1.
+  if (isTRUE(get0("SUPP_USE_FROZEN_MODELS", ifnotfound = FALSE))) {
+    primary_source <- file.path(main_outputs_dir, "tables", "main_fig1_all_clients",
+      "Fig1A_all_clients_overlay_summary.csv")
+    primary <- readr::read_csv(primary_source, show_col_types = FALSE)
+    required <- c("Pathway", "Modality", "Stage", "n")
+    if (!all(required %in% names(primary))) {
+      stop("S1 final Figure 1 source lacks Pathway/Modality/Stage/n columns.", call. = FALSE)
+    }
+    plotted_stage_audit <- primary |>
+      dplyr::filter(.data$Pathway == "Hsp60_10_all_clients",
+        .data$Modality %in% c("RNA", "Protein"), .data$Stage %in% c("NCI", "MCI", "AD")) |>
+      dplyr::transmute(modality = as.character(.data$Modality),
+        stage = as.character(.data$Stage), n_samples = as.numeric(.data$n),
+        source_file = primary_source,
+        population = "Analyzable primary Hsp60/10 client-score samples")
+    expected <- c(RNA_NCI = 200, RNA_MCI = 158, RNA_AD = 219,
+      Protein_NCI = 167, Protein_MCI = 96, Protein_AD = 109)
+    key <- paste(plotted_stage_audit$modality, plotted_stage_audit$stage, sep = "_")
+    actual <- setNames(plotted_stage_audit$n_samples, key)[names(expected)]
+    if (nrow(plotted_stage_audit) != 6 || anyDuplicated(key) ||
+        anyNA(actual) || any(actual != expected)) {
+      stop("S1 final Figure 1 source differs from verified primary analyzable counts.", call. = FALSE)
+    }
+    readr::write_csv(plotted_stage_audit,
+      file.path(audits_dir, "SuppFig1_plotted_primary_stage_counts.csv"))
+    message("S1 manuscript panel: final analyzable client-score counts; metadata availability is audited separately.")
+    print(plotted_stage_audit |> dplyr::select(-"source_file"))
+    usable_stage <- plotted_stage_audit |>
+      dplyr::mutate(display_stage = factor(.data$stage, levels = rev(c("NCI", "MCI", "AD"))),
+        modality = factor(.data$modality, levels = c("RNA", "Protein")))
+  } else {
   usable_stage <- stage_audit |>
     dplyr::filter(!.data$stage %in% c("Metadata not loaded", "Stage column not found")) |>
     dplyr::mutate(
@@ -530,6 +564,8 @@ make_metadata_panels <- function(rna_meta, protein_meta) {
     dplyr::filter(!is.na(.data$display_stage)) |>
     dplyr::group_by(.data$modality, .data$display_stage) |>
     dplyr::summarise(n_samples = sum(.data$n_samples), .groups = "drop")
+
+  }
 
   if (nrow(usable_stage) > 0) {
     x_max <- max(usable_stage$n_samples, na.rm = TRUE)
@@ -554,7 +590,7 @@ make_metadata_panels <- function(rna_meta, protein_meta) {
         expand = ggplot2::expansion(mult = c(0, 0.02))
       ) +
       ggplot2::labs(
-        title = "Samples by clinical stage",
+        title = "Analyzable samples by clinical stage",
         x = "Samples",
         y = NULL,
         fill = NULL

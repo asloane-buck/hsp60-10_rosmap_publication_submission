@@ -1,0 +1,9 @@
+check,pass
+results_file_exists,TRUE
+summary_file_exists,TRUE
+undetected_file_exists,TRUE
+39_detected_markers,TRUE
+117_marker_tests,TRUE
+9_FDR_significant_tests,TRUE
+all_FDR_significant_in_AD_vs_NCI,TRUE
+5_undetected_prespecified_markers,TRUE

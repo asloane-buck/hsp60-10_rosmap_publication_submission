@@ -46,7 +46,7 @@ panels_dir <- file.path(outputs_dir, "panels")
 tables_dir <- file.path(outputs_dir, "tables")
 audits_dir <- file.path(outputs_dir, "audits")
 manuscript_ready_pdf_dir <- file.path(outputs_dir, "manuscript_ready_supplemental_pdfs")
-manuscript_ready_png_dir <- file.path(outputs_dir, "manuscript_ready_supplemental_png_qc")
+manuscript_ready_png_dir <- file.path(outputs_dir, "manuscript_ready_supplemental_pngs")
 
 # Journal supplemental figure export constraints.
 SUPP_FULL_WIDTH_MM <- 170
@@ -58,9 +58,13 @@ SUPP_FINAL_FIGURE_HEIGHT_MM <- c(
   Supplementary_Figure_1_cohort_detection = 139,
   Supplementary_Figure_2_matched_individual_sensitivity = 85,
   Supplementary_Figure_3_mitochondrial_specificity = 140,
-  Supplementary_Figure_4_pathology_model_robustness = 119,
+  Supplementary_Figure_4_pathology_model_robustness = 145,
   Supplementary_Figure_5_msbb_cross_cohort_validation = 119,
-  Supplementary_Figure_6_regional_proteomics_validation = 120
+  Supplementary_Figure_6_regional_proteomics_validation = 140,
+  Supplementary_Figure_7_conventional_differential = 90,
+  Supplementary_Figure_8_PC1_sensitivity = 93,
+  Supplementary_Figure_9_variance_partition = 71,
+  Supplementary_Figure_10_marker_sensitivity = 180
 )
 
 if (any(SUPP_FINAL_FIGURE_HEIGHT_MM > SUPP_MAX_HEIGHT_MM)) {

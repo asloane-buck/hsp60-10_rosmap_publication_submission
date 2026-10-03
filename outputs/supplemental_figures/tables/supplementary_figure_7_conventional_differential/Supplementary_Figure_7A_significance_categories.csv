@@ -1,0 +1,13 @@
+contrast,n_shared_hsp_clients,significance_class,n_clients,contrast_label
+MCI_vs_NCI,257,RNA only,0,MCI vs NCI
+MCI_vs_NCI,257,Protein only,0,MCI vs NCI
+MCI_vs_NCI,257,Both,0,MCI vs NCI
+MCI_vs_NCI,257,Neither,257,MCI vs NCI
+AD_vs_MCI,257,RNA only,7,AD vs MCI
+AD_vs_MCI,257,Protein only,38,AD vs MCI
+AD_vs_MCI,257,Both,1,AD vs MCI
+AD_vs_MCI,257,Neither,211,AD vs MCI
+AD_vs_NCI,257,RNA only,6,AD vs NCI
+AD_vs_NCI,257,Protein only,104,AD vs NCI
+AD_vs_NCI,257,Both,10,AD vs NCI
+AD_vs_NCI,257,Neither,137,AD vs NCI

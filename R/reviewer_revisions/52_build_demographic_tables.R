@@ -938,8 +938,8 @@ display_long <- purrr::map_dfr(
 
 display_table <- display_long |>
   tidyr::pivot_wider(
-    names_from = .data$column_id,
-    values_from = .data$value
+    names_from = column_id,
+    values_from = value
   )
 
 ############################################################

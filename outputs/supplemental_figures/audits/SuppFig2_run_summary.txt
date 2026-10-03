@@ -1,14 +1,14 @@
 Supplementary Figure 2 run summary
-generated at: 2026-06-23 15:25:09 PDT
+generated at: 2026-10-03 16:11:21 MDT
 figure: matched-individual RNA/protein sensitivity analysis
-matched individuals: 142
-RNA matrix: 21433 genes x 578 samples
-Protein matrix: 8252 genes x 279 samples
+matched primary-stage individuals with identical RNA/protein stage: 198
+RNA matrix: 21433 genes x 577 samples
+Protein matrix: 8252 genes x 400 samples
 RNA metadata input: rna_meta
 Protein metadata input: protein_meta
 Client inventory size after harmonization: 321
 Mitochondrial background size after harmonization: 880
 pathways plotted:
   - Hsp60/10 client network (defined n=321)
-  - Broad mitochondrial background (defined n=880)
+  - Broad mitochondrial background (defined n=877)
   - TCA/pyruvate metabolism (defined n=83)

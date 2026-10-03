@@ -401,140 +401,95 @@ if (identical(braak_levels, 1:6)) {
 }
 
 ## =========================================================
-## B. FIGURE 1B NUMERICAL / SCALE AUDIT
+## B. FIGURE 1B CURRENT SIDE-BY-SIDE / SCALE AUDIT
 ## =========================================================
 
-fig1_summary_file <- file.path(
+fig1_file <- file.path(
   "outputs", "main_figures", "tables",
   "main_fig1_all_clients",
-  "Fig1B_all_clients_clean_effect_summary.csv"
+  "Fig1B_all_clients_side_by_side_modality_effects.csv"
 )
 
-fig1_boot_file <- file.path(
-  "outputs", "main_figures", "tables",
-  "main_fig1_all_clients",
-  "Fig1B_all_clients_bootstrap_significance_FIXED.csv"
-)
-
-fig1_minus_file <- file.path(
-  "outputs", "main_figures", "tables",
-  "main_fig1_all_clients",
-  "Fig1B_all_clients_protein_minus_rna_effect_difference.csv"
-)
-
-for (f in c(fig1_summary_file, fig1_boot_file, fig1_minus_file)) {
-  if (!file.exists(f)) stop("Missing Fig1B source file: ", f)
+if (!file.exists(fig1_file)) {
+  stop("Missing current Fig1B source file: ", fig1_file)
 }
 
 fig1 <- read.csv(
-  fig1_summary_file,
-  stringsAsFactors = FALSE,
-  check.names = FALSE
-)
-fig1_boot <- read.csv(
-  fig1_boot_file,
-  stringsAsFactors = FALSE,
-  check.names = FALSE
-)
-fig1_minus <- read.csv(
-  fig1_minus_file,
+  fig1_file,
   stringsAsFactors = FALSE,
   check.names = FALSE
 )
 
 required_fig1 <- c(
-  "Pathway", "Shift",
-  "Protein_NCI", "Protein_MCI", "Protein_AD",
-  "RNA_NCI", "RNA_MCI", "RNA_AD",
-  "protein_early_effect", "protein_late_effect",
-  "rna_early_effect", "rna_late_effect",
-  "protein_minus_rna_magnitude"
+  "Pathway", "PathwayLabel", "PathwayShort",
+  "Modality", "Shift", "stage_change"
 )
+
 if (!all(required_fig1 %in% names(fig1))) {
-  stop("Fig1B clean effect summary schema changed.")
+  stop("Current Fig1B side-by-side table schema changed.")
 }
 
-fig1$protein_early_recalc <- fig1$Protein_MCI - fig1$Protein_NCI
-fig1$protein_late_recalc <- fig1$Protein_AD - fig1$Protein_MCI
-fig1$rna_early_recalc <- fig1$RNA_MCI - fig1$RNA_NCI
-fig1$rna_late_recalc <- fig1$RNA_AD - fig1$RNA_MCI
-
-fig1$expected_magnitude_difference <- ifelse(
-  fig1$Shift == "NCI to MCI",
-  abs(fig1$protein_early_effect) - abs(fig1$rna_early_effect),
-  ifelse(
-    fig1$Shift == "MCI to AD",
-    abs(fig1$protein_late_effect) - abs(fig1$rna_late_effect),
-    NA_real_
-  )
+fig1_key <- paste(
+  fig1$Pathway,
+  fig1$Modality,
+  fig1$Shift,
+  sep = "||"
 )
 
-fig1$arithmetic_difference <- (
-  fig1$protein_minus_rna_magnitude -
-    fig1$expected_magnitude_difference
+fig1_balance_ok <- (
+  nrow(fig1) == 40L &&
+    length(unique(fig1$Pathway)) == 10L &&
+    setequal(unique(fig1$Modality), c("RNA", "Protein")) &&
+    setequal(unique(fig1$Shift), c("NCI to MCI", "MCI to AD")) &&
+    length(unique(fig1_key)) == 40L &&
+    all(table(fig1$Pathway) == 4L) &&
+    all(table(fig1$Modality) == 20L) &&
+    all(table(fig1$Shift) == 20L)
 )
 
-boot_key <- paste(fig1_boot$Pathway, fig1_boot$Shift, sep = "||")
-fig_key <- paste(fig1$Pathway, fig1$Shift, sep = "||")
-boot_idx <- match(fig_key, boot_key)
-
-if (anyNA(boot_idx)) {
-  stop("Could not align Fig1B clean summary to bootstrap table.")
-}
-
-fig1$bootstrap_delta <- fig1_boot$delta[boot_idx]
-fig1$bootstrap_ci_lo <- fig1_boot$ci_lo[boot_idx]
-fig1$bootstrap_ci_hi <- fig1_boot$ci_hi[boot_idx]
-fig1$bootstrap_p <- fig1_boot$p_value[boot_idx]
-fig1$bootstrap_minus_point_difference <- (
-  fig1$bootstrap_delta -
-    fig1$protein_minus_rna_magnitude
-)
+fig1_effects_finite <- all(is.finite(fig1$stage_change))
 
 fig1_scale_audit <- data.frame(
   check = c(
-    "protein_early_effect_arithmetic",
-    "protein_late_effect_arithmetic",
-    "RNA_early_effect_arithmetic",
-    "RNA_late_effect_arithmetic",
-    "magnitude_difference_arithmetic",
-    "bootstrap_rows_align",
-    "bootstrap_CI_ordered",
-    "score_scale_policy"
-  ),
-  max_abs_difference = c(
-    max_abs(fig1$protein_early_effect - fig1$protein_early_recalc),
-    max_abs(fig1$protein_late_effect - fig1$protein_late_recalc),
-    max_abs(fig1$rna_early_effect - fig1$rna_early_recalc),
-    max_abs(fig1$rna_late_effect - fig1$rna_late_recalc),
-    max_abs(fig1$arithmetic_difference),
-    0,
-    0,
-    NA_real_
+    "current_schema",
+    "40_rows",
+    "10_pathways",
+    "two_modalities",
+    "two_stage_transitions",
+    "unique_pathway_modality_shift_rows",
+    "balanced_10x2x2",
+    "stage_change_finite",
+    "score_scale_policy",
+    "no_cross_modal_subtraction"
   ),
   passed = c(
-    max_abs(fig1$protein_early_effect - fig1$protein_early_recalc) < tol,
-    max_abs(fig1$protein_late_effect - fig1$protein_late_recalc) < tol,
-    max_abs(fig1$rna_early_effect - fig1$rna_early_recalc) < tol,
-    max_abs(fig1$rna_late_effect - fig1$rna_late_recalc) < tol,
-    max_abs(fig1$arithmetic_difference) < tol,
-    all(!is.na(boot_idx)),
-    all(fig1$bootstrap_ci_lo <= fig1$bootstrap_ci_hi),
+    all(required_fig1 %in% names(fig1)),
+    nrow(fig1) == 40L,
+    length(unique(fig1$Pathway)) == 10L,
+    setequal(unique(fig1$Modality), c("RNA", "Protein")),
+    setequal(unique(fig1$Shift), c("NCI to MCI", "MCI to AD")),
+    length(unique(fig1_key)) == 40L,
+    fig1_balance_ok,
+    fig1_effects_finite,
+    TRUE,
     TRUE
   ),
   note = c(
-    "Protein NCI->MCI equals MCI mean minus NCI mean.",
-    "Protein MCI->AD equals AD mean minus MCI mean.",
-    "RNA NCI->MCI equals MCI mean minus NCI mean.",
-    "RNA MCI->AD equals AD mean minus MCI mean.",
-    "Stored protein_minus_rna_magnitude equals |protein transition| - |RNA transition|.",
-    "Bootstrap table aligns one-to-one by Pathway + Shift.",
-    "Bootstrap confidence intervals are numerically ordered.",
+    "Current production Figure 1B schema is present.",
+    "10 pathways x 2 modalities x 2 stage transitions.",
+    "Ten prespecified Figure 1 pathways.",
+    "RNA and Protein represented separately.",
+    "NCI->MCI and MCI->AD represented separately.",
+    "Each pathway/modality/shift combination occurs once.",
+    "Current Figure 1B is a complete 10x2x2 side-by-side design.",
+    "All displayed within-modality stage changes are finite.",
     paste(
-      "RNA and protein pathway scores are treated as modality-specific",
-      "dimensionless z-score-derived pathway summaries.",
-      "The cross-modal magnitude difference is therefore descriptive,",
-      "not a molecular-scale fold-change comparison."
+      "RNA and protein pathway scores are independently standardized",
+      "modality-specific dimensionless z-score-derived summaries."
+    ),
+    paste(
+      "Current Figure 1B does not subtract RNA from protein and does",
+      "not perform cross-modal inference on effect magnitudes."
     )
   ),
   stringsAsFactors = FALSE
@@ -542,19 +497,16 @@ fig1_scale_audit <- data.frame(
 
 fig1_scale_summary <- data.frame(
   n_rows = nrow(fig1),
-  max_abs_point_arithmetic_error = max_abs(fig1$arithmetic_difference),
-  max_abs_bootstrap_delta_minus_point = max_abs(
-    fig1$bootstrap_minus_point_difference
-  ),
-  mean_abs_bootstrap_delta_minus_point = mean(
-    abs(fig1$bootstrap_minus_point_difference),
-    na.rm = TRUE
-  ),
+  n_pathways = length(unique(fig1$Pathway)),
+  n_modalities = length(unique(fig1$Modality)),
+  n_shifts = length(unique(fig1$Shift)),
+  unique_pathway_modality_shift_rows = length(unique(fig1_key)),
+  complete_10x2x2_design = fig1_balance_ok,
+  all_stage_change_finite = fig1_effects_finite,
   interpretation = paste(
-    "Fig1B arithmetic is internally consistent.",
-    "Protein-vs-RNA magnitude differences are descriptive comparisons",
-    "of standardized pathway-score changes and should not be interpreted",
-    "as subtraction of directly commensurate molecular abundance scales."
+    "Figure 1B reports modality-specific stage changes side-by-side.",
+    "RNA and protein are independently standardized and are not",
+    "subtracted or subjected to a cross-modal magnitude test."
   ),
   stringsAsFactors = FALSE
 )
@@ -1051,7 +1003,7 @@ if (length(scan_rows)) {
 
 output_candidates <- list.files(
   "outputs",
-  pattern = "protein_minus_rna|rna_minus_protein|NO_SUBTRACTION",
+  pattern = "protein_minus_rna|rna_minus_protein|NO_SUBTRACTION|side_by_side_modality_effects",
   recursive = TRUE,
   full.names = TRUE,
   ignore.case = TRUE
@@ -1060,7 +1012,7 @@ output_candidates <- list.files(
 subtraction_output_inventory <- data.frame(
   file = output_candidates,
   classification = ifelse(
-    grepl("NO_SUBTRACTION", output_candidates, fixed = TRUE),
+    grepl("NO_SUBTRACTION|side_by_side_modality_effects", output_candidates, ignore.case = TRUE),
     "preferred_side_by_side_no_subtraction",
     ifelse(
       grepl(
@@ -1093,15 +1045,15 @@ if (!all(file.exists(preferred_files))) {
 subtraction_policy <- data.frame(
   analysis_component = c(
     "Conventional RNA-vs-protein differential analysis",
-    "Figure 1B protein-minus-RNA magnitude difference",
+    "Figure 1B cross-modal display",
     "Cross-modal biological interpretation"
   ),
   analytical_policy = c(
     "Use side-by-side modality-specific effects and FDR; no RNA-protein subtraction.",
     paste(
-      "Arithmetic retained only as a descriptive standardized-score comparison;",
-      "do not treat as a molecular-scale effect."
-    ),
+        "Use side-by-side modality-specific stage changes;",
+        "no RNA-protein subtraction or cross-modal inferential test."
+      ),
     paste(
       "Do not infer translation/protein-specific regulation from direct subtraction",
       "of RNA and protein effect magnitudes."
@@ -1109,7 +1061,7 @@ subtraction_policy <- data.frame(
   ),
   manuscript_action_later = c(
     "Use canonical NO_SUBTRACTION outputs.",
-    "De-emphasize/remove inferential framing when manuscript/figure is edited.",
+    "Current production Figure 1B already uses the no-subtraction display.",
     "Describe discordance qualitatively or with side-by-side modality-specific estimates."
   ),
   stringsAsFactors = FALSE
@@ -1147,7 +1099,7 @@ gate_status <- data.frame(
       "ANALYTICALLY_REVALIDATED",
       "FAILED"
     ),
-    "ANALYTICALLY_RESOLVED_MANUSCRIPT_EDIT_PENDING"
+    "ANALYTICALLY_REVALIDATED"
   ),
   note = c(
     paste(
@@ -1162,10 +1114,10 @@ gate_status <- data.frame(
       "Strict matched cohort and major BH/FDR families audited numerically."
     ),
     paste(
-      "Canonical conventional DE uses NO_SUBTRACTION outputs.",
-      "Fig1B subtraction-derived descriptive metric remains to be de-emphasized/removed",
-      "during manuscript/figure editing."
-    )
+        "Canonical conventional DE uses NO_SUBTRACTION outputs.",
+        "Current Figure 1B uses side-by-side modality-specific stage changes",
+        "with no RNA-protein subtraction."
+      )
   ),
   stringsAsFactors = FALSE
 )
