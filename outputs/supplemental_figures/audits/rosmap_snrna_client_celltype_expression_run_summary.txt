@@ -1,0 +1,31 @@
+ROSMAP snRNA-seq Hsp60/10 client cell-type expression analysis
+==============================================================
+Generated: 2026-07-07 17:13:58 PDT
+
+Purpose:
+  Reference cell-type localization of Hsp60/10 clients.
+  This does not model disease effects within snRNA-seq.
+
+Counts file: /Users/ashlynsloane/Buck Institute 25-26/ROSMAP Analysis March 26/eQTL_DLPFC_snRNAseq/Post_submission_reviewer_proofing/Raw_Data/ROSMAP_Brain.snRNAseq_counts_sparse_format_20230420.csv
+Cells file: /Users/ashlynsloane/Buck Institute 25-26/ROSMAP Analysis March 26/eQTL_DLPFC_snRNAseq/Post_submission_reviewer_proofing/Raw_Data/ROSMAP_Brain.snRNAseq_metadata_cells_20230420.csv
+Genes file: /Users/ashlynsloane/Buck Institute 25-26/ROSMAP Analysis March 26/eQTL_DLPFC_snRNAseq/Post_submission_reviewer_proofing/Raw_Data/ROSMAP_Brain.snRNAseq_metadata_genes_20230420.csv
+
+Sparse matrix dimensions: 28781 genes x 172659 cells
+Usable cells after library-size filtering: 172659
+Cell types: astrocytes, endothelials, Exc, Inh, microglia, oligodendrocytes, opcs, pericytes, VLMC
+Input Hsp60/10 clients: 306
+Hsp60/10 clients found in snRNA-seq: 292
+Top inverse-Braak quartile clients in selected table: 77
+AGORA target clients in selected table: 49
+High-priority candidate clients in selected table: 36
+
+Main outputs:
+  hsp60_clients_rosmap_snrna_celltype_expression_summary.csv
+  hsp60_clients_dominant_celltype_summary.csv
+  hsp60_client_vulnerability_celltype_expression_tests.csv
+  hsp60_client_inverse_braak_expression_spearman_by_celltype.csv
+  hsp60_highlighted_candidate_snrna_expression.csv
+  hsp60_clients_celltype_heatmap_ready_table.csv
+
+Removed from final outputs:
+  pareto_frontier, because no valid TRUE group was detected in the selected annotation table.
