@@ -1,0 +1,10 @@
+"family","file","p_column","fdr_column","group_column","n_rows","n_groups","max_abs_fdr_difference","passed"
+"Hsp client pathology models","outputs/reviewer_revisions/reporting_requirements_resolution/02_pathology_Braak_CERAD_effect_SE_CI_n_P_FDR.csv","p_value","fdr_bh","endpoint",612,2,1.66533453693773e-15,TRUE
+"Network cognition outcomes","outputs/reviewer_revisions/reporting_requirements_resolution/06_network_cognition_reporting_complete.csv","p.value","fdr_bh_three_network_outcomes","",3,1,0,TRUE
+"Corrected cognition null metrics","outputs/reviewer_revisions/reporting_requirements_resolution/08_cognition_null_reporting_complete.csv","empirical_p_greater","fdr_bh_across_null_metrics","",5,1,0,TRUE
+"Regional Hsp pathway primary interactions","outputs/reviewer_revisions/regional_formal_interaction/hsp_conclusion_audit/Hsp_pathway_score_primary_interactions.csv","p_region_x_predictor","BH_FDR_two_primary_tests","",2,1,9.99200722162641e-16,TRUE
+"Regional genome-wide AD interaction","outputs/reviewer_revisions/regional_formal_interaction/validated_final/FINAL_region_x_AD_interaction_all_proteins.csv","p_region_x_predictor","p_region_x_predictor_fdr","",9005,1,5.55111512312578e-16,TRUE
+"Regional genome-wide continuous Braak interaction","outputs/reviewer_revisions/regional_formal_interaction/validated_final/FINAL_region_x_Braak_continuous_interaction_all_proteins.csv","p_region_x_predictor","p_region_x_predictor_fdr","",9002,1,5.55111512312578e-16,TRUE
+"Regional genome-wide categorical Braak interaction","outputs/reviewer_revisions/regional_formal_interaction/validated_final/FINAL_region_x_Braak_bin3_interaction_all_proteins.csv","global_region_x_braak_bin3_p","global_region_x_braak_bin3_fdr","",9001,1,5.55111512312578e-16,TRUE
+"RNA pathway PC1 sensitivity","outputs/reviewer_revisions/Hsp_pathway_PC1_sensitivity/stage_Wilcoxon_mean_z_vs_PC1.csv","p_value","p_fdr_bh_within_score","score_type",4,2,9.97465998686664e-18,TRUE
+"Alternative-mechanism marker panel","outputs/reviewer_revisions/alternative_mechanism_marker_panel/marker_stage_limma_results.csv","p_value","marker_panel_fdr","contrast",117,3,1.19348975147204e-15,TRUE
