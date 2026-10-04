@@ -36,7 +36,7 @@ Prepared source files were scanned for obvious personal absolute local project p
 
 ## Not yet verified
 
-The full R pipeline has not been executed in this environment because the controlled-access local inputs are not included. Before public release, run the checklist in `CODEX_REPRODUCIBILITY_CHECKLIST.md` from a clean local clone.
+The full R pipeline has not been executed in this environment because the controlled-access local inputs are not included. Before public release, run the checklist in `REPRODUCIBILITY_CHECKLIST.md` from a clean local clone.
 
 ## Recommended public-release sequence
 

@@ -196,19 +196,8 @@ save_plot_set <- function(plot, filename_base, width, height, output_dir) {
 }
 
 find_poppler_tool <- function(tool_name) {
-  from_path <- Sys.which(tool_name)
-  candidates <- c(
-    unname(from_path),
-    file.path(
-      path.expand("~"),
-      ".cache",
-      "codex-runtimes",
-      "codex-primary-runtime",
-      "dependencies",
-      "bin",
-      tool_name
-    )
-  )
+  # Poppler tools must be available on the system PATH.
+  candidates <- unname(Sys.which(tool_name))
 
   candidates <- candidates[!is.na(candidates) & nzchar(candidates)]
   candidates[file.exists(candidates)][1] %||% NA_character_

@@ -56,14 +56,45 @@ export MSBB_VALIDATION_FILE="/path/to/MSBB_validation_results.csv"
 
 The clean expected local filenames are documented in `data/README.md` and `data/supplemental_inputs/README.md`.
 
-## Software
+## Software and environment
 
-This repository was prepared from R scripts using the following core packages: `tidyverse`, `janitor`, `readxl`, `broom`, `ggrepel`, `patchwork`, `scales`, `ggplot2`, `grid`, and optional export packages `ragg`, `svglite`, `ggtext`, and Ghostscript/font tools for PDF checks.
+The analysis environment is recorded in `renv.lock` (R 4.5.2; Bioconductor 3.22). With the corresponding R version and the `renv` package installed, restore the recorded packages from the repository root:
 
-For final publication, add either:
+```bash
+Rscript -e 'renv::restore(lockfile = "renv.lock", prompt = FALSE)'
+```
 
-- `renv.lock`, generated from the exact analysis environment; or
-- a session-info file generated after a successful full run.
+Figure export may additionally require system fonts and Ghostscript. Package restoration does not download controlled-access data or external annotation files.
+
+## Reviewer revision analyses and validation
+
+Reviewer analysis and audit scripts are in `R/reviewer_revisions/`. For a complete fresh-process run, after preparing the required local inputs:
+
+```bash
+bash R/reviewer_revisions/60_run_final_reproducibility_gate.sh
+Rscript R/reviewer_revisions/61_validate_final_reproducibility_gate.R
+```
+
+The runner executes the main pipeline, publication figure export, 10,000-permutation sensitivity analysis, supplemental pipeline, and reviewer analysis/validation chain. It writes run records to `outputs/reviewer_revisions/final_reproducibility_run/`, including phase exit statuses, code provenance, scientific CSV checksums and session information. The separate validator checks the resulting run records. These records describe the run that produced them; subsequent changes to code or outputs require corresponding verification.
+
+To validate existing remaining-analysis output tables without rerunning model fitting:
+
+```bash
+Rscript R/reviewer_revisions/59_validate_remaining_analysis_gates.R
+```
+
+Its required inputs are in `outputs/reviewer_revisions/remaining_analysis_gates/`. If those outputs need regeneration, run `R/reviewer_revisions/58_run_remaining_analysis_gates.R` before the validator. This analysis compares continuous and categorical Braak/CERAD models and audits Figure 1B, the matched cohort, BH correction and the use of side-by-side modality effects.
+
+## Submission outputs
+
+- Main publication figures: `outputs/main_figures/plots/manuscript_ready_pdf/`.
+- Supplemental figure composites: `outputs/supplemental_figures/figures/`.
+- Supplemental figure audit tables: `outputs/supplemental_figures/audits/`.
+- Reconciled submission workbook: `supplementary_tables/Hsp60_10_Supplementary_Tables_REVISED.xlsx`.
+
+The reconciled workbook contains Supplementary Tables 1–11. Historical exports and script backups are not substitutes for this workbook. Reviewer working outputs are ignored by Git by default; only individually reviewed aggregate results and provenance files should be selected for publication. Participant-level data and local input files remain excluded.
+
+Figure 5 cognition resampling uses 306 scored clients and 603 scored non-client mitochondrial proteins from 609 detected background proteins. The verified saved-score result has observed mean 4.972222, null mean 3.194182, observed/null ratio 1.556650, and one-sided add-one empirical P = 1/10,001 (10,000 draws; seed 1405). Main Figure 5 and supplemental Figure S3 have separately saved null draws; use each figure's own source tables when checking its reported values.
 
 ## Code availability statement draft
 

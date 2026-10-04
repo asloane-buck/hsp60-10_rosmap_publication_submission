@@ -1,4 +1,4 @@
-# Codex/local reproducibility checklist
+# Local reproducibility checklist
 
 Use this checklist before making the repository public or archiving it on Zenodo.
 
@@ -73,6 +73,6 @@ sink()
 
 1. Commit the sanitized source code only.
 2. Push to a private GitHub repository.
-3. Ask a lab member or Codex to run this checklist from a clean clone.
+3. Ask a lab member to run this checklist from a clean clone.
 4. Make the repository public only after PI approval.
 5. Create a GitHub release and archive that release with Zenodo.
