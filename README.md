@@ -1,6 +1,6 @@
 # Hsp60/10 mitochondrial chaperonin client analyses in ROSMAP
 
-This repository contains R code used to generate the main and supplemental manuscript figures for the Hsp60/10 mitochondrial chaperonin client analysis in Alzheimer's disease using ROSMAP transcriptomic, proteomic, neuropathological, cognitive, and validation data.
+This repository contains R analysis code and Python workbook-assembly scripts used to generate the main and supplemental manuscript figures and supplementary tables for the Hsp60/10 mitochondrial chaperonin client analysis in Alzheimer's disease using ROSMAP transcriptomic, proteomic, neuropathological, cognitive, and validation data.
 
 ## Data availability
 
@@ -92,13 +92,44 @@ Its required inputs are in `outputs/reviewer_revisions/remaining_analysis_gates/
 - Supplemental figure audit tables: `outputs/supplemental_figures/audits/`.
 - Reconciled submission workbook: `supplementary_tables/Hsp60_10_Supplementary_Tables_REVISED.xlsx`.
 
-The reconciled workbook contains Supplementary Tables 1–11. Historical exports and script backups are not substitutes for this workbook. Reviewer working outputs are ignored by Git by default; only individually reviewed aggregate results and provenance files should be selected for publication. Participant-level data and local input files remain excluded.
+The reconciled workbook contains Supplementary Tables 1–12. Historical exports and script backups are not substitutes for this workbook. Reviewer working outputs are ignored by Git by default; only individually reviewed aggregate results and provenance files should be selected for publication. Participant-level data and local input files remain excluded.
 
 Figure 5 cognition resampling uses 306 scored clients and 603 scored non-client mitochondrial proteins from 609 detected background proteins. The verified saved-score result has observed mean 4.972222, null mean 3.194182, observed/null ratio 1.556650, and one-sided add-one empirical P = 1/10,001 (10,000 draws; seed 1405). Main Figure 5 and supplemental Figure S3 have separately saved null draws; use each figure's own source tables when checking its reported values.
 
-## Code availability statement draft
+## Assemble the submission workbook
 
-Custom R analysis code used to generate the manuscript analyses and figures is available at this GitHub repository: https://github.com/asloane-buck/hsp60-10_rosmap_publication_submission and archived on Zenodo at https://doi.org/10.5281/zenodo.20851582. Controlled-access ROSMAP transcriptomic, proteomic, clinical, neuropathological, and metadata files are available through the applicable AD Knowledge Portal/Synapse access procedures and are not redistributed with this code repository.
+The reviewed workbook is `supplementary_tables/Hsp60_10_Supplementary_Tables_REVISED.xlsx`. It contains 13 scientific worksheets: one each for Tables 1–11, plus `S12_Marker_annotations` and `S12_GO_annotations` for Table 12. Table 12 documents an exploratory 44-protein marker panel; functional and GO annotations support its interpretation, not historical prespecification. The annotation source is `supplementary_tables/Hsp60_10_Exploratory_Marker_Annotations.xlsx`.
+
+To assemble a submission copy from the frozen Tables 1–11 and the saved annotation source, run from the repository root with Python 3:
+
+```bash
+python3 R/supplemental/assemble_submission_tables.py \
+  --existing supplementary_tables/Hsp60_10_Supplementary_Tables_REVISED.xlsx \
+  --table12 supplementary_tables/Hsp60_10_Exploratory_Marker_Annotations.xlsx \
+  --output supplementary_tables/Hsp60_10_Supplementary_Tables_SUBMISSION.xlsx
+```
+
+The output filename must not already exist. The standard-library assembler preserves the retained scientific worksheet XML, appends Table 12 using `add_supplementary_table_12.py`, and removes internal-note worksheets using `clean_submission_workbook.py`. It does not fit models or recalculate results. Protein-source links and GO evidence remain in the scientific annotation sheets.
+
+`20_build_revised_supplementary_tables.py` is a historical results-based builder with an APOE appendix named `ST12_APOE_sensitivity`; it is not the final submission-assembly entry point. Do not use that historical appendix as the manuscript's Table 12. The separately archived aggregate APOE effect summary is `outputs/reviewer_revisions/APOE_sensitivity/APOE_sensitivity_effect_summary.csv`.
+
+## Published-file provenance
+
+`PUBLICATION_FILE_SHA256.txt` records checksums for the selected submission workbook, annotation source, manuscript-ready main figures, supplemental composites and the archived APOE effect summary. Check the distributed files from the repository root:
+
+```bash
+shasum -a 256 -c PUBLICATION_FILE_SHA256.txt
+```
+
+This is a file-integrity check, not a new raw-data reproduction or model-validation run. The historical records under `outputs/reviewer_revisions/final_reproducibility_run/` remain unchanged and describe their original run.
+
+## Code availability and archived versions
+
+The revised analysis code and reviewed submission workbook are maintained on `main` after the publication-branch merge. The GitHub revision history identifies the exact files in each commit.
+
+The Zenodo DOI https://doi.org/10.5281/zenodo.20851582 archives the original June 2026 release, `v1.0.1-submission`. It does not archive the October reviewer revisions. A new Zenodo version must be created from the final revised release before its version DOI can be cited as the revision archive. Do not use the original release DOI as evidence that the revised files have been archived.
+
+Controlled-access ROSMAP transcriptomic, proteomic, clinical, neuropathological and metadata files remain available through the applicable AD Knowledge Portal/Synapse access procedures and are not redistributed here.
 
 ## License
 
