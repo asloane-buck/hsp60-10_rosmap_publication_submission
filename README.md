@@ -127,7 +127,9 @@ This is a file-integrity check, not a new raw-data reproduction or model-validat
 
 The revised analysis code and reviewed submission workbook are maintained on `main` after the publication-branch merge. The GitHub revision history identifies the exact files in each commit.
 
-The Zenodo DOI https://doi.org/10.5281/zenodo.20851582 archives the original June 2026 release, `v1.0.1-submission`. It does not archive the October reviewer revisions. A new Zenodo version must be created from the final revised release before its version DOI can be cited as the revision archive. Do not use the original release DOI as evidence that the revised files have been archived.
+The revised release, `v2.0.0-reviewer-revisions`, is archived in Zenodo at https://doi.org/10.5281/zenodo.23177576 (published October 6, 2026). This version archives the code and reviewed outputs supporting the revised manuscript.
+
+The original June 2026 release, `v1.0.1-submission`, remains available at https://doi.org/10.5281/zenodo.20851582.
 
 Controlled-access ROSMAP transcriptomic, proteomic, clinical, neuropathological and metadata files remain available through the applicable AD Knowledge Portal/Synapse access procedures and are not redistributed here.
 

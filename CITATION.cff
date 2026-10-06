@@ -5,3 +5,6 @@ authors:
   - family-names: "Sloane"
     given-names: "Rebecca"
 repository-code: "https://github.com/asloane-buck/hsp60-10_rosmap_publication_submission"
+version: "v2.0.0-reviewer-revisions"
+date-released: "2026-10-06"
+doi: "10.5281/zenodo.23177576"
