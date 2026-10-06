@@ -49,7 +49,7 @@ rm(list = ls())
 source("R/supplemental/90_run_supplemental_pipeline.R")
 ```
 
-Expected: Supplemental Figures 1-6 complete or fail only because a documented local input/intermediate file is missing.
+Expected: Supplemental Figures 1-10 complete or fail only because a documented local input/intermediate file is missing.
 
 ## 6. Capture environment
 
@@ -71,7 +71,7 @@ sink()
 
 ## 7. Release workflow
 
-1. Commit the sanitized source code only.
+1. Commit reviewed source code, documentation, aggregate results, and publication figures; exclude controlled-access inputs and participant-level data.
 2. Push to a private GitHub repository.
 3. Ask a lab member to run this checklist from a clean clone.
 4. Make the repository public only after PI approval.
