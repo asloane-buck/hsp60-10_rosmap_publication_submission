@@ -3,7 +3,7 @@
 # ============================================================
 
 # Purpose:
-# Test whether Hsp60/10 clients show stronger late-stage decline,
+# Test whether Hsp60/10 clients show stronger AD-versus-MCI lower abundance,
 # inverse Braak association, cognition association,
 # and AGORA support than abundance-matched non-Hsp60/10 mitochondrial
 # background proteins. Joint, CERAD-only, and strict-joint pathology
@@ -316,7 +316,7 @@ sf3_metric_tbl <- tibble::tibble(
     "strict_joint_pathology_magnitude"
   ),
   metric_label = c(
-    "Late-stage protein decline",
+    "AD-versus-MCI lower-abundance magnitude",
     "Inverse Braak association",
     "Cognition association score",
     "AGORA target fraction",
@@ -612,7 +612,7 @@ sf3_make_ratio_summary <- function(summary_tbl) {
       metric_label = factor(
         .data$metric_label,
         levels = rev(c(
-          "Late-stage protein decline",
+          "AD-versus-MCI lower-abundance magnitude",
           "Inverse Braak association",
           "Cognition association score",
           "AGORA target fraction"
@@ -762,8 +762,8 @@ make_supfig3_mitochondrial_specificity <- function(inputs, n_perm = 10000, seed 
       null_tbl,
       summary_tbl,
       metric_name = "protein_late_decline_magnitude",
-      title = "Late-stage decline specificity",
-      xlab = "Mean late-stage decline magnitude"
+      title = "AD-versus-MCI lower abundance specificity",
+      xlab = "Mean AD-versus-MCI lower abundance magnitude"
     ),
     "B"
   )

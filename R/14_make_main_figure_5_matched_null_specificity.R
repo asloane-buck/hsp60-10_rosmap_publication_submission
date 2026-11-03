@@ -5,7 +5,7 @@
 ## Primary comparison:
 ## Hsp60/10 clients versus abundance-matched non-client
 ## mitochondrial proteins across:
-##   - late-stage protein decline
+##   - AD-versus-MCI lower-abundance magnitude
 ##   - joint Braak/CERAD AD-pathology association
 ##   - cognition preservation support
 ##   - AGORA AD target enrichment
@@ -764,7 +764,7 @@ figure_tbl <- null_summary %>%
   mutate(
     metric_clean = case_when(
       metric == "protein_late_decline_magnitude" ~
-        "Late-stage\nprotein decline",
+        "AD-versus-MCI\nlower-abundance magnitude",
 
       metric == primary_pathology_metric ~
         "Joint AD pathology\nassociation",
@@ -783,7 +783,7 @@ figure_tbl <- null_summary %>%
       metric_clean,
       levels = rev(
         c(
-          "Late-stage\nprotein decline",
+          "AD-versus-MCI\nlower-abundance magnitude",
           "Joint AD pathology\nassociation",
           "Cognition\npreservation score",
           "AGORA target\nfraction"
@@ -1175,7 +1175,7 @@ final_fig <- (top_row / bottom_row) +
     title = "Hsp60/10 clients show coordinated vulnerability across AD-relevant dimensions",
     subtitle = paste0(
       "Against 10,000 abundance-matched non-client mitochondrial null sets, ",
-      "Hsp60/10 clients show stronger late-stage protein decline, stronger joint Braak/CERAD ",
+      "Hsp60/10 clients show stronger AD-versus-MCI lower-abundance magnitude, stronger joint Braak/CERAD ",
       "pathology association, higher cognition preservation support, and greater AGORA target enrichment."
     ),
     caption = paste0(

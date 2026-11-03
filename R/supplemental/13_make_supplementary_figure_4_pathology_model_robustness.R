@@ -513,9 +513,9 @@ sf4_make_scatter_plot <- function(plot_tbl) {
       color = "grey20"
     ) +
     ggplot2::labs(
-      title = "Late-stage decline vs adjusted Braak",
+      title = "AD-versus-MCI lower abundance vs adjusted Braak",
       subtitle = NULL,
-      x = "Late-stage protein decline magnitude",
+      x = "AD-versus-MCI lower-abundance magnitude",
       y = "CERAD-adjusted inverse Braak"
     ) +
     sf4_theme(base_size = 8.5)

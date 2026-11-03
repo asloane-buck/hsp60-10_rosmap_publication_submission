@@ -6,7 +6,7 @@
 ## Publication version notes:
 ## - Panel B simplified:
 ##     * removes centrality size mapping to reduce clutter
-##     * uses a single readable late-decline–Braak landscape
+##     * uses a single readable lower-abundance–Braak landscape
 ##     * fewer labels
 ## - Panel C:
 ##     * uses a muted 50–100% fill range (with squish)
@@ -468,7 +468,7 @@ functional_legend_labels <- c(
 late_decline_col <- require_any_col(
   priority_tbl,
   c("late_decline_percentile", "late_decline_pct"),
-  "late-stage decline percentile"
+  "AD-versus-MCI lower abundance percentile"
 )
 joint_pathology_col <- require_any_col(
   priority_tbl,
@@ -781,7 +781,7 @@ heatmap_tbl <- category_summary %>%
   mutate(
     evidence_layer = dplyr::recode(
       evidence_layer_raw,
-      median_late_decline = "Late decline",
+      median_late_decline = "Lower abundance",
       median_joint_pathology = "Joint pathology",
       median_cognition = "Cognition",
       median_centrality = "Centrality",
@@ -790,7 +790,7 @@ heatmap_tbl <- category_summary %>%
     ),
     evidence_layer = factor(
       evidence_layer,
-      levels = c("Late decline", "Joint pathology", "Cognition", "Centrality", "Frontier\nfraction", "AGORA\nfraction")
+      levels = c("Lower abundance", "Joint pathology", "Cognition", "Centrality", "Frontier\nfraction", "AGORA\nfraction")
     ),
     row_label = paste0(module_rank, ". ", functional_class, " (n=", n_genes, ")"),
     row_label = factor(row_label, levels = rev(unique(row_label)))
@@ -885,17 +885,17 @@ candidate_heatmap_tbl <- candidate_display_tbl %>%
   mutate(
     axis = recode(
       axis,
-      late_decline_pct = "Late decline",
+      late_decline_pct = "Lower abundance",
       joint_pathology_pct = "Joint pathology",
       cognition_pct = "Cognition",
       centrality_pct = "Centrality"
     ),
-    axis = factor(axis, levels = c("Late decline", "Joint pathology", "Cognition", "Centrality"))
+    axis = factor(axis, levels = c("Lower abundance", "Joint pathology", "Cognition", "Centrality"))
   )
 
 candidate_class_dot_tbl <- candidate_display_tbl %>%
   distinct(row_label, candidate_layer, functional_class) %>%
-  mutate(axis = factor("Class", levels = c("Class", "Late decline", "Joint pathology", "Cognition", "Centrality")))
+  mutate(axis = factor("Class", levels = c("Class", "Lower abundance", "Joint pathology", "Cognition", "Centrality")))
 
 candidate_layer_class_counts <- fig6_tbl %>%
   filter(candidate_layer != "Other classified client") %>%
@@ -945,7 +945,7 @@ schem_tbl <- tibble(
   header = c("Input", "Four prioritization axes", "Support/context layers", "Output"),
   body = c(
     "Detected Hsp60/10\nclients",
-    "Late-stage protein decline\nJoint Braak/CERAD pathology\nCognition preservation\nNetwork centrality",
+    "AD-versus-MCI lower-abundance magnitude\nJoint Braak/CERAD pathology\nCognition preservation\nNetwork centrality",
     "Pareto/frontier status\nAGORA support\nMitoCarta class",
     "Rule-based\ncandidate classes\nfor mechanistic\nfollow-up"
   ),
@@ -1056,9 +1056,9 @@ pB <- ggplot(
   scale_y_continuous(labels = percent_format(accuracy = 1), limits = c(0, 1), breaks = seq(0, 1, 0.25)) +
   coord_cartesian(clip = "off") +
   labs(
-    title = "B. Late-decline / joint-pathology target landscape",
-    subtitle = "Candidate-layer genes are colored by MitoCarta class; unlabeled background clients are grey. \nPareto rings use late-stage decline, joint pathology, cognition, and centrality axes.",
-    x = "Late-stage protein decline\npercentile",
+    title = "B. Lower-abundance / joint-pathology target landscape",
+    subtitle = "Candidate-layer genes are colored by MitoCarta class; unlabeled background clients are grey. \nPareto rings use AD-versus-MCI lower abundance, joint pathology, cognition, and centrality axes.",
+    x = "AD-versus-MCI lower-abundance magnitude\npercentile",
     y = "Joint AD pathology\npercentile"
   ) +
   theme_fig6(10.2) +
@@ -1085,7 +1085,7 @@ pC <- ggplot(heatmap_tbl, aes(x = evidence_layer, y = row_label, fill = value)) 
   muted_full_fill_scale(name = "Percentile /\nfraction") +
   labs(
     title = "C. Ranked MitoCarta functional-class evidence summary",
-    subtitle = "Rows are ordered by frontier fraction, then cognition, joint pathology, late-stage decline, and centrality.",
+    subtitle = "Rows are ordered by frontier fraction, then cognition, joint pathology, AD-versus-MCI lower abundance, and centrality.",
     x = NULL, y = NULL
   ) +
   theme_fig6(9.8) +
@@ -1149,7 +1149,7 @@ pD <- ggplot() +
     title = "D. Rule-based candidate-layer evidence table",
     subtitle = paste0(
       "Rows show up to ", display_n_per_layer,
-      " genes per candidate layer when available. Class dots use the same MitoCarta colors as Panel C/B. \nOrdering uses the unweighted mean of late-stage decline, joint pathology, cognition, and centrality percentiles for display only; \nfull ranked table is saved."
+      " genes per candidate layer when available. Class dots use the same MitoCarta colors as Panel C/B. \nOrdering uses the unweighted mean of AD-versus-MCI lower abundance, joint pathology, cognition, and centrality percentiles for display only; \nfull ranked table is saved."
     ),
     x = NULL,
     y = NULL
@@ -1281,7 +1281,7 @@ fig6_candidate_classification <- patchwork::free(pA) / patchwork::free(pB) / pC 
   ) +
   plot_annotation(
     title = "Integrated Hsp60/10 client evidence defines candidate classes for mechanistic follow-up",
-    subtitle = "Late-stage decline, joint Braak/CERAD pathology, cognition support, and centrality are continuous axes; AGORA support and MitoCarta-derived functional classes annotate rule-based candidate layers.",
+    subtitle = "AD-versus-MCI lower abundance, joint Braak/CERAD pathology, cognition support, and centrality are continuous axes; AGORA support and MitoCarta-derived functional classes annotate rule-based candidate layers.",
     theme = theme(
       plot.title = element_text(face = "bold", hjust = 0.5, size = 17.2),
       plot.subtitle = element_text(hjust = 0.5, size = 11.0, color = "grey35"),

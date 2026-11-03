@@ -5,7 +5,7 @@
 ############################################################
 
 ## MAIN FIGURE 2 — ALL HSP60/10 CLIENTS
-## Heterogeneous late-stage decline and network centrality
+## Heterogeneous AD-versus-MCI lower abundance and network centrality
 ############################################################
 
 suppressPackageStartupMessages({
@@ -180,13 +180,13 @@ fig2_tbl <- all_hsp60_10_client_tbl %>%
     ## Top quartile among detected protein clients.
     late_decline_group = if_else(
       late_decline_rank <= ceiling(0.25 * n_detected_clients),
-      "Top-quartile late decline",
+      "Top-quartile lower abundance",
       "Other detected Hsp60/10 clients"
     ),
 
     late_decline_group = factor(
       late_decline_group,
-      levels = c("Top-quartile late decline", "Other detected Hsp60/10 clients")
+      levels = c("Top-quartile lower abundance", "Other detected Hsp60/10 clients")
     ),
 
      label_gene = if_else(
@@ -264,15 +264,15 @@ print(late_decline_group_counts)
 centrality_stats_tbl <- fig2_tbl %>%
   filter(is.finite(centrality_value)) %>%
   summarise(
-    comparison = "Top-quartile late decline vs other detected clients",
+    comparison = "Top-quartile lower abundance vs other detected clients",
     metric = "Network centrality",
-    n_top = sum(late_decline_group == "Top-quartile late decline"),
+    n_top = sum(late_decline_group == "Top-quartile lower abundance"),
     n_other = sum(late_decline_group == "Other detected Hsp60/10 clients"),
-    median_top = median(centrality_value[late_decline_group == "Top-quartile late decline"], na.rm = TRUE),
+    median_top = median(centrality_value[late_decline_group == "Top-quartile lower abundance"], na.rm = TRUE),
     median_other = median(centrality_value[late_decline_group == "Other detected Hsp60/10 clients"], na.rm = TRUE),
     p_value = suppressWarnings(
       wilcox.test(
-        centrality_value[late_decline_group == "Top-quartile late decline"],
+        centrality_value[late_decline_group == "Top-quartile lower abundance"],
         centrality_value[late_decline_group == "Other detected Hsp60/10 clients"],
         exact = FALSE
       )$p.value
@@ -292,17 +292,17 @@ print(fig2_stats_tbl)
 ############################################################
 
 late_decline_colors <- c(
-  "Top-quartile late decline" = "#B22222",
+  "Top-quartile lower abundance" = "#B22222",
   "Other detected Hsp60/10 clients" = "grey78"
 )
 
 late_decline_point_colors <- c(
-  "Top-quartile late decline" = "#B22222",
+  "Top-quartile lower abundance" = "#B22222",
   "Other detected Hsp60/10 clients" = "grey70"
 )
 
 ############################################################
-## 5. Panel A — all detected clients ranked by late-stage decline
+## 5. Panel A — all detected clients ranked by AD-versus-MCI lower abundance
 ############################################################
 
 require_columns(
@@ -359,7 +359,7 @@ pA <- ggplot(
     max.time = 2,
     seed = 1
   ) +
-  scale_fill_manual(values = late_decline_point_colors, name = "Late-decline group") +
+  scale_fill_manual(values = late_decline_point_colors, name = "Lower-abundance group") +
   scale_color_manual(values = late_decline_point_colors, guide = "none") +
   scale_x_continuous(
     breaks = scales::pretty_breaks(n = 8),
@@ -369,10 +369,10 @@ pA <- ggplot(
     expand = expansion(mult = c(0.08, 0.48))
   ) +
   labs(
-    title = "A. Late-stage decline is heterogeneous across the Hsp60/10 client network",
-    subtitle = "All detected Hsp60/10 clients are ranked by late-stage protein decline; red marks the top quartile.",
+    title = "A. AD-versus-MCI lower abundance is heterogeneous across the Hsp60/10 client network",
+    subtitle = "All detected Hsp60/10 clients are ranked by AD-versus-MCI lower-abundance magnitude; red marks the top quartile.",
     x = "Rank among detected Hsp60/10 clients",
-    y = "Late-stage protein decline"
+    y = "AD-versus-MCI lower-abundance magnitude"
   ) +
   theme_fig2(11) +
   theme(
@@ -395,13 +395,13 @@ centrality_plot_tbl <- fig2_tbl %>%
   filter(is.finite(centrality_value)) %>%
   mutate(
       late_decline_group_short = case_when(
-    late_decline_group == "Top-quartile late decline" ~ paste0("Top quartile\n(n=", sum(late_decline_group == "Top-quartile late decline"), ")"),
+    late_decline_group == "Top-quartile lower abundance" ~ paste0("Top quartile\n(n=", sum(late_decline_group == "Top-quartile lower abundance"), ")"),
     late_decline_group == "Other detected Hsp60/10 clients" ~ paste0("Other clients\n(n=", sum(late_decline_group == "Other detected Hsp60/10 clients"), ")")
   ),
   late_decline_group_short = factor(
     late_decline_group_short,
     levels = c(
-      paste0("Top quartile\n(n=", sum(late_decline_group == "Top-quartile late decline"), ")"),
+      paste0("Top quartile\n(n=", sum(late_decline_group == "Top-quartile lower abundance"), ")"),
       paste0("Other clients\n(n=", sum(late_decline_group == "Other detected Hsp60/10 clients"), ")")
     )
 )
@@ -463,7 +463,7 @@ pB <- ggplot(
   scale_y_continuous(expand = expansion(mult = c(0.05, 0.70))) +
   labs(
     title = "B. Network centrality",
-    subtitle = "Top-quartile late-declining clients occupy more central positions in the client network.",
+    subtitle = "Top-quartile lower-abundance clients occupy more central positions in the client network.",
     x = NULL,
     y = "Network centrality"
   ) +
@@ -487,7 +487,7 @@ fig2_all_clients <- pA / pB +
   plot_layout(heights = c(1.35, 0.85)) +
   plot_annotation(
     title = "Hsp60/10 client vulnerability is selective across the full client network",
-    subtitle = "Late-stage protein decline is heterogeneous; strongly late-declining clients show greater network centrality.",
+    subtitle = "AD-versus-MCI lower-abundance magnitude is heterogeneous; clients with the greatest lower-abundance magnitude show greater network centrality.",
     theme = theme(
       plot.title = element_text(face = "bold", hjust = 0.5, size = 18),
       plot.subtitle = element_text(hjust = 0.5, size = 12, color = "grey35")

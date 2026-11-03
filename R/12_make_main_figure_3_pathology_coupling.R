@@ -4,8 +4,8 @@
 ##
 ## Corrected pathology-coupling figure:
 ##   A. Paired signed Braak/tau vs CERAD/amyloid pathology associations
-##   B. Late-stage decline vs signed Braak/tau-aligned association
-##   C. Late-stage decline vs signed CERAD/amyloid-aligned association
+##   B. AD-versus-MCI lower abundance vs signed Braak/tau-aligned association
+##   C. AD-versus-MCI lower abundance vs signed CERAD/amyloid-aligned association
 ##
 ## Positive pathology-aligned beta means lower protein abundance
 ## with worse pathology for BOTH endpoints:
@@ -222,8 +222,8 @@ fig3_tbl <- all_hsp60_10_client_tbl %>%
     detected_in_protein =
       as.logical(detected_in_protein),
 
-    ## Late-stage protein decline:
-    ## more positive = stronger MCI-to-AD protein decline.
+    ## AD-versus-MCI lower-abundance magnitude:
+    ## more positive = greater lower abundance in AD relative to MCI.
     late_decline_value =
       suppressWarnings(
         as.numeric(
@@ -277,7 +277,7 @@ fig3_tbl <- all_hsp60_10_client_tbl %>%
             0.25 *
               n_detected_clients
           ),
-        "Top-quartile late decline",
+        "Top-quartile lower abundance",
         "Other detected Hsp60/10 clients"
       ),
 
@@ -285,7 +285,7 @@ fig3_tbl <- all_hsp60_10_client_tbl %>%
       factor(
         late_decline_group,
         levels = c(
-          "Top-quartile late decline",
+          "Top-quartile lower abundance",
           "Other detected Hsp60/10 clients"
         )
       )
@@ -299,7 +299,7 @@ write_fig3_all_table(
 cat("\nFigure 3 table dimensions:\n")
 print(dim(fig3_tbl))
 
-cat("\nFigure 3 late-decline group counts:\n")
+cat("\nFigure 3 lower-abundance group counts:\n")
 print(
   table(
     fig3_tbl$late_decline_group
@@ -413,7 +413,7 @@ pathology_axis_stats <- pathology_pair_tbl %>%
   )
 
 ############################################################
-## Late decline vs Braak
+## Lower abundance vs Braak
 ############################################################
 
 late_decline_braak_tbl <- fig3_tbl %>%
@@ -451,7 +451,7 @@ late_decline_braak_stats <- tibble(
 )
 
 ############################################################
-## Late decline vs CERAD
+## Lower abundance vs CERAD
 ############################################################
 
 late_decline_cerad_tbl <- fig3_tbl %>%
@@ -489,7 +489,7 @@ late_decline_cerad_stats <- tibble(
 )
 
 ############################################################
-## Top-quartile late-decline descriptive comparisons
+## Top-quartile lower-abundance descriptive comparisons
 ############################################################
 
 braak_group_stats <- fig3_tbl %>%
@@ -497,7 +497,7 @@ braak_group_stats <- fig3_tbl %>%
     n_top =
       sum(
         late_decline_group ==
-          "Top-quartile late decline"
+          "Top-quartile lower abundance"
       ),
 
     n_other =
@@ -510,7 +510,7 @@ braak_group_stats <- fig3_tbl %>%
       median(
         braak_aligned_beta[
           late_decline_group ==
-            "Top-quartile late decline"
+            "Top-quartile lower abundance"
         ],
         na.rm = TRUE
       ),
@@ -528,7 +528,7 @@ braak_group_stats <- fig3_tbl %>%
       safe_wilcox_unpaired(
         braak_aligned_beta[
           late_decline_group ==
-            "Top-quartile late decline"
+            "Top-quartile lower abundance"
         ],
         braak_aligned_beta[
           late_decline_group ==
@@ -548,7 +548,7 @@ cerad_group_stats <- fig3_tbl %>%
     n_top =
       sum(
         late_decline_group ==
-          "Top-quartile late decline"
+          "Top-quartile lower abundance"
       ),
 
     n_other =
@@ -561,7 +561,7 @@ cerad_group_stats <- fig3_tbl %>%
       median(
         cerad_aligned_beta[
           late_decline_group ==
-            "Top-quartile late decline"
+            "Top-quartile lower abundance"
         ],
         na.rm = TRUE
       ),
@@ -579,7 +579,7 @@ cerad_group_stats <- fig3_tbl %>%
       safe_wilcox_unpaired(
         cerad_aligned_beta[
           late_decline_group ==
-            "Top-quartile late decline"
+            "Top-quartile lower abundance"
         ],
         cerad_aligned_beta[
           late_decline_group ==
@@ -662,25 +662,25 @@ print(
   width = Inf
 )
 
-cat("\n===== LATE DECLINE VS BRAAK =====\n")
+cat("\n===== LOWER ABUNDANCE VS BRAAK =====\n")
 print(
   late_decline_braak_stats,
   width = Inf
 )
 
-cat("\n===== LATE DECLINE VS CERAD =====\n")
+cat("\n===== LOWER ABUNDANCE VS CERAD =====\n")
 print(
   late_decline_cerad_stats,
   width = Inf
 )
 
-cat("\n===== BRAAK TOP-LATE-DECLINE GROUP =====\n")
+cat("\n===== BRAAK TOP-LOWER-ABUNDANCE GROUP =====\n")
 print(
   braak_group_stats,
   width = Inf
 )
 
-cat("\n===== CERAD TOP-LATE-DECLINE GROUP =====\n")
+cat("\n===== CERAD TOP-LOWER-ABUNDANCE GROUP =====\n")
 print(
   cerad_group_stats,
   width = Inf
@@ -691,7 +691,7 @@ print(
 ############################################################
 
 late_decline_colors <- c(
-  "Top-quartile late decline" =
+  "Top-quartile lower abundance" =
     "#9E4A4A",
 
   "Other detected Hsp60/10 clients" =
@@ -847,9 +847,9 @@ pA <- ggplot(
     values =
       late_decline_colors,
     name =
-      "Late-decline group",
+      "Lower-abundance group",
     labels = c(
-      "Top-quartile late decline",
+      "Top-quartile lower abundance",
       "Other clients"
     )
   ) +
@@ -877,7 +877,7 @@ pA <- ggplot(
   )
 
 ############################################################
-## 6. Panel B — late decline vs signed Braak/tau
+## 6. Panel B — lower abundance vs signed Braak/tau
 ############################################################
 
 cor_label_B <- paste0(
@@ -980,13 +980,13 @@ pB <- ggplot(
   ) +
   labs(
     title =
-      "B. Late-stage decline is associated with Braak/tau-aligned protein loss",
+      "B. AD-versus-MCI lower abundance is associated with Braak/tau-aligned protein loss",
 
     subtitle =
       "Higher pathology-aligned beta indicates lower protein abundance with worse Braak stage.",
 
     x =
-      "Late-stage protein decline",
+      "AD-versus-MCI lower-abundance magnitude",
 
     y =
       "Braak/tau-aligned beta"
@@ -997,7 +997,7 @@ pB <- ggplot(
   )
 
 ############################################################
-## 7. Panel C — late decline vs signed CERAD/amyloid
+## 7. Panel C — lower abundance vs signed CERAD/amyloid
 ############################################################
 
 cor_label_C <- paste0(
@@ -1100,13 +1100,13 @@ pC <- ggplot(
   ) +
   labs(
     title =
-      "C. Late-stage decline is associated with CERAD/amyloid-aligned protein loss",
+      "C. AD-versus-MCI lower abundance is associated with CERAD/amyloid-aligned protein loss",
 
     subtitle =
       "Because lower CERAD scores indicate worse pathology, positive beta is the pathology-aligned decline direction.",
 
     x =
-      "Late-stage protein decline",
+      "AD-versus-MCI lower-abundance magnitude",
 
     y =
       "CERAD/amyloid-aligned beta"
@@ -1136,7 +1136,7 @@ fig3_all_clients <-
     ) +
     plot_annotation(
       title =
-        "Late-stage Hsp60/10 client decline is associated with both tau and amyloid pathology",
+        "Hsp60/10 client AD-versus-MCI lower-abundance magnitude is associated with both tau and amyloid pathology",
 
       subtitle =
         paste0(
