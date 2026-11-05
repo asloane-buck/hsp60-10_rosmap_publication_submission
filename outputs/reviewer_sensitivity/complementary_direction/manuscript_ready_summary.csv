@@ -1,0 +1,29 @@
+statistic,value
+Hsp60/10 clients lower in AD,243
+Hsp60/10 clients higher in AD,63
+Hsp60/10 lower-in-AD fraction,0.7941176470588235
+Background proteins lower in AD,427
+Background proteins higher in AD,182
+Background lower-in-AD fraction,0.7011494252873564
+Direction Fisher odds ratio,1.643160612845698
+Direction Fisher 95% CI low,1.1737351911968166
+Direction Fisher 95% CI high,2.3196998342570554
+Direction Fisher two-sided P,0.0026423505368279874
+Lower-abundance observed mean,0.023021425900610556
+Lower-abundance null mean,0.01817768136509023
+Lower-abundance observed/null ratio,1.2664665772402972
+Lower-abundance upper-tail empirical P,1e-4
+Higher-abundance observed mean,0.0033475467630821433
+Higher-abundance null mean,0.0066770415249173595
+Higher-abundance observed/null ratio,0.5013517963891314
+Higher-abundance lower-tail empirical P,1e-4
+Absolute-difference observed mean,0.0263689726636927
+Absolute-difference null mean,0.02485472289000759
+Absolute-difference observed/null ratio,1.0609240256021477
+Absolute-difference upper-tail empirical P,0.0286
+Shared clients in conventional AD-versus-MCI analysis,257
+FDR-supported protein clients,39
+FDR-supported protein clients lower in AD,36
+FDR-supported protein clients higher in AD,3
+All shared protein clients lower in AD,200
+All shared protein clients higher in AD,57

@@ -1,0 +1,5 @@
+set,direction,n,total,fraction
+Hsp60/10 clients,higher_in_AD,63,306,0.20588235294117646
+Hsp60/10 clients,lower_in_AD,243,306,0.7941176470588235
+Non-client mitochondrial background,higher_in_AD,182,609,0.2988505747126437
+Non-client mitochondrial background,lower_in_AD,427,609,0.7011494252873564

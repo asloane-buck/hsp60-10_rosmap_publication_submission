@@ -1,0 +1,4 @@
+metric,label,primary_tail,observed,null_mean,null_sd,observed_to_null_ratio,z_score,upper_tail_extreme_count,empirical_p_upper_raw,empirical_p_upper_reported,lower_tail_extreme_count,empirical_p_lower_raw,empirical_p_lower_reported,primary_empirical_p_raw,primary_empirical_p_reported
+lower_abundance_magnitude,Lower abundance in AD versus MCI,upper,0.023021425900610556,0.01817768136509023,7.780692387297402e-4,1.2664665772402972,6.225338690202075,0,0,1e-4,10000,1,1,0,1e-4
+higher_abundance_magnitude,Higher abundance in AD versus MCI,lower,0.0033475467630821433,0.0066770415249173595,5.666008627230213e-4,0.5013517963891314,-5.876261370012801,10000,1,1,0,0,1e-4,0,1e-4
+absolute_difference,Absolute AD-versus-MCI difference,upper,0.0263689726636927,0.02485472289000759,7.908922744180848e-4,1.0609240256021477,1.914609388237163,286,0.0286,0.0286,9714,0.9714,0.9714,0.0286,0.0286

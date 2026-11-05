@@ -1,0 +1,11 @@
+analysis=Reviewer 2 complementary-direction sensitivity
+git_head=f9a7a9d8b43479b4d4cb6eb90ea13e0c13d891bf
+canonical_input=/Users/ashlynsloane/Buck Institute 25-26/ROSMAP Analysis March 26/hsp60_10_rosmap_publication_ready_repo/outputs/main_figures/tables/figure5_null_input_COVARIATE_ADJUSTED.csv
+canonical_input_md5=b813f7a257deb93f44b5d0cbd8878677
+seed=1300
+n_iter=10000
+reporting_floor=1e-04
+n_hsp=306
+n_background=609
+max_lower_metric_reconstruction_error=0
+timestamp=2026-11-05 10:04:44 -0700

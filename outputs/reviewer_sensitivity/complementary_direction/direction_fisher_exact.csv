@@ -1,0 +1,2 @@
+hsp_lower,hsp_higher,hsp_lower_fraction,background_lower,background_higher,background_lower_fraction,odds_ratio,conf_low,conf_high,p_value_two_sided
+243,63,0.7941176470588235,427,182,0.7011494252873564,1.643160612845698,1.1737351911968166,2.3196998342570554,0.0026423505368279874

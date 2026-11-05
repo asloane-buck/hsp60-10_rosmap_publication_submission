@@ -1,0 +1,3 @@
+check,sensitivity_value,canonical_value,abs_difference,status
+observed lower-abundance mean,0.023021425900610556,0.02302142590061056,3.469446951953614e-18,PASS
+matched-null lower-abundance mean,0.01817768136509023,0.01817768136509023,0,PASS
