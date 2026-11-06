@@ -422,7 +422,7 @@ fig1 <- read.csv(
 
 required_fig1 <- c(
   "Pathway", "PathwayLabel", "PathwayShort",
-  "Modality", "Shift", "stage_change"
+  "Modality", "Shift", "stage_difference"
 )
 
 if (!all(required_fig1 %in% names(fig1))) {
@@ -440,14 +440,14 @@ fig1_balance_ok <- (
   nrow(fig1) == 40L &&
     length(unique(fig1$Pathway)) == 10L &&
     setequal(unique(fig1$Modality), c("RNA", "Protein")) &&
-    setequal(unique(fig1$Shift), c("NCI to MCI", "MCI to AD")) &&
+    setequal(unique(fig1$Shift), c("NCI versus MCI", "MCI versus AD")) &&
     length(unique(fig1_key)) == 40L &&
     all(table(fig1$Pathway) == 4L) &&
     all(table(fig1$Modality) == 20L) &&
     all(table(fig1$Shift) == 20L)
 )
 
-fig1_effects_finite <- all(is.finite(fig1$stage_change))
+fig1_effects_finite <- all(is.finite(fig1$stage_difference))
 
 fig1_scale_audit <- data.frame(
   check = c(
@@ -458,7 +458,7 @@ fig1_scale_audit <- data.frame(
     "two_stage_transitions",
     "unique_pathway_modality_shift_rows",
     "balanced_10x2x2",
-    "stage_change_finite",
+    "stage_difference_finite",
     "score_scale_policy",
     "no_cross_modal_subtraction"
   ),
@@ -467,7 +467,7 @@ fig1_scale_audit <- data.frame(
     nrow(fig1) == 40L,
     length(unique(fig1$Pathway)) == 10L,
     setequal(unique(fig1$Modality), c("RNA", "Protein")),
-    setequal(unique(fig1$Shift), c("NCI to MCI", "MCI to AD")),
+    setequal(unique(fig1$Shift), c("NCI versus MCI", "MCI versus AD")),
     length(unique(fig1_key)) == 40L,
     fig1_balance_ok,
     fig1_effects_finite,
@@ -482,7 +482,7 @@ fig1_scale_audit <- data.frame(
     "NCI->MCI and MCI->AD represented separately.",
     "Each pathway/modality/shift combination occurs once.",
     "Current Figure 1B is a complete 10x2x2 side-by-side design.",
-    "All displayed within-modality stage changes are finite.",
+    "All displayed within-modality cross-sectional differences are finite.",
     paste(
       "RNA and protein pathway scores are independently standardized",
       "modality-specific dimensionless z-score-derived summaries."
@@ -502,9 +502,9 @@ fig1_scale_summary <- data.frame(
   n_shifts = length(unique(fig1$Shift)),
   unique_pathway_modality_shift_rows = length(unique(fig1_key)),
   complete_10x2x2_design = fig1_balance_ok,
-  all_stage_change_finite = fig1_effects_finite,
+  all_stage_difference_finite = fig1_effects_finite,
   interpretation = paste(
-    "Figure 1B reports modality-specific stage changes side-by-side.",
+    "Figure 1B reports modality-specific cross-sectional differences side-by-side.",
     "RNA and protein are independently standardized and are not",
     "subtracted or subjected to a cross-modal magnitude test."
   ),
@@ -1051,7 +1051,7 @@ subtraction_policy <- data.frame(
   analytical_policy = c(
     "Use side-by-side modality-specific effects and FDR; no RNA-protein subtraction.",
     paste(
-        "Use side-by-side modality-specific stage changes;",
+        "Use side-by-side modality-specific cross-sectional differences;",
         "no RNA-protein subtraction or cross-modal inferential test."
       ),
     paste(
@@ -1107,7 +1107,7 @@ gate_status <- data.frame(
       "continuous models reproduce production exactly."
     ),
     paste(
-      "Transition arithmetic, cross-modal magnitude arithmetic, bootstrap alignment,",
+      "Cross-sectional contrast arithmetic, cross-modal magnitude arithmetic, bootstrap alignment,",
       "and standardized-score interpretation audited."
     ),
     paste(
@@ -1115,7 +1115,7 @@ gate_status <- data.frame(
     ),
     paste(
         "Canonical conventional DE uses NO_SUBTRACTION outputs.",
-        "Current Figure 1B uses side-by-side modality-specific stage changes",
+        "Current Figure 1B uses side-by-side modality-specific cross-sectional differences",
         "with no RNA-protein subtraction."
       )
   ),

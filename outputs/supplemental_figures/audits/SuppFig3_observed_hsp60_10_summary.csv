@@ -1,5 +1,5 @@
 metric,metric_label,metric_type,observed_mean,observed_n
-protein_late_decline_magnitude,Late-stage protein decline,continuous,0.023021425900610556,306
+protein_lower_abundance_magnitude,AD-versus-MCI lower-abundance magnitude,continuous,0.023021425900610556,306
 braak_pathology_magnitude,Inverse Braak association,continuous,0.05638645644472039,306
 cognition_priority_score,Cognition association score,continuous,4.97222222222222,306
 agora_nominated_target,AGORA target fraction,fraction,0.16013071895424832,306

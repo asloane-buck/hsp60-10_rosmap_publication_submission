@@ -1734,8 +1734,8 @@ def build_st12(
         )
 
     metric_display = {
-        "late_decline_percentile":
-            "Late-decline percentile",
+        "lower_abundance_percentile":
+            "Lower-abundance percentile",
         "inverse_braak_percentile":
             "Inverse-Braak percentile",
         "pathology_vulnerability_score":
@@ -1978,7 +1978,7 @@ def validate_st12(
         late["direction_concordance"]
     ) != 1.0:
         raise RuntimeError(
-            "ST12 validation failed: late-stage "
+            "ST12 validation failed: AD-versus-MCI "
             "direction concordance should equal 1."
         )
 
@@ -1988,7 +1988,7 @@ def validate_st12(
     }
 
     if metrics != {
-        "late_decline_percentile",
+        "lower_abundance_percentile",
         "inverse_braak_percentile",
         "pathology_vulnerability_score",
     }:

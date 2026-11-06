@@ -48,9 +48,9 @@ if (length(forbidden_hits) > 0) {
 required_patterns <- c(
   "clinical_stage",
   'levels = c("NCI", "MCI", "AD")',
-  "protein_late_decline_magnitude",
-  "late_decline_percentile",
-  "SENSITIVITY_TOP_N_LATE_DECLINE",
+  "protein_lower_abundance_magnitude",
+  "lower_abundance_percentile",
+  "SENSITIVITY_TOP_N_LOWER_ABUNDANCE",
   "sensitivity_provenance.txt",
   "sensitivity_sessionInfo.txt"
 )
@@ -174,22 +174,22 @@ checks <- dplyr::bind_rows(
     !is.null(results$check2)
   ),
   check_one(
-    "Check 1 late-decline magnitude predictor",
-    "protein_late_decline_magnitude" %in% check1_metric_names,
+    "Check 1 lower-abundance magnitude predictor",
+    "protein_lower_abundance_magnitude" %in% check1_metric_names,
     TRUE,
-    "protein_late_decline_magnitude" %in% check1_metric_names
+    "protein_lower_abundance_magnitude" %in% check1_metric_names
   ),
   check_one(
-    "Check 1 late-decline percentile predictor",
-    "late_decline_percentile" %in% check1_metric_names,
+    "Check 1 lower-abundance percentile predictor",
+    "lower_abundance_percentile" %in% check1_metric_names,
     TRUE,
-    "late_decline_percentile" %in% check1_metric_names
+    "lower_abundance_percentile" %in% check1_metric_names
   ),
   check_one(
-    "Check 2 late-decline metric",
-    "protein_late_decline_magnitude" %in% check2_metric_names,
+    "Check 2 lower-abundance metric",
+    "protein_lower_abundance_magnitude" %in% check2_metric_names,
     TRUE,
-    "protein_late_decline_magnitude" %in% check2_metric_names
+    "protein_lower_abundance_magnitude" %in% check2_metric_names
   ),
   check_one(
     "Check 2 inverse-Braak metric",

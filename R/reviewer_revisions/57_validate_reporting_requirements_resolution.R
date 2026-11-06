@@ -183,7 +183,7 @@ add(
   "Fig1B_balanced_10x2x2",
   length(unique(fig1$pathway)) == 10L &&
     setequal(unique(fig1$modality), c("RNA", "Protein")) &&
-    setequal(unique(fig1$shift), c("NCI to MCI", "MCI to AD")) &&
+    setequal(unique(fig1$shift), c("NCI versus MCI", "MCI versus AD")) &&
     length(unique(fig1_keys)) == 40L,
   paste0(
     "pathways=", length(unique(fig1$pathway)),
@@ -196,7 +196,7 @@ add(
 add(
   "Fig1B_effects_finite",
   all(is.finite(fig1$effect)),
-  "all current modality-specific stage changes finite"
+  "all current modality-specific cross-sectional differences finite"
 )
 
 add(

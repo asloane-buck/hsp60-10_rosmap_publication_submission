@@ -81,7 +81,7 @@ sf3_summary <- supfig3_outputs$summary_tbl
 
 main_late_obs <- get_metric_value(
   main_fig5_null_summary,
-  "protein_late_decline_magnitude",
+  "protein_lower_abundance_magnitude",
   "observed"
 )
 main_braak_obs <- get_metric_value(
@@ -102,7 +102,7 @@ main_agora_obs <- get_metric_value(
 
 sf3_late_obs <- get_metric_value(
   sf3_summary,
-  "protein_late_decline_magnitude",
+  "protein_lower_abundance_magnitude",
   "observed_mean"
 )
 sf3_braak_obs <- get_metric_value(
@@ -190,7 +190,7 @@ checks <- dplyr::bind_rows(
     "Supp Fig 3 metric set",
     sort(as.character(sf3_summary$metric)),
     sort(c(
-      "protein_late_decline_magnitude",
+      "protein_lower_abundance_magnitude",
       "inverse_braak_magnitude",
       "cognition_priority_score",
       "agora_nominated_target"
@@ -198,7 +198,7 @@ checks <- dplyr::bind_rows(
     setequal(
       sf3_summary$metric,
       c(
-        "protein_late_decline_magnitude",
+        "protein_lower_abundance_magnitude",
         "inverse_braak_magnitude",
         "cognition_priority_score",
         "agora_nominated_target"
@@ -206,7 +206,7 @@ checks <- dplyr::bind_rows(
     )
   ),
   check_one(
-    "Supp Fig 3 observed late decline matches Main Fig 5",
+    "Supp Fig 3 observed lower-abundance magnitude matches Main Fig 5",
     abs(sf3_late_obs - main_late_obs),
     "<1e-12",
     is.finite(sf3_late_obs) &&

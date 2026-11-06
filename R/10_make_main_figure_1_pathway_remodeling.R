@@ -387,7 +387,7 @@ write_fig1_all_table(overlay_summary_all_clients, "Fig1A_all_clients_overlay_sum
 
 ############################################################
 ## 7. Panel A significance annotations
-## Colored brackets = within-modality stage changes
+## Colored brackets = within-modality cross-sectional differences
 ############################################################
 make_fig1_all_sig_annotations <- function(overlay_long, overlay_summary) {
   stage_levels <- c("NCI", "MCI", "AD")
@@ -504,7 +504,7 @@ fig1_sig_ann_all_clients %>%
 ############################################################
 ## 8. Panel B side-by-side modality effect table
 ##
-## Show signed RNA and protein stage changes separately.
+## Show signed RNA and protein cross-sectional differences separately.
 ## No RNA-minus-protein or protein-minus-RNA subtraction is
 ## calculated or used for inference.
 ############################################################
@@ -523,41 +523,40 @@ pB_tbl <- overlay_summary_all_clients %>%
     values_from = mean_score
   ) %>%
   mutate(
-    protein_early_effect = `Protein_MCI` - `Protein_NCI`,
-    protein_late_effect = `Protein_AD` - `Protein_MCI`,
-    rna_early_effect = `RNA_MCI` - `RNA_NCI`,
-    rna_late_effect = `RNA_AD` - `RNA_MCI`
+    protein_mci_minus_nci_effect = `Protein_MCI` - `Protein_NCI`,
+    protein_ad_minus_mci_effect = `Protein_AD` - `Protein_MCI`,
+    rna_mci_minus_nci_effect = `RNA_MCI` - `RNA_NCI`,
+    rna_ad_minus_mci_effect = `RNA_AD` - `RNA_MCI`
   ) %>%
   select(
     Pathway,
     PathwayLabel,
     PathwayShort,
-    protein_early_effect,
-    protein_late_effect,
-    rna_early_effect,
-    rna_late_effect
+    protein_mci_minus_nci_effect,
+    protein_ad_minus_mci_effect,
+    rna_mci_minus_nci_effect,
+    rna_ad_minus_mci_effect
   ) %>%
   pivot_longer(
     cols = c(
-      protein_early_effect,
-      protein_late_effect,
-      rna_early_effect,
-      rna_late_effect
+      protein_mci_minus_nci_effect,
+      protein_ad_minus_mci_effect,
+      rna_mci_minus_nci_effect,
+      rna_ad_minus_mci_effect
     ),
-    names_to = c("modality_key", "shift_key"),
-    names_pattern = "(protein|rna)_(early|late)_effect",
-    values_to = "stage_change"
+    names_to = "contrast_key",
+    values_to = "stage_difference"
   ) %>%
   mutate(
-    Modality = recode(
-      modality_key,
-      protein = "Protein",
-      rna = "RNA"
+    Modality = case_when(
+      startsWith(contrast_key, "protein_") ~ "Protein",
+      startsWith(contrast_key, "rna_") ~ "RNA",
+      TRUE ~ NA_character_
     ),
-    Shift = recode(
-      shift_key,
-      early = "NCI to MCI",
-      late = "MCI to AD"
+    Shift = case_when(
+      grepl("_mci_minus_nci_effect$", contrast_key) ~ "NCI versus MCI",
+      grepl("_ad_minus_mci_effect$", contrast_key) ~ "MCI versus AD",
+      TRUE ~ NA_character_
     ),
     Modality = factor(
       Modality,
@@ -565,7 +564,7 @@ pB_tbl <- overlay_summary_all_clients %>%
     ),
     Shift = factor(
       Shift,
-      levels = c("NCI to MCI", "MCI to AD")
+      levels = c("NCI versus MCI", "MCI versus AD")
     ),
     PathwayShort = factor(
       PathwayShort,
@@ -578,7 +577,7 @@ pB_tbl <- overlay_summary_all_clients %>%
     PathwayShort,
     Modality,
     Shift,
-    stage_change
+    stage_difference
   )
 
 require_columns(
@@ -588,7 +587,7 @@ require_columns(
     "PathwayShort",
     "Modality",
     "Shift",
-    "stage_change"
+    "stage_difference"
   ),
   "Figure 1 Panel B side-by-side effect table"
 )
@@ -620,9 +619,9 @@ if (nrow(pB_tbl) != expected_panelB_rows) {
   )
 }
 
-if (any(!is.finite(pB_tbl$stage_change))) {
+if (any(!is.finite(pB_tbl$stage_difference))) {
   stop(
-    "Figure 1 Panel B contains non-finite stage-change values.",
+    "Figure 1 Panel B contains non-finite cross-sectional differences.",
     call. = FALSE
   )
 }
@@ -753,7 +752,7 @@ pA <- ggplot(
   scale_y_continuous(expand = expansion(mult = c(0.08, 0.52))) +
   labs(
     title = "A. All-client pathway remodeling across AD stage",
-    subtitle = "Colored brackets show within-modality stage changes.",
+    subtitle = "Colored brackets show within-modality cross-sectional differences.",
     x = NULL,
     y = "Mean standardized pathway score"
   ) +
@@ -787,7 +786,7 @@ pB <- ggplot() +
   geom_point(
     data = pB_tbl,
     aes(
-      x = stage_change,
+      x = stage_difference,
       y = PathwayShort,
       shape = Modality,
       color = Modality
@@ -818,7 +817,7 @@ pB <- ggplot() +
     expand = expansion(mult = c(0.06, 0.06))
   ) +
   labs(
-    title = "B. RNA and protein stage changes",
+    title = "B. RNA and protein cross-sectional differences",
     subtitle = paste0(
       "Signed standardized pathway-score changes are shown separately ",
       "by modality; no cross-modal subtraction is used."

@@ -465,9 +465,9 @@ functional_legend_labels <- c(
 ## 4. Join priority table to MitoCarta
 ############################################################
 
-late_decline_col <- require_any_col(
+lower_abundance_col <- require_any_col(
   priority_tbl,
-  c("late_decline_percentile", "late_decline_pct"),
+  c("lower_abundance_percentile", "lower_abundance_pct"),
   "AD-versus-MCI lower abundance percentile"
 )
 joint_pathology_col <- require_any_col(
@@ -518,9 +518,9 @@ fig6_tbl <- priority_tbl %>%
   mutate(gene = clean_gene(gene)) %>%
   left_join(mitocarta_tbl, by = "gene") %>%
   mutate(
-    late_decline_pct =
+    lower_abundance_pct =
       as_fraction(
-        .data[[late_decline_col]]
+        .data[[lower_abundance_col]]
       ),
 
     ## Primary pathology dimension:
@@ -650,7 +650,7 @@ fig6_tbl <- fig6_tbl %>%
 fig6_tbl$pareto_frontier <- pareto_frontier_flag(
   fig6_tbl %>%
     select(
-      late_decline_pct,
+      lower_abundance_pct,
       joint_pathology_pct,
       cognition_pct,
       centrality_pct
@@ -661,7 +661,7 @@ fig6_tbl$pareto_frontier <- pareto_frontier_flag(
 fig6_tbl$strict_joint_pareto_frontier <- pareto_frontier_flag(
   fig6_tbl %>%
     select(
-      late_decline_pct,
+      lower_abundance_pct,
       strict_joint_pathology_pct,
       cognition_pct,
       centrality_pct
@@ -672,7 +672,7 @@ fig6_tbl$strict_joint_pareto_frontier <- pareto_frontier_flag(
 fig6_tbl$legacy_braak_pareto_frontier <- pareto_frontier_flag(
   fig6_tbl %>%
     select(
-      late_decline_pct,
+      lower_abundance_pct,
       legacy_braak_pct,
       cognition_pct,
       centrality_pct
@@ -684,7 +684,7 @@ fig6_tbl <- fig6_tbl %>%
     mean_axis_percentile_for_display_only =
       rowMeans(
         cbind(
-          late_decline_pct,
+          lower_abundance_pct,
           joint_pathology_pct,
           cognition_pct,
           centrality_pct
@@ -726,9 +726,9 @@ category_summary <- fig6_tbl %>%
   group_by(functional_class) %>%
   summarise(
     n_genes = n(),
-    median_late_decline =
+    median_lower_abundance =
       median(
-        late_decline_pct,
+        lower_abundance_pct,
         na.rm = TRUE
       ),
 
@@ -753,7 +753,7 @@ category_summary <- fig6_tbl %>%
     desc(pareto_fraction),
     desc(median_cognition),
     desc(median_joint_pathology),
-    desc(median_late_decline),
+    desc(median_lower_abundance),
     desc(median_centrality)
   ) %>%
   mutate(module_rank = row_number())
@@ -763,12 +763,12 @@ write_fig6_table(category_summary, "Fig6_MitoCarta_functional_class_summary_rank
 heatmap_tbl <- category_summary %>%
   select(
     module_rank, functional_class, n_genes,
-    median_late_decline, median_joint_pathology, median_cognition, median_centrality,
+    median_lower_abundance, median_joint_pathology, median_cognition, median_centrality,
     pareto_fraction, agora_fraction
   ) %>%
   pivot_longer(
     cols = c(
-      median_late_decline,
+      median_lower_abundance,
       median_joint_pathology,
       median_cognition,
       median_centrality,
@@ -781,7 +781,7 @@ heatmap_tbl <- category_summary %>%
   mutate(
     evidence_layer = dplyr::recode(
       evidence_layer_raw,
-      median_late_decline = "Lower abundance",
+      median_lower_abundance = "Lower abundance",
       median_joint_pathology = "Joint pathology",
       median_cognition = "Cognition",
       median_centrality = "Centrality",
@@ -803,7 +803,7 @@ candidate_rank_table <- fig6_tbl %>%
   ungroup() %>%
   select(
     display_rank_within_layer, gene, candidate_layer, functional_class,
-    late_decline_pct,
+    lower_abundance_pct,
     joint_pathology_pct,
     strict_joint_pathology_pct,
     legacy_braak_pct,
@@ -867,14 +867,14 @@ candidate_heatmap_tbl <- candidate_display_tbl %>%
     row_label,
     candidate_layer,
     functional_class,
-    late_decline_pct,
+    lower_abundance_pct,
     joint_pathology_pct,
     cognition_pct,
     centrality_pct
   ) %>%
   pivot_longer(
     cols = c(
-      late_decline_pct,
+      lower_abundance_pct,
       joint_pathology_pct,
       cognition_pct,
       centrality_pct
@@ -885,7 +885,7 @@ candidate_heatmap_tbl <- candidate_display_tbl %>%
   mutate(
     axis = recode(
       axis,
-      late_decline_pct = "Lower abundance",
+      lower_abundance_pct = "Lower abundance",
       joint_pathology_pct = "Joint pathology",
       cognition_pct = "Cognition",
       centrality_pct = "Centrality"
@@ -1015,7 +1015,7 @@ pA <- ggplot() +
 pB <- ggplot(
   fig6_tbl,
   aes(
-    x = late_decline_pct,
+    x = lower_abundance_pct,
     y = joint_pathology_pct
   )
 ) +

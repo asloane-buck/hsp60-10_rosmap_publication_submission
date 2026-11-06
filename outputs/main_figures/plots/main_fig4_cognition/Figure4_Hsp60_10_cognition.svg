@@ -523,7 +523,7 @@
 <text x='336.05' y='349.58' text-anchor='middle' style='font-size: 9.50px; font-weight: bold; font-family: "Arial";' textLength='36.39px' lengthAdjust='spacingAndGlyphs'>at death</text>
 <text transform='translate(25.45,200.73) rotate(-90)' text-anchor='middle' style='font-size: 10.50px; font-weight: bold; font-family: "Arial";' textLength='155.27px' lengthAdjust='spacingAndGlyphs'>Adjusted Hsp60/10 client score</text>
 <text x='79.26' y='78.27' style='font-size: 9.80px;fill: #595959; font-family: "Arial";' textLength='247.38px' lengthAdjust='spacingAndGlyphs'>Adjusted Hsp60/10 score across final cognitive diagnosis</text>
-<text x='79.26' y='63.40' style='font-size: 12.50px; font-weight: bold; font-family: "Arial";' textLength='382.69px' lengthAdjust='spacingAndGlyphs'>A. Client network abundance declines with cognitive impairment</text>
+<text x='79.26' y='63.40' style='font-size: 12.50px; font-weight: bold; font-family: "Arial";' textLength='379.19px' lengthAdjust='spacingAndGlyphs'>A. Client network abundance is lower with cognitive impairment</text>
 </g>
 <defs>
   <clipPath id='cpNzkuMjZ8NTkyLjgzfDQwNi42Nnw2MDIuODc='>
@@ -960,7 +960,7 @@
 <rect x='763.95' y='694.66' width='5.85' height='5.85' style='stroke-width: 0.62; stroke: none; fill: #B3B3B3;' />
 <circle cx='766.87' cy='697.58' r='4.47' style='stroke-width: 0.45; fill: #B3B3B3;' />
 <text x='777.34' y='699.48' style='font-size: 5.30px; font-family: "Arial";' textLength='13.28px' lengthAdjust='spacingAndGlyphs'>0.001</text>
-<text x='583.20' y='36.78' text-anchor='middle' style='font-size: 10.60px;fill: #595959; font-family: "Arial";' textLength='478.11px' lengthAdjust='spacingAndGlyphs'>Network-level decline is accompanied by cognition-prioritized mitochondrial client classes in ROSMAP</text>
+<text x='583.20' y='36.78' text-anchor='middle' style='font-size: 10.60px;fill: #595959; font-family: "Arial";' textLength='501.66px' lengthAdjust='spacingAndGlyphs'>Lower network abundance is accompanied by cognition-prioritized mitochondrial client classes in ROSMAP</text>
 <text x='583.20' y='20.15' text-anchor='middle' style='font-size: 17.00px; font-weight: bold; font-family: "Arial";' textLength='543.53px' lengthAdjust='spacingAndGlyphs'>Hsp60/10 Client Network Abundance Tracks Cognitive Preservation</text>
 </g>
 </g>

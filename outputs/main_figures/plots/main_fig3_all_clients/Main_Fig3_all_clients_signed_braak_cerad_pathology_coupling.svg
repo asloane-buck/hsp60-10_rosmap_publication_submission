@@ -1095,10 +1095,10 @@
 <text x='398.52' y='218.02' text-anchor='middle' style='font-size: 10.00px;fill: #333333; font-family: "Arial";' textLength='25.03px' lengthAdjust='spacingAndGlyphs'>0.050</text>
 <text x='442.08' y='218.02' text-anchor='middle' style='font-size: 10.00px;fill: #333333; font-family: "Arial";' textLength='25.03px' lengthAdjust='spacingAndGlyphs'>0.075</text>
 <text x='485.65' y='218.02' text-anchor='middle' style='font-size: 10.00px;fill: #333333; font-family: "Arial";' textLength='25.03px' lengthAdjust='spacingAndGlyphs'>0.100</text>
-<text x='393.98' y='230.74' text-anchor='middle' style='font-size: 11.00px; font-weight: bold; font-family: "Arial";' textLength='136.38px' lengthAdjust='spacingAndGlyphs'>Late-stage protein decline</text>
+<text x='393.98' y='230.74' text-anchor='middle' style='font-size: 11.00px; font-weight: bold; font-family: "Arial";' textLength='231.09px' lengthAdjust='spacingAndGlyphs'>AD-versus-MCI lower-abundance magnitude</text>
 <text transform='translate(271.45,164.42) rotate(-90)' text-anchor='middle' style='font-size: 11.00px; font-weight: bold; font-family: "Arial";' textLength='118.03px' lengthAdjust='spacingAndGlyphs'>Braak/tau-aligned beta</text>
 <text x='298.67' y='76.14' style='font-size: 10.00px;fill: #595959; font-family: "Arial";' textLength='396.95px' lengthAdjust='spacingAndGlyphs'>Higher pathology-aligned beta indicates lower protein abundance with worse Braak stage.</text>
-<text x='298.67' y='60.76' style='font-size: 13.00px; font-weight: bold; font-family: "Arial";' textLength='434.91px' lengthAdjust='spacingAndGlyphs'>B. Late-stage decline is associated with Braak/tau-aligned protein loss</text>
+<text x='298.67' y='60.76' style='font-size: 13.00px; font-weight: bold; font-family: "Arial";' textLength='523.98px' lengthAdjust='spacingAndGlyphs'>B. AD-versus-MCI lower abundance is associated with Braak/tau-aligned protein loss</text>
 <rect x='55.03' y='281.27' width='434.26' height='78.86' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
 <polyline points='55.03,358.15 489.28,358.15 ' style='stroke-width: 0.53; stroke: #EBEBEB; stroke-linecap: butt;' />
 <polyline points='55.03,345.11 489.28,345.11 ' style='stroke-width: 0.53; stroke: #EBEBEB; stroke-linecap: butt;' />
@@ -1461,18 +1461,18 @@
 <text x='282.49' y='372.22' text-anchor='middle' style='font-size: 10.00px;fill: #333333; font-family: "Arial";' textLength='25.03px' lengthAdjust='spacingAndGlyphs'>0.050</text>
 <text x='381.75' y='372.22' text-anchor='middle' style='font-size: 10.00px;fill: #333333; font-family: "Arial";' textLength='25.03px' lengthAdjust='spacingAndGlyphs'>0.075</text>
 <text x='481.01' y='372.22' text-anchor='middle' style='font-size: 10.00px;fill: #333333; font-family: "Arial";' textLength='25.03px' lengthAdjust='spacingAndGlyphs'>0.100</text>
-<text x='272.15' y='384.94' text-anchor='middle' style='font-size: 11.00px; font-weight: bold; font-family: "Arial";' textLength='136.38px' lengthAdjust='spacingAndGlyphs'>Late-stage protein decline</text>
+<text x='272.15' y='384.94' text-anchor='middle' style='font-size: 11.00px; font-weight: bold; font-family: "Arial";' textLength='231.09px' lengthAdjust='spacingAndGlyphs'>AD-versus-MCI lower-abundance magnitude</text>
 <text transform='translate(27.80,320.70) rotate(-90)' text-anchor='middle' style='font-size: 11.00px; font-weight: bold; font-family: "Arial";' textLength='151.62px' lengthAdjust='spacingAndGlyphs'>CERAD/amyloid-aligned beta</text>
-<text x='55.03' y='273.69' style='font-size: 10.00px;fill: #595959; font-family: "Arial";' textLength='495.70px' lengthAdjust='spacingAndGlyphs'>Because lower CERAD scores indicate worse pathology, positive beta is the pathology-aligned decline direction.</text>
-<text x='55.03' y='258.31' style='font-size: 13.00px; font-weight: bold; font-family: "Arial";' textLength='474.61px' lengthAdjust='spacingAndGlyphs'>C. Late-stage decline is associated with CERAD/amyloid-aligned protein loss</text>
-<rect x='112.82' y='83.72' width='318.67' height='28.24' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<text x='118.30' y='101.42' style='font-size: 10.00px; font-weight: bold; font-family: "Arial";' textLength='89.47px' lengthAdjust='spacingAndGlyphs'>Late-decline group</text>
-<circle cx='221.89' cy='97.84' r='1.94' style='stroke-width: 0.26; stroke: #595959; stroke-opacity: 0.65; fill: #9E4A4A; fill-opacity: 0.65;' />
-<circle cx='355.75' cy='97.84' r='1.94' style='stroke-width: 0.26; stroke: #595959; stroke-opacity: 0.65; fill: #BFBFBF; fill-opacity: 0.65;' />
-<text x='236.01' y='101.42' style='font-size: 10.00px; font-family: "Arial";' textLength='105.62px' lengthAdjust='spacingAndGlyphs'>Top-quartile late decline</text>
-<text x='369.87' y='101.42' style='font-size: 10.00px; font-family: "Arial";' textLength='56.14px' lengthAdjust='spacingAndGlyphs'>Other clients</text>
+<text x='55.03' y='273.69' style='font-size: 10.00px;fill: #595959; font-family: "Arial";' textLength='540.73px' lengthAdjust='spacingAndGlyphs'>Because lower CERAD scores indicate worse pathology, positive beta is the pathology-aligned lower-abundance direction.</text>
+<text x='55.03' y='258.31' style='font-size: 13.00px; font-weight: bold; font-family: "Arial";' textLength='563.69px' lengthAdjust='spacingAndGlyphs'>C. AD-versus-MCI lower abundance is associated with CERAD/amyloid-aligned protein loss</text>
+<rect x='86.42' y='83.72' width='371.47' height='28.24' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<text x='91.90' y='101.42' style='font-size: 10.00px; font-weight: bold; font-family: "Arial";' textLength='116.69px' lengthAdjust='spacingAndGlyphs'>Lower-abundance group</text>
+<circle cx='222.71' cy='97.84' r='1.94' style='stroke-width: 0.26; stroke: #595959; stroke-opacity: 0.65; fill: #9E4A4A; fill-opacity: 0.65;' />
+<circle cx='382.15' cy='97.84' r='1.94' style='stroke-width: 0.26; stroke: #595959; stroke-opacity: 0.65; fill: #BFBFBF; fill-opacity: 0.65;' />
+<text x='236.83' y='101.42' style='font-size: 10.00px; font-family: "Arial";' textLength='131.20px' lengthAdjust='spacingAndGlyphs'>Top-quartile lower abundance</text>
+<text x='396.27' y='101.42' style='font-size: 10.00px; font-family: "Arial";' textLength='56.14px' lengthAdjust='spacingAndGlyphs'>Other clients</text>
 <text x='254.60' y='35.79' text-anchor='middle' style='font-size: 10.50px;fill: #595959; font-family: "Arial";' textLength='681.06px' lengthAdjust='spacingAndGlyphs'>Braak/tau and CERAD/amyloid were modeled separately. Positive pathology-aligned beta indicates lower protein abundance with worse pathology.</text>
-<text x='254.60' y='19.43' text-anchor='middle' style='font-size: 16.00px; font-weight: bold; font-family: "Arial";' textLength='648.73px' lengthAdjust='spacingAndGlyphs'>Late-stage Hsp60/10 client decline is associated with both tau and amyloid pathology</text>
+<text x='254.60' y='19.43' text-anchor='middle' style='font-size: 16.00px; font-weight: bold; font-family: "Arial";' textLength='844.73px' lengthAdjust='spacingAndGlyphs'>Hsp60/10 client AD-versus-MCI lower-abundance magnitude is associated with both tau and amyloid pathology</text>
 </g>
 </g>
 </svg>

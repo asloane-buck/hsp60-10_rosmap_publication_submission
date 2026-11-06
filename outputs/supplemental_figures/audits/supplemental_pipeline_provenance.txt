@@ -1,8 +1,8 @@
 Corrected supplemental figure pipeline provenance
-generated_at: 2026-10-03 16:11:58 MDT
+generated_at: 2026-11-06 12:36:00 MST
 project_dir: /Users/ashlynsloane/Buck Institute 25-26/ROSMAP Analysis March 26/hsp60_10_rosmap_publication_ready_repo
-git_branch: supplemental-joint-pathology
-git_sha: 9b1f095e7eb1c04b3b6dea7ce1aa216a62901805
+git_branch: reviewer2-cross-sectional-terminology
+git_sha: 4cab0bb565a287ae27dff0db6b0b1bc548f19cbc
 working_tree_dirty: TRUE
 production_null_input: /Users/ashlynsloane/Buck Institute 25-26/ROSMAP Analysis March 26/hsp60_10_rosmap_publication_ready_repo/outputs/main_figures/tables/figure5_null_input_COVARIATE_ADJUSTED.csv
 production_cognition_input: /Users/ashlynsloane/Buck Institute 25-26/ROSMAP Analysis March 26/hsp60_10_rosmap_publication_ready_repo/outputs/main_figures/tables/main_fig5_matched_null_specificity/Fig5_gene_universe_cognition_summary_by_gene.csv

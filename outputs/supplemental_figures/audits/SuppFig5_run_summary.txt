@@ -1,19 +1,19 @@
 Supplementary Figure 5 run summary
-generated at: 2026-10-03 16:11:51 MDT
+generated at: 2026-11-06 12:35:53 MST
 figure: external MSBB cross-cohort validation
 ROSMAP Hsp60/10 input: hsp_null_tbl
 ROSMAP background input: background_null_pool
 MSBB Braak input: MSBB combined file -> standardized Braak effects
-MSBB late-decline input: MSBB combined file -> standardized collapse
+MSBB lower-abundance input: MSBB combined file -> standardized collapse
 ROSMAP genes: 915
 MSBB matched genes: 858
 Cross-cohort genes: 858
 ROSMAP summary:
-  - Non-client mitochondrial proteins: n=609, median inverse Braak=0.02939, median late decline=0.01367
-  - Hsp60/10 clients: n=306, median inverse Braak=0.04689, median late decline=0.02028
+  - Non-client mitochondrial proteins: n=609, median inverse Braak=0.02939, median lower-abundance magnitude=0.01367
+  - Hsp60/10 clients: n=306, median inverse Braak=0.04689, median lower-abundance magnitude=0.02028
 MSBB summary:
-  - Non-client mitochondrial proteins: n=565, median inverse Braak beta=0.03445, median inverse Braak rho=0.04829, median late decline=0.108
-  - Hsp60/10 clients: n=293, median inverse Braak beta=0.04553, median inverse Braak rho=0.07956, median late decline=0.155
+  - Non-client mitochondrial proteins: n=565, median inverse Braak beta=0.03445, median inverse Braak rho=0.04829, median lower-abundance magnitude=0.108
+  - Hsp60/10 clients: n=293, median inverse Braak beta=0.04553, median inverse Braak rho=0.07956, median lower-abundance magnitude=0.155
 Hsp60/10 concordance: 165 / 293 (56.3%) concordant inverse Braak; expected by marginal positivity=152.5; Spearman rho=0.212; Spearman P=0.0002566
 Validation test summary:
   - MSBB client vs background, two-sided Wilcoxon: P=0.03599

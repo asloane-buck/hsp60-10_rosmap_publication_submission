@@ -70,25 +70,25 @@ score_compare <- cognition_model_df |>
 hsp_null_compare <- hsp_null_tbl |>
   dplyr::select(
     gene,
-    null_late_effect = protein_late_effect,
-    null_late_decline = protein_late_decline_magnitude
+    null_ad_minus_mci_effect = protein_ad_minus_mci_effect,
+    null_lower_abundance = protein_lower_abundance_magnitude
   ) |>
   dplyr::inner_join(
     all_hsp60_10_client_tbl |>
       dplyr::filter(.data$detected_in_protein) |>
       dplyr::select(
         gene,
-        source_late_effect = protein_late_effect,
-        source_late_decline = protein_late_decline_magnitude
+        source_ad_minus_mci_effect = protein_ad_minus_mci_effect,
+        source_lower_abundance = protein_lower_abundance_magnitude
       ),
     by = "gene"
   ) |>
   dplyr::mutate(
     effect_difference = abs(
-      .data$null_late_effect - .data$source_late_effect
+      .data$null_ad_minus_mci_effect - .data$source_ad_minus_mci_effect
     ),
-    decline_difference = abs(
-      .data$null_late_decline - .data$source_late_decline
+    lower_abundance_difference = abs(
+      .data$null_lower_abundance - .data$source_lower_abundance
     )
   )
 
@@ -158,16 +158,16 @@ checks <- dplyr::bind_rows(
     max(hsp_null_compare$effect_difference, na.rm = TRUE) < 1e-10
   ),
   check_one(
-    "Matched-null Hsp late-decline magnitudes reproduce source table",
-    max(hsp_null_compare$decline_difference, na.rm = TRUE),
+    "Matched-null Hsp lower-abundance magnitudes reproduce source table",
+    max(hsp_null_compare$lower_abundance_difference, na.rm = TRUE),
     "<1e-10",
-    max(hsp_null_compare$decline_difference, na.rm = TRUE) < 1e-10
+    max(hsp_null_compare$lower_abundance_difference, na.rm = TRUE) < 1e-10
   ),
   check_one(
-    "Observed matched-null mean late decline",
-    round(observed_stats$observed_mean_late_decline, 4),
+    "Observed matched-null mean lower-abundance magnitude",
+    round(observed_stats$observed_mean_lower_abundance, 4),
     "0.0230 +/- 0.005",
-    abs(observed_stats$observed_mean_late_decline - 0.0230) <= 0.005
+    abs(observed_stats$observed_mean_lower_abundance - 0.0230) <= 0.005
   ),
   check_one(
     "Null iterations",
@@ -176,10 +176,10 @@ checks <- dplyr::bind_rows(
     nrow(null_results) == cfg$null_n_iter
   ),
   check_one(
-    "Null summary uses late-decline terminology",
-    "protein_late_decline_magnitude" %in% null_summary$metric,
+    "Null summary uses lower-abundance terminology",
+    "protein_lower_abundance_magnitude" %in% null_summary$metric,
     TRUE,
-    "protein_late_decline_magnitude" %in% null_summary$metric
+    "protein_lower_abundance_magnitude" %in% null_summary$metric
   ),
   check_one(
     "R/06 has no invalid legacy-stage mapping",

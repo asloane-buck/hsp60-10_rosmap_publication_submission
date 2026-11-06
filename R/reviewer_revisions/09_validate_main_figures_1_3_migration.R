@@ -71,10 +71,10 @@ script12 <- paste(
   collapse = "\n"
 )
 
-fig2_source <- all_hsp60_10_client_tbl$protein_late_decline_magnitude[
+fig2_source <- all_hsp60_10_client_tbl$protein_lower_abundance_magnitude[
   match(fig2_tbl$gene, all_hsp60_10_client_tbl$gene)
 ]
-fig3_source <- all_hsp60_10_client_tbl$protein_late_decline_magnitude[
+fig3_source <- all_hsp60_10_client_tbl$protein_lower_abundance_magnitude[
   match(fig3_tbl$gene, all_hsp60_10_client_tbl$gene)
 ]
 
@@ -99,16 +99,16 @@ checks <- dplyr::bind_rows(
   ),
   check_one("Figure 2 source clients", nrow(fig2_tbl), 306, nrow(fig2_tbl) == 306),
   check_one(
-    "Figure 2 top-quartile late-decline n",
-    sum(fig2_tbl$late_decline_group == "Top-quartile late decline"),
+    "Figure 2 top-quartile lower-abundance n",
+    sum(fig2_tbl$lower_abundance_group == "Top-quartile lower abundance"),
     ceiling(0.25 * 306),
-    sum(fig2_tbl$late_decline_group == "Top-quartile late decline") == ceiling(0.25 * 306)
+    sum(fig2_tbl$lower_abundance_group == "Top-quartile lower abundance") == ceiling(0.25 * 306)
   ),
   check_one(
-    "Figure 2 late-decline metric reproduces source",
-    max(abs(fig2_tbl$late_decline_value - fig2_source), na.rm = TRUE),
+    "Figure 2 lower-abundance metric reproduces source",
+    max(abs(fig2_tbl$lower_abundance_value - fig2_source), na.rm = TRUE),
     "<1e-12",
-    max(abs(fig2_tbl$late_decline_value - fig2_source), na.rm = TRUE) < 1e-12
+    max(abs(fig2_tbl$lower_abundance_value - fig2_source), na.rm = TRUE) < 1e-12
   ),
   check_one(
     "Figure 2 legacy source identifiers absent",
@@ -124,10 +124,10 @@ checks <- dplyr::bind_rows(
   ),
   check_one("Figure 3 source clients", nrow(fig3_tbl), 306, nrow(fig3_tbl) == 306),
   check_one(
-    "Figure 3 late-decline metric reproduces source",
-    max(abs(fig3_tbl$late_decline_value - fig3_source), na.rm = TRUE),
+    "Figure 3 lower-abundance metric reproduces source",
+    max(abs(fig3_tbl$lower_abundance_value - fig3_source), na.rm = TRUE),
     "<1e-12",
-    max(abs(fig3_tbl$late_decline_value - fig3_source), na.rm = TRUE) < 1e-12
+    max(abs(fig3_tbl$lower_abundance_value - fig3_source), na.rm = TRUE) < 1e-12
   ),
   check_one(
     "Figure 3 legacy source identifier absent",

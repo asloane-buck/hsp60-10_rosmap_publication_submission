@@ -1,4 +1,4 @@
-functional_class,n_genes,median_late_decline,median_joint_pathology,median_cognition,median_centrality,pareto_fraction,agora_fraction,module_rank
+functional_class,n_genes,median_lower_abundance,median_joint_pathology,median_cognition,median_centrality,pareto_fraction,agora_fraction,module_rank
 Mito translation / ribosome,103,0.6622950819672131,0.5606557377049181,0.5770491803278689,0.5770491803278689,0.06796116504854369,0.1650485436893204,1
 Other mitochondrial metabolism,16,0.4819672131147541,0.3868852459016393,0.5311475409836066,0.13934426229508198,0.0625,0.125,2
 Proteostasis / stress,26,0.4442622950819672,0.4049180327868853,0.14754098360655737,0.4098360655737705,0.038461538461538464,0.07692307692307693,3

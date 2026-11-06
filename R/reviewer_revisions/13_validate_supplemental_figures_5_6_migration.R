@@ -68,14 +68,14 @@ production_rosmap <- dplyr::bind_rows(
       gene,
       production_group = "Hsp60/10 clients",
       production_inverse_braak = inverse_braak_magnitude,
-      production_late_decline = protein_late_decline_magnitude
+      production_lower_abundance = protein_lower_abundance_magnitude
     ),
   production_background_null_pool |>
     dplyr::transmute(
       gene,
       production_group = "Non-client mitochondrial proteins",
       production_inverse_braak = inverse_braak_magnitude,
-      production_late_decline = protein_late_decline_magnitude
+      production_lower_abundance = protein_lower_abundance_magnitude
     )
 ) |>
   dplyr::distinct(.data$gene, .keep_all = TRUE)
@@ -88,8 +88,8 @@ sf5_agreement <- supfig5_outputs$rosmap_tbl |>
     braak_abs_difference = abs(
       .data$rosmap_inverse_braak - .data$production_inverse_braak
     ),
-    decline_abs_difference = abs(
-      .data$rosmap_late_decline - .data$production_late_decline
+    lower_abundance_abs_difference = abs(
+      .data$rosmap_lower_abundance - .data$production_lower_abundance
     )
   )
 
@@ -159,10 +159,10 @@ checks <- dplyr::bind_rows(
     max(sf5_agreement$braak_abs_difference, na.rm = TRUE) < 1e-12
   ),
   check_one(
-    "Supp Fig 5 late decline reproduces production",
-    max(sf5_agreement$decline_abs_difference, na.rm = TRUE),
+    "Supp Fig 5 lower-abundance magnitude reproduces production",
+    max(sf5_agreement$lower_abundance_abs_difference, na.rm = TRUE),
     "<1e-12",
-    max(sf5_agreement$decline_abs_difference, na.rm = TRUE) < 1e-12
+    max(sf5_agreement$lower_abundance_abs_difference, na.rm = TRUE) < 1e-12
   ),
   check_one(
     "Supp Fig 5 MSBB matched genes nonempty",
@@ -197,21 +197,21 @@ checks <- dplyr::bind_rows(
   check_one(
     "Supp Fig 6 regional difference metrics",
     sf6_metric_levels,
-    c("AD-associated decline", "High-Braak coupling"),
+    c("AD-associated lower abundance", "High-Braak coupling"),
     identical(
       sf6_metric_levels,
-      c("AD-associated decline", "High-Braak coupling")
+      c("AD-associated lower abundance", "High-Braak coupling")
     )
   ),
   check_one(
     "Supp Fig 6 displayed collapse terminology absent",
     grepl(
-      'AD-associated collapse|ylab = "AD decline\\\\n-\\\\(AD - Control\\\\)"',
+      'AD-associated collapse|ylab = "AD lower abundance\\\\n-\\\\(AD - Control\\\\)"',
       script15
     ),
     FALSE,
     !grepl(
-      'AD-associated collapse|ylab = "AD decline\\\\n-\\\\(AD - Control\\\\)"',
+      'AD-associated collapse|ylab = "AD lower abundance\\\\n-\\\\(AD - Control\\\\)"',
       script15
     )
   )

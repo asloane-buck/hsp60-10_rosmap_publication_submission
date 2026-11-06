@@ -17,7 +17,7 @@ required_files <- c(
   "APOE_cohort_summary.csv",
   "APOE_e4_carrier_by_stage.csv",
   "APOE_sensitivity_cohort_audit.csv",
-  "APOE_sensitivity_late_stage_clients.csv",
+  "APOE_sensitivity_ad_vs_mci_clients.csv",
   "APOE_sensitivity_Braak_clients.csv",
   "APOE_sensitivity_CERAD_clients.csv",
   "APOE_sensitivity_production_model_validation.csv",
@@ -54,7 +54,7 @@ read_out <- function(name) {
 cohort <- read_out("APOE_cohort_summary.csv")
 stage <- read_out("APOE_e4_carrier_by_stage.csv")
 audit <- read_out("APOE_sensitivity_cohort_audit.csv")
-late <- read_out("APOE_sensitivity_late_stage_clients.csv")
+late <- read_out("APOE_sensitivity_ad_vs_mci_clients.csv")
 braak <- read_out("APOE_sensitivity_Braak_clients.csv")
 cerad <- read_out("APOE_sensitivity_CERAD_clients.csv")
 prod <- read_out("APOE_sensitivity_production_model_validation.csv")
@@ -458,7 +458,7 @@ add_check(
   }
 )
 
-late_topq <- topq[topq$axis == "late_decline", , drop = FALSE]
+late_topq <- topq[topq$axis == "lower_abundance", , drop = FALSE]
 braak_topq <- topq[topq$axis == "inverse_braak", , drop = FALSE]
 
 add_check(

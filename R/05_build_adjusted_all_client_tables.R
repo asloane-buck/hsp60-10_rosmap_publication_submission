@@ -1,7 +1,7 @@
 ############################################################
 ## 05_build_adjusted_all_client_tables.R
 ## Build source-of-truth all_hsp60_10_client_tbl using
-## covariate-adjusted RNA/protein inputs for stage/late-decline/centrality
+## covariate-adjusted RNA/protein inputs for stage/lower-abundance/centrality
 ## and processed non-residualized protein input for pathology beta models.
 ##
 ## Inputs expected from scripts 00-04:
@@ -109,9 +109,9 @@ build_stage_summary <- function(mat, meta, genes, prefix) {
       "{prefix}_n_nci"        := sum(is.finite(nci)),
       "{prefix}_n_mci"        := sum(is.finite(mci)),
       "{prefix}_n_ad"         := sum(is.finite(ad)),
-      "{prefix}_early_effect" := safe_mean(mci) - safe_mean(nci),
-      "{prefix}_late_effect"  := safe_mean(ad) - safe_mean(mci),
-      "{prefix}_total_effect" := safe_mean(ad) - safe_mean(nci)
+      "{prefix}_mci_minus_nci_effect" := safe_mean(mci) - safe_mean(nci),
+      "{prefix}_ad_minus_mci_effect"  := safe_mean(ad) - safe_mean(mci),
+      "{prefix}_ad_minus_nci_effect" := safe_mean(ad) - safe_mean(nci)
     )
   })
 }
@@ -325,13 +325,13 @@ all_hsp60_10_client_tbl <- tibble::tibble(gene = all_detected_or_supplied) |>
 
     functional_class = assign_informative_function(gene),
 
-    protein_late_decline_magnitude = dplyr::case_when(
-      !is.finite(protein_late_effect) ~ NA_real_,
-      protein_late_effect < 0 ~ abs(protein_late_effect),
+    protein_lower_abundance_magnitude = dplyr::case_when(
+      !is.finite(protein_ad_minus_mci_effect) ~ NA_real_,
+      protein_ad_minus_mci_effect < 0 ~ abs(protein_ad_minus_mci_effect),
       TRUE ~ 0
     ),
-    late_effect_absolute_difference = abs(
-      protein_late_effect - rna_late_effect
+    ad_minus_mci_effect_absolute_difference = abs(
+      protein_ad_minus_mci_effect - rna_ad_minus_mci_effect
     ),
 
     ########################################################
@@ -396,8 +396,8 @@ all_hsp60_10_client_tbl <- tibble::tibble(gene = all_detected_or_supplied) |>
       NA_real_
     ),
 
-    late_decline_percentile = percentile01(
-      protein_late_decline_magnitude
+    lower_abundance_percentile = percentile01(
+      protein_lower_abundance_magnitude
     ),
 
     braak_pathology_percentile = percentile01(
@@ -477,15 +477,15 @@ all_hsp60_10_client_tbl <- tibble::tibble(gene = all_detected_or_supplied) |>
       hub_mean_abs_cor
     ),
 
-    late_effect_difference_percentile = percentile01(
-      late_effect_absolute_difference
+    ad_minus_mci_effect_difference_percentile = percentile01(
+      ad_minus_mci_effect_absolute_difference
     ),
 
     ## Legacy Braak-only score retained solely for migration
     ## validation. Do not use as the revised primary pathology
     ## framework.
     legacy_braak_pathology_vulnerability_score = sqrt(
-      late_decline_percentile *
+      lower_abundance_percentile *
         inverse_braak_percentile
     ),
 
@@ -496,10 +496,10 @@ all_hsp60_10_client_tbl <- tibble::tibble(gene = all_detected_or_supplied) |>
     ## The RNA-protein late-effect difference is descriptive only.
     priority_score_internal_only = rowMeans(
       cbind(
-        late_decline_percentile,
+        lower_abundance_percentile,
         inverse_braak_percentile,
         centrality_percentile,
-        late_effect_difference_percentile
+        ad_minus_mci_effect_difference_percentile
       ),
       na.rm = TRUE
     ),
@@ -611,8 +611,8 @@ message("AGORA-like columns in priority_input_tbl: ", paste(grep("agora|target|n
 
 priority_tbl <- priority_input_tbl |>
   dplyr::mutate(
-    late_decline_topq = as.integer(
-      late_decline_percentile >= 75
+    lower_abundance_topq = as.integer(
+      lower_abundance_percentile >= 75
     ),
 
     ## Legacy Braak-only flag retained during migration.
@@ -642,14 +642,14 @@ priority_tbl <- priority_input_tbl |>
     ## in the old priority-score architecture and will not be
     ## the revised Figure 6 primary framework.
     clinical_topq = as.integer(
-      late_decline_percentile >= 75 |
+      lower_abundance_percentile >= 75 |
         inverse_braak_percentile >= 75
     ),
 
-    n_total_axes = late_decline_topq + braak_topq + centrality_topq + clinical_topq + agora_target,
+    n_total_axes = lower_abundance_topq + braak_topq + centrality_topq + clinical_topq + agora_target,
 
     proteomic_vulnerability_axis = rowMeans(
-      cbind(late_decline_percentile, inverse_braak_percentile, centrality_percentile),
+      cbind(lower_abundance_percentile, inverse_braak_percentile, centrality_percentile),
       na.rm = TRUE
     ),
 
@@ -661,7 +661,7 @@ priority_tbl <- priority_input_tbl |>
     ## Main Figure 6 priority score.
     priority_score = rowMeans(
       cbind(
-        late_decline_percentile,
+        lower_abundance_percentile,
         inverse_braak_percentile,
         centrality_percentile,
         clinical_topq * 100,

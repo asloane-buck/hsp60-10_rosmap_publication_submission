@@ -642,11 +642,40 @@ require_columns(
   "Figure 5 null results"
 )
 
+## Persist the final production Figure 5 null objects after the
+## cognition metric has been added. These are the canonical inputs
+## for downstream reviewer reporting.
+fig5_final_table_dir <- file.path(
+  cfg$table_dir,
+  "main_fig5_matched_null_specificity"
+)
+dir.create(
+  fig5_final_table_dir,
+  recursive = TRUE,
+  showWarnings = FALSE
+)
+
+readr::write_csv(
+  null_summary,
+  file.path(
+    fig5_final_table_dir,
+    "Fig5_null_summary_with_cognition.csv"
+  )
+)
+
+readr::write_csv(
+  null_results,
+  file.path(
+    fig5_final_table_dir,
+    "Fig5_null_results_with_cognition.csv"
+  )
+)
+
 ## Canonical Figure 5 pathology metric.
 ##
 ## This is the equal-weight mean of the correctly oriented,
 ## standardized Braak and CERAD pathology-associated protein
-## decline magnitudes.
+## lower-abundance magnitudes.
 primary_pathology_metric <- "joint_pathology_magnitude"
 
 ## Figure 5 now uses cognition preservation instead of the older
@@ -700,7 +729,7 @@ require_values(
   null_summary,
   "metric",
   c(
-    "protein_late_decline_magnitude",
+    "protein_lower_abundance_magnitude",
     primary_pathology_metric,
     cognition_metric,
     "agora_fraction"
@@ -755,7 +784,7 @@ theme_set(
 figure_tbl <- null_summary %>%
   filter(
     metric %in% c(
-      "protein_late_decline_magnitude",
+      "protein_lower_abundance_magnitude",
       primary_pathology_metric,
       cognition_metric,
       "agora_fraction"
@@ -763,7 +792,7 @@ figure_tbl <- null_summary %>%
   ) %>%
   mutate(
     metric_clean = case_when(
-      metric == "protein_late_decline_magnitude" ~
+      metric == "protein_lower_abundance_magnitude" ~
         "AD-versus-MCI\nlower-abundance magnitude",
 
       metric == primary_pathology_metric ~

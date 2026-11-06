@@ -1,2 +1,2 @@
 comparison,metric,n_top,n_other,median_top,median_other,p_value,p_label,star
-Top-quartile late decline vs other detected clients,Network centrality,77,229,0.23830871587175678,0.169588904668146,9.97405718812298e-8,P = 9.97e-08,***
+Top-quartile lower abundance vs other detected clients,Network centrality,77,229,0.23830871587175678,0.169588904668146,9.97405718812298e-8,P = 9.97e-08,***

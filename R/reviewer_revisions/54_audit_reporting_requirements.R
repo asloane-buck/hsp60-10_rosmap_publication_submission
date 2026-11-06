@@ -34,7 +34,7 @@ R <- data.frame(
     "Regional_Braak_continuous_gene_interaction",
     "Regional_Braak_categorical_gene_interaction",
     "Regional_Hsp_pathway_interaction",
-    "APOE_late_stage_clients",
+    "APOE_ad_vs_mci_clients",
     "APOE_Braak_clients",
     "APOE_CERAD_clients",
     "Alternative_mechanism_markers",
@@ -53,7 +53,7 @@ R <- data.frame(
     "Formal DLPFC-vs-STG continuous Braak interaction",
     "Formal DLPFC-vs-STG categorical Braak interaction",
     "Direct Hsp60/10 pathway regional interaction",
-    "APOE sensitivity: late AD-minus-MCI decline",
+    "APOE sensitivity: AD-versus-MCI lower abundance",
     "APOE sensitivity: Braak",
     "APOE sensitivity: CERAD",
     "Alternative-mechanism marker panel",
@@ -72,12 +72,12 @@ R <- data.frame(
     "outputs/reviewer_revisions/regional_formal_interaction/validated_final/FINAL_region_x_Braak_continuous_interaction_all_proteins.csv",
     "outputs/reviewer_revisions/regional_formal_interaction/validated_final/FINAL_region_x_Braak_bin3_interaction_all_proteins.csv",
     "outputs/reviewer_revisions/regional_formal_interaction/hsp_conclusion_audit/Hsp_pathway_score_primary_interactions.csv",
-    "outputs/reviewer_revisions/APOE_sensitivity/APOE_sensitivity_late_stage_clients.csv",
+    "outputs/reviewer_revisions/APOE_sensitivity/APOE_sensitivity_ad_vs_mci_clients.csv",
     "outputs/reviewer_revisions/APOE_sensitivity/APOE_sensitivity_Braak_clients.csv",
     "outputs/reviewer_revisions/APOE_sensitivity/APOE_sensitivity_CERAD_clients.csv",
     "outputs/reviewer_revisions/alternative_mechanism_marker_panel/marker_stage_limma_results.csv",
     "outputs/reviewer_revisions/Hsp_pathway_PC1_sensitivity/stage_Wilcoxon_mean_z_vs_PC1.csv",
-    "outputs/reviewer_revisions/corrected_cognition_production_validation/corrected_figure5_null_summary.csv"
+    "outputs/main_figures/tables/main_fig5_matched_null_specificity/Fig5_null_summary_with_cognition.csv"
   ),
   support = c(
     "outputs/reviewer_revisions/conventional_stage_differential_final/20_sample_stage_audit.csv",
@@ -182,7 +182,7 @@ detect <- function(cols, metric) {
       "^log2foldchange$","^logfc$","^delta$",
       "_effect$","^effect_","_beta$","^beta_",
       "estimate","log2_fold","log2fold","log_fc",
-      "correlation","^rho$","region_x_predictor","^stage_change$"
+      "correlation","^rho$","region_x_predictor","^stage_difference$"
     ), collapse = "|"),
     se = paste(c(
       "^se$","^std_error$","^std_err$","^stderr$","^lfcse$",

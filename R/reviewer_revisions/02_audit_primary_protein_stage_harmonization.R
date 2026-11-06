@@ -7,8 +7,8 @@
 ##    cogdx-derived clinical stage used for RNA (NCI/MCI/AD).
 ## 2. Compare those assignments with the legacy proteomics
 ##    Control/AsymAD/AD grouping used in the submitted analysis.
-## 3. Quantify the impact on pathway stage-transition effects and
-##    gene-level late-stage protein decline.
+## 3. Quantify the impact on pathway stage-contrast effects and
+##    gene-level AD-versus-MCI lower-abundance magnitude.
 ## 4. Write explicit manifests, effect tables, and run provenance.
 ##
 ## Reproducibility:
@@ -459,7 +459,7 @@ write_review_csv(
 )
 
 # ------------------------------------------------------------
-# 5. Gene-level stage effects and late-stage decline impact
+# 5. Gene-level stage effects and AD-versus-MCI lower abundance impact
 # ------------------------------------------------------------
 
 legacy_meta <- protein_manifest |>
@@ -501,20 +501,20 @@ gene_effect_comparison <- dplyr::full_join(
 ) |>
   dplyr::mutate(
     is_hsp60_10_client = .data$gene %in% all_hsp60_10_clients,
-    late_decline_magnitude__legacy = dplyr::case_when(
+    lower_abundance_magnitude__legacy = dplyr::case_when(
       !is.finite(.data$late_shift__legacy) ~ NA_real_,
       .data$late_shift__legacy < 0 ~ abs(.data$late_shift__legacy),
       TRUE ~ 0
     ),
-    late_decline_magnitude__common = dplyr::case_when(
+    lower_abundance_magnitude__common = dplyr::case_when(
       !is.finite(.data$late_shift__common) ~ NA_real_,
       .data$late_shift__common < 0 ~ abs(.data$late_shift__common),
       TRUE ~ 0
     ),
     late_shift_difference_common_minus_legacy =
       .data$late_shift__common - .data$late_shift__legacy,
-    late_decline_difference_common_minus_legacy =
-      .data$late_decline_magnitude__common - .data$late_decline_magnitude__legacy
+    lower_abundance_difference_common_minus_legacy =
+      .data$lower_abundance_magnitude__common - .data$lower_abundance_magnitude__legacy
   )
 
 write_review_csv(
@@ -545,26 +545,26 @@ n_stage_concordant <- sum(stage_comparable$legacy_matches_common)
 n_stage_discordant <- n_stage_comparable - n_stage_concordant
 
 client_q75_legacy <- stats::quantile(
-  client_effect_comparison$late_decline_magnitude__legacy,
+  client_effect_comparison$lower_abundance_magnitude__legacy,
   probs = 0.75,
   na.rm = TRUE,
   names = FALSE
 )
 
 client_q75_common <- stats::quantile(
-  client_effect_comparison$late_decline_magnitude__common,
+  client_effect_comparison$lower_abundance_magnitude__common,
   probs = 0.75,
   na.rm = TRUE,
   names = FALSE
 )
 
 top_legacy <- client_effect_comparison |>
-  dplyr::filter(.data$late_decline_magnitude__legacy >= client_q75_legacy) |>
+  dplyr::filter(.data$lower_abundance_magnitude__legacy >= client_q75_legacy) |>
   dplyr::pull(.data$gene) |>
   unique()
 
 top_common <- client_effect_comparison |>
-  dplyr::filter(.data$late_decline_magnitude__common >= client_q75_common) |>
+  dplyr::filter(.data$lower_abundance_magnitude__common >= client_q75_common) |>
   dplyr::pull(.data$gene) |>
   unique()
 
@@ -585,7 +585,7 @@ concordance_summary <- tibble::tibble(
     "All-protein Pearson r: late shift legacy vs common",
     "Hsp60/10-client Spearman rho: late shift legacy vs common",
     "Hsp60/10-client Pearson r: late shift legacy vs common",
-    "Hsp60/10-client Spearman rho: decline magnitude legacy vs common",
+    "Hsp60/10-client Spearman rho: lower-abundance magnitude legacy vs common",
     "Legacy client top-quartile threshold",
     "Common-stage client top-quartile threshold",
     "Legacy client top-quartile set size",
@@ -620,8 +620,8 @@ concordance_summary <- tibble::tibble(
       client_effect_comparison$late_shift__common
     ),
     safe_spearman(
-      client_effect_comparison$late_decline_magnitude__legacy,
-      client_effect_comparison$late_decline_magnitude__common
+      client_effect_comparison$lower_abundance_magnitude__legacy,
+      client_effect_comparison$lower_abundance_magnitude__common
     ),
     client_q75_legacy,
     client_q75_common,

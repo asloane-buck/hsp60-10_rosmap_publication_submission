@@ -1,7 +1,7 @@
 "family","file","p_column","fdr_column","group_column","n_rows","n_groups","max_abs_fdr_difference","passed"
 "Hsp client pathology models","outputs/reviewer_revisions/reporting_requirements_resolution/02_pathology_Braak_CERAD_effect_SE_CI_n_P_FDR.csv","p_value","fdr_bh","endpoint",612,2,1.66533453693773e-15,TRUE
 "Network cognition outcomes","outputs/reviewer_revisions/reporting_requirements_resolution/06_network_cognition_reporting_complete.csv","p.value","fdr_bh_three_network_outcomes","",3,1,0,TRUE
-"Corrected cognition null metrics","outputs/reviewer_revisions/reporting_requirements_resolution/08_cognition_null_reporting_complete.csv","empirical_p_greater","fdr_bh_across_null_metrics","",5,1,0,TRUE
+"Corrected cognition null metrics","outputs/reviewer_revisions/reporting_requirements_resolution/08_cognition_null_reporting_complete.csv","empirical_p_greater","fdr_bh_across_null_metrics","",8,1,2.84603070277445e-19,TRUE
 "Regional Hsp pathway primary interactions","outputs/reviewer_revisions/regional_formal_interaction/hsp_conclusion_audit/Hsp_pathway_score_primary_interactions.csv","p_region_x_predictor","BH_FDR_two_primary_tests","",2,1,9.99200722162641e-16,TRUE
 "Regional genome-wide AD interaction","outputs/reviewer_revisions/regional_formal_interaction/validated_final/FINAL_region_x_AD_interaction_all_proteins.csv","p_region_x_predictor","p_region_x_predictor_fdr","",9005,1,5.55111512312578e-16,TRUE
 "Regional genome-wide continuous Braak interaction","outputs/reviewer_revisions/regional_formal_interaction/validated_final/FINAL_region_x_Braak_continuous_interaction_all_proteins.csv","p_region_x_predictor","p_region_x_predictor_fdr","",9002,1,5.55111512312578e-16,TRUE

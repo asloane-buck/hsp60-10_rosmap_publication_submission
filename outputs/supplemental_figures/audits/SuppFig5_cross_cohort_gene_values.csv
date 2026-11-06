@@ -1,4 +1,4 @@
-gene,group,rosmap_inverse_braak,rosmap_late_decline,msbb_inverse_braak_beta,msbb_inverse_braak_rho,msbb_braak_p,msbb_braak_n,msbb_late_decline,concordant_inverse_braak,concordance_class
+gene,group,rosmap_inverse_braak,rosmap_lower_abundance,msbb_inverse_braak_beta,msbb_inverse_braak_rho,msbb_braak_p,msbb_braak_n,msbb_lower_abundance,concordant_inverse_braak,concordance_class
 AARS2,Hsp60/10 clients,0.02134509624255183,0.01243691511266269,0.00790218707574012,-0.00234989278559251,0.8692029201194917,186,-0.09806519727162658,TRUE,"Concordant inverse
 Braak effect"
 ABHD10,Hsp60/10 clients,0.05365340550244547,0.00892902634638653,0.05497561492761474,0.0948601056030538,0.2585079496214257,186,0.195915331152615,TRUE,"Concordant inverse

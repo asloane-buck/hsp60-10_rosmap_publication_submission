@@ -87,7 +87,7 @@ sf3_get_input <- function(candidate_names, required = TRUE, label = "input") {
 sf3_validate_tbl <- function(tbl, label) {
   required_cols <- c(
     "gene",
-    "protein_late_decline_magnitude",
+    "protein_lower_abundance_magnitude",
     "braak_pathology_magnitude",
     "cerad_pathology_magnitude",
     "joint_pathology_magnitude",
@@ -302,7 +302,7 @@ sf3_reannotate_agora <- function(tbl, inputs) {
 # ============================================================
 
 sf3_primary_metrics <- c(
-  "protein_late_decline_magnitude",
+  "protein_lower_abundance_magnitude",
   "braak_pathology_magnitude",
   "cognition_priority_score",
   "agora_nominated_target"
@@ -722,7 +722,7 @@ make_supfig3_mitochondrial_specificity <- function(inputs, n_perm = 10000, seed 
   }
   summary_tbl <- sf3_null_summary(null_tbl, observed_tbl)
   if (frozen) {
-    expected <- c(protein_late_decline_magnitude = 1.265840925881682,
+    expected <- c(protein_lower_abundance_magnitude = 1.265840925881682,
       braak_pathology_magnitude = 1.247473108461921,
       cognition_priority_score = 1.5657058251254254,
       agora_nominated_target = 2.076605555131758)
@@ -761,7 +761,7 @@ make_supfig3_mitochondrial_specificity <- function(inputs, n_perm = 10000, seed 
     sf3_make_null_hist(
       null_tbl,
       summary_tbl,
-      metric_name = "protein_late_decline_magnitude",
+      metric_name = "protein_lower_abundance_magnitude",
       title = "AD-versus-MCI lower abundance specificity",
       xlab = "Mean AD-versus-MCI lower abundance magnitude"
     ),
@@ -781,7 +781,7 @@ make_supfig3_mitochondrial_specificity <- function(inputs, n_perm = 10000, seed 
 
   panel_paths <- c(
     save_panel_set(panel_a, "SuppFig3A_matched_null_design", width = 7.2, height = 2.4, output_dir = panels_dir),
-    save_panel_set(panel_b, "SuppFig3B_late_decline_null", width = 5.9, height = 4.0, output_dir = panels_dir),
+    save_panel_set(panel_b, "SuppFig3B_lower_abundance_null", width = 5.9, height = 4.0, output_dir = panels_dir),
     save_panel_set(panel_c, "SuppFig3C_inverse_braak_null", width = 5.9, height = 4.0, output_dir = panels_dir),
     save_panel_set(panel_d, "SuppFig3D_specificity_summary", width = 6.3, height = 4.0, output_dir = panels_dir)
   )

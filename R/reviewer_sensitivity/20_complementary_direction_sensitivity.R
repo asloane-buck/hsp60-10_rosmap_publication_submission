@@ -87,8 +87,8 @@ x <- read_csv(
 required_cols <- c(
   "gene",
   "is_hsp60_10_client",
-  "protein_late_effect",
-  "protein_late_decline_magnitude",
+  "protein_ad_minus_mci_effect",
+  "protein_lower_abundance_magnitude",
   "matching_abundance",
   "abundance_bin"
 )
@@ -112,7 +112,7 @@ if (length(missing_cols) > 0) {
 
 x <- x |>
   mutate(
-    signed_ad_minus_mci = .data$protein_late_effect,
+    signed_ad_minus_mci = .data$protein_ad_minus_mci_effect,
 
     lower_abundance_magnitude =
       pmax(-.data$signed_ad_minus_mci, 0),
@@ -137,7 +137,7 @@ x <- x |>
 max_lower_diff <- max(
   abs(
     x$lower_abundance_magnitude -
-      x$protein_late_decline_magnitude
+      x$protein_lower_abundance_magnitude
   ),
   na.rm = TRUE
 )
@@ -593,7 +593,7 @@ if (file.exists(canonical_summary_file)) {
   ) |>
     filter(
       .data$metric ==
-        "protein_late_decline_magnitude"
+        "protein_lower_abundance_magnitude"
     )
 
   if (nrow(canonical) == 1) {

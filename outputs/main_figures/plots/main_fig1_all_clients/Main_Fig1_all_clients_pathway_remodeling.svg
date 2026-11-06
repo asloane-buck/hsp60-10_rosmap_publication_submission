@@ -705,7 +705,7 @@
 <line x1='714.37' y1='100.76' x2='728.19' y2='100.76' style='stroke-width: 0.90; stroke: #1B4F9C; stroke-linecap: butt;' />
 <text x='680.82' y='103.77' style='font-size: 8.40px; font-family: "Arial";' textLength='26.59px' lengthAdjust='spacingAndGlyphs'>Protein</text>
 <text x='735.15' y='103.77' style='font-size: 8.40px; font-family: "Arial";' textLength='17.72px' lengthAdjust='spacingAndGlyphs'>RNA</text>
-<text x='90.76' y='79.56' style='font-size: 10.00px;fill: #595959; font-family: "Arial";' textLength='241.25px' lengthAdjust='spacingAndGlyphs'>Colored brackets show within-modality stage changes.</text>
+<text x='90.76' y='79.56' style='font-size: 10.00px;fill: #595959; font-family: "Arial";' textLength='294.39px' lengthAdjust='spacingAndGlyphs'>Colored brackets show within-modality cross-sectional differences.</text>
 <text x='90.76' y='64.22' style='font-size: 14.00px; font-weight: bold; font-family: "Arial";' textLength='328.72px' lengthAdjust='spacingAndGlyphs'>A. All-client pathway remodeling across AD stage</text>
 </g>
 <defs>
@@ -797,7 +797,7 @@
 </defs>
 <g clip-path='url(#cpOTAuNzZ8Njc5LjExfDY2MS4yMnw2NzcuOTU=)'>
 <rect x='90.76' y='661.22' width='588.35' height='16.73' style='stroke-width: 0.75; stroke: #B3B3B3; fill: #F2F2F2;' />
-<text x='384.94' y='672.88' text-anchor='middle' style='font-size: 9.20px; font-weight: bold; font-family: "Arial";' textLength='46.44px' lengthAdjust='spacingAndGlyphs'>NCI to MCI</text>
+<text x='384.94' y='672.88' text-anchor='middle' style='font-size: 9.20px; font-weight: bold; font-family: "Arial";' textLength='67.39px' lengthAdjust='spacingAndGlyphs'>NCI versus MCI</text>
 </g>
 <g clip-path='url(#cpMC4wMHwxMjk2LjAwfDAuMDB8OTA3LjIw)'>
 </g>
@@ -808,7 +808,7 @@
 </defs>
 <g clip-path='url(#cpNjg0LjI0fDEyNzIuNTl8NjYxLjIyfDY3Ny45NQ==)'>
 <rect x='684.24' y='661.22' width='588.35' height='16.73' style='stroke-width: 0.75; stroke: #B3B3B3; fill: #F2F2F2;' />
-<text x='978.41' y='672.88' text-anchor='middle' style='font-size: 9.20px; font-weight: bold; font-family: "Arial";' textLength='43.55px' lengthAdjust='spacingAndGlyphs'>MCI to AD</text>
+<text x='978.41' y='672.88' text-anchor='middle' style='font-size: 9.20px; font-weight: bold; font-family: "Arial";' textLength='64.50px' lengthAdjust='spacingAndGlyphs'>MCI versus AD</text>
 </g>
 <g clip-path='url(#cpMC4wMHwxMjk2LjAwfDAuMDB8OTA3LjIw)'>
 <polyline points='90.76,868.46 679.11,868.46 ' style='stroke-width: 1.00; stroke-linecap: square;' />
@@ -863,7 +863,7 @@
 <text x='118.30' y='640.14' style='font-size: 8.24px; font-family: "Arial";' textLength='17.41px' lengthAdjust='spacingAndGlyphs'>RNA</text>
 <text x='163.25' y='640.14' style='font-size: 8.24px; font-family: "Arial";' textLength='26.08px' lengthAdjust='spacingAndGlyphs'>Protein</text>
 <text x='90.76' y='616.30' style='font-size: 9.50px;fill: #595959; font-family: "Arial";' textLength='487.77px' lengthAdjust='spacingAndGlyphs'>Signed standardized pathway-score changes are shown separately by modality; no cross-modal subtraction is used.</text>
-<text x='90.76' y='601.42' style='font-size: 14.00px; font-weight: bold; font-family: "Arial";' textLength='228.88px' lengthAdjust='spacingAndGlyphs'>B. RNA and protein stage changes</text>
+<text x='90.76' y='601.42' style='font-size: 14.00px; font-weight: bold; font-family: "Arial";' textLength='312.88px' lengthAdjust='spacingAndGlyphs'>B. RNA and protein cross-sectional differences</text>
 <text x='644.01' y='36.24' text-anchor='middle' style='font-size: 12.00px;fill: #595959; font-family: "Arial";' textLength='606.23px' lengthAdjust='spacingAndGlyphs'>Hsp60/10 clients are evaluated against broad MitoCarta and non-overlapping mitochondrial/comparator gene sets.</text>
 <text x='644.01' y='18.37' text-anchor='middle' style='font-size: 18.00px; font-weight: bold; font-family: "Arial";' textLength='729.75px' lengthAdjust='spacingAndGlyphs'>All-client Hsp60/10 analysis reveals stage-dependent mitochondrial remodeling in AD</text>
 </g>

@@ -1,4 +1,4 @@
-gene,msbb_braak_beta,msbb_inverse_braak_beta,msbb_braak_p,msbb_braak_n,msbb_braak_rho_raw,msbb_inverse_braak_rho,msbb_high_minus_low,msbb_late_decline,msbb_collapse_n_low,msbb_collapse_n_high,group
+gene,msbb_braak_beta,msbb_inverse_braak_beta,msbb_braak_p,msbb_braak_n,msbb_braak_rho_raw,msbb_inverse_braak_rho,msbb_high_minus_low,msbb_lower_abundance,msbb_collapse_n_low,msbb_collapse_n_high,group
 AADAT,-0.07182812053293033,0.07182812053293033,0.09660392131858508,186,-0.12470174041741136,0.12470174041741136,-0.3435722565547924,0.3435722565547924,54,77,Non-client mitochondrial proteins
 AARS2,-0.00790218707574012,0.00790218707574012,0.8692029201194917,186,0.00234989278559251,-0.00234989278559251,0.09806519727162658,-0.09806519727162658,54,77,Hsp60/10 clients
 AASS,0.24787155236309985,-0.24787155236309985,3.304133924478115e-8,186,0.46422833226313737,-0.46422833226313737,1.0639999584869608,-1.0639999584869608,54,77,Non-client mitochondrial proteins
