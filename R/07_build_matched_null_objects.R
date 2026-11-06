@@ -4,7 +4,7 @@
 ## corrected full proteomics cohort.
 ##
 ## Key invariants:
-## - Late-stage decline uses adjusted protein abundance and the canonical
+## - AD-versus-MCI lower abundance uses adjusted protein abundance and the canonical
 ##   cogdx-derived NCI/MCI/AD stage.
 ## - Abundance matching uses processed non-residualized protein abundance.
 ## - Braak effects use processed abundance with covariates in the model.
@@ -119,7 +119,7 @@ if (anyDuplicated(prot_stage_meta_null$SampleID) > 0) {
 }
 
 ############################################################
-## 3. Stage-associated late decline and matching abundance
+## 3. AD-versus-MCI lower abundance and matching abundance
 ############################################################
 
 calc_background_metric_one <- function(g) {
@@ -140,21 +140,21 @@ calc_background_metric_one <- function(g) {
   mci <- tmp$adjusted_y[tmp$stage == "MCI"]
   ad <- tmp$adjusted_y[tmp$stage == "AD"]
 
-  protein_late_effect <-
+  protein_ad_minus_mci_effect <-
     mean(ad, na.rm = TRUE) -
     mean(mci, na.rm = TRUE)
 
-  protein_late_decline_magnitude <- dplyr::case_when(
-    !is.finite(protein_late_effect) ~ NA_real_,
-    protein_late_effect < 0 ~ abs(protein_late_effect),
+  protein_lower_abundance_magnitude <- dplyr::case_when(
+    !is.finite(protein_ad_minus_mci_effect) ~ NA_real_,
+    protein_ad_minus_mci_effect < 0 ~ abs(protein_ad_minus_mci_effect),
     TRUE ~ 0
   )
 
   tibble::tibble(
     gene = g,
-    protein_late_effect = protein_late_effect,
-    protein_late_decline_magnitude =
-      protein_late_decline_magnitude,
+    protein_ad_minus_mci_effect = protein_ad_minus_mci_effect,
+    protein_lower_abundance_magnitude =
+      protein_lower_abundance_magnitude,
     matching_abundance = mean(tmp$raw_y, na.rm = TRUE)
   )
 }
@@ -224,7 +224,7 @@ null_input_tbl <- tibble::tibble(
   checked_left_join(
     background_metrics,
     by = "gene",
-    label = "null genes to corrected late-decline metrics"
+    label = "null genes to corrected lower-abundance metrics"
   ) |>
   checked_left_join(
     background_braak,
@@ -244,9 +244,9 @@ null_input_tbl <- tibble::tibble(
     ## Rank-based legacy quantities
     ########################################################
 
-    late_decline_rank =
+    lower_abundance_rank =
       percentile01(
-        .data$protein_late_decline_magnitude
+        .data$protein_lower_abundance_magnitude
       ) / 100,
 
     braak_pathology_rank =
@@ -306,7 +306,7 @@ null_input_tbl <- tibble::tibble(
     pathology_vulnerability_score =
       rowMeans(
         cbind(
-          .data$late_decline_rank,
+          .data$lower_abundance_rank,
           .data$inverse_braak_rank
         ),
         na.rm = TRUE
@@ -320,7 +320,7 @@ message(
 
 null_input_tbl <- null_input_tbl |>
   dplyr::filter(
-    !is.na(.data$protein_late_decline_magnitude),
+    !is.na(.data$protein_lower_abundance_magnitude),
     !is.na(.data$inverse_braak_magnitude),
     !is.na(.data$cerad_pathology_magnitude),
     !is.na(.data$joint_pathology_magnitude),
@@ -376,35 +376,35 @@ if (nrow(background_null_pool) < 50) {
 hsp_metric_agreement <- hsp_null_tbl |>
   dplyr::select(
     gene,
-    null_late_effect = protein_late_effect,
-    null_late_decline = protein_late_decline_magnitude
+    null_ad_minus_mci_effect = protein_ad_minus_mci_effect,
+    null_lower_abundance = protein_lower_abundance_magnitude
   ) |>
   dplyr::inner_join(
     all_hsp60_10_client_tbl |>
       dplyr::filter(.data$detected_in_protein) |>
       dplyr::select(
         gene,
-        source_late_effect = protein_late_effect,
-        source_late_decline = protein_late_decline_magnitude
+        source_ad_minus_mci_effect = protein_ad_minus_mci_effect,
+        source_lower_abundance = protein_lower_abundance_magnitude
       ),
     by = "gene"
   ) |>
   dplyr::mutate(
     abs_effect_difference = abs(
-      .data$null_late_effect - .data$source_late_effect
+      .data$null_ad_minus_mci_effect - .data$source_ad_minus_mci_effect
     ),
-    abs_decline_difference = abs(
-      .data$null_late_decline - .data$source_late_decline
+    abs_lower_abundance_difference = abs(
+      .data$null_lower_abundance - .data$source_lower_abundance
     )
   )
 
 if (
   nrow(hsp_metric_agreement) != length(hsp_symbols_detected) ||
   max(hsp_metric_agreement$abs_effect_difference, na.rm = TRUE) > 1e-10 ||
-  max(hsp_metric_agreement$abs_decline_difference, na.rm = TRUE) > 1e-10
+  max(hsp_metric_agreement$abs_lower_abundance_difference, na.rm = TRUE) > 1e-10
 ) {
   stop(
-    "Matched-null Hsp60/10 late-decline metrics do not reproduce the ",
+    "Matched-null Hsp60/10 lower-abundance metrics do not reproduce the ",
     "source-of-truth client table.",
     call. = FALSE
   )
@@ -412,7 +412,7 @@ if (
 
 write_tbl(
   hsp_metric_agreement,
-  "figure5_hsp_late_decline_source_agreement"
+  "figure5_hsp_lower_abundance_source_agreement"
 )
 
 ############################################################
@@ -447,8 +447,8 @@ cat(
 
 observed_stats <- hsp_null_tbl |>
   dplyr::summarise(
-    observed_mean_late_decline = mean(
-      .data$protein_late_decline_magnitude,
+    observed_mean_lower_abundance = mean(
+      .data$protein_lower_abundance_magnitude,
       na.rm = TRUE
     ),
     observed_mean_inverse_braak = mean(
@@ -471,7 +471,7 @@ observed_stats <- hsp_null_tbl |>
       na.rm = TRUE
     ),
 
-    ## Legacy Braak + late-decline composite.
+    ## Legacy Braak + lower-abundance composite.
     observed_mean_pathology_score = mean(
       .data$pathology_vulnerability_score,
       na.rm = TRUE
@@ -525,8 +525,8 @@ null_results <- purrr::map_dfr(
 
     tibble::tibble(
       iter = i,
-      null_mean_late_decline = mean(
-        sampled_bg$protein_late_decline_magnitude,
+      null_mean_lower_abundance = mean(
+        sampled_bg$protein_lower_abundance_magnitude,
         na.rm = TRUE
       ),
       null_mean_inverse_braak = mean(
@@ -571,7 +571,7 @@ obs <- observed_stats
 
 null_summary <- tibble::tibble(
   metric = c(
-    "protein_late_decline_magnitude",
+    "protein_lower_abundance_magnitude",
 
     ## Legacy migration-control metrics.
     "inverse_braak_magnitude",
@@ -586,7 +586,7 @@ null_summary <- tibble::tibble(
   ),
 
   observed = c(
-    obs$observed_mean_late_decline,
+    obs$observed_mean_lower_abundance,
 
     obs$observed_mean_inverse_braak,
     obs$observed_mean_pathology_score,
@@ -600,7 +600,7 @@ null_summary <- tibble::tibble(
 
   null_mean = c(
     mean(
-      null_results$null_mean_late_decline,
+      null_results$null_mean_lower_abundance,
       na.rm = TRUE
     ),
 
@@ -637,7 +637,7 @@ null_summary <- tibble::tibble(
 
   null_sd = c(
     stats::sd(
-      null_results$null_mean_late_decline,
+      null_results$null_mean_lower_abundance,
       na.rm = TRUE
     ),
 
@@ -674,8 +674,8 @@ null_summary <- tibble::tibble(
 
   empirical_p_greater = c(
     mean(
-      null_results$null_mean_late_decline >=
-        obs$observed_mean_late_decline,
+      null_results$null_mean_lower_abundance >=
+        obs$observed_mean_lower_abundance,
       na.rm = TRUE
     ),
 

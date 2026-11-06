@@ -45,7 +45,7 @@ if (length(forbidden_hits) > 0) {
 required_runner_patterns <- c(
   "figure5_null_input_COVARIATE_ADJUSTED.csv",
   "Fig5_gene_universe_cognition_summary_by_gene.csv",
-  "protein_late_decline_magnitude",
+  "protein_lower_abundance_magnitude",
   "cognition_priority_score",
   "915",
   "306",
@@ -120,7 +120,7 @@ prod <- readr::read_csv(
       "Non-client mitochondrial proteins"
     ),
     inverse_braak = as.numeric(.data$inverse_braak_magnitude),
-    late_decline = as.numeric(.data$protein_late_decline_magnitude)
+    lower_abundance = as.numeric(.data$protein_lower_abundance_magnitude)
   )
 
 supp <- supfig5_outputs$rosmap_tbl |>
@@ -128,7 +128,7 @@ supp <- supfig5_outputs$rosmap_tbl |>
     gene_key = external_key(.data$gene),
     group = as.character(.data$group),
     inverse_braak = as.numeric(.data$rosmap_inverse_braak),
-    late_decline = as.numeric(.data$rosmap_late_decline)
+    lower_abundance = as.numeric(.data$rosmap_lower_abundance)
   )
 
 if (anyDuplicated(prod$gene_key) > 0 ||
@@ -153,8 +153,8 @@ agreement <- prod |>
         .data$inverse_braak_supplement
     ),
     late_abs_difference = abs(
-      .data$late_decline_production -
-        .data$late_decline_supplement
+      .data$lower_abundance_production -
+        .data$lower_abundance_supplement
     )
   )
 
@@ -272,7 +272,7 @@ checks <- dplyr::bind_rows(
     max(agreement$braak_abs_difference, na.rm = TRUE) < 1e-12
   ),
   check_one(
-    "Supp Fig 5 late-decline agreement",
+    "Supp Fig 5 lower-abundance agreement",
     max(agreement$late_abs_difference, na.rm = TRUE),
     "<1e-12",
     max(agreement$late_abs_difference, na.rm = TRUE) < 1e-12
@@ -280,10 +280,10 @@ checks <- dplyr::bind_rows(
   check_one(
     "Supp Fig 6 difference metrics",
     sort(unique(as.character(supfig6_outputs$diff_tbl$metric))),
-    sort(c("AD-associated decline", "High-Braak coupling")),
+    sort(c("AD-associated lower abundance", "High-Braak coupling")),
     identical(
       sort(unique(as.character(supfig6_outputs$diff_tbl$metric))),
-      sort(c("AD-associated decline", "High-Braak coupling"))
+      sort(c("AD-associated lower abundance", "High-Braak coupling"))
     )
   ),
   check_one(

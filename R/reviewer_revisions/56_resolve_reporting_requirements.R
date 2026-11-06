@@ -49,7 +49,7 @@ required_inputs <- c(
   "outputs/reviewer_revisions/corrected_cognition_production_validation/corrected_network_cognition_models.csv",
   "outputs/reviewer_revisions/regional_formal_interaction/hsp_conclusion_audit/Hsp_pathway_score_primary_interactions.csv",
   "outputs/reviewer_revisions/Hsp_pathway_PC1_sensitivity/stage_Wilcoxon_mean_z_vs_PC1.csv",
-  "outputs/reviewer_revisions/corrected_cognition_production_validation/corrected_figure5_null_summary.csv"
+  "outputs/main_figures/tables/main_fig5_matched_null_specificity/Fig5_null_summary_with_cognition.csv"
 )
 
 missing_inputs <- required_inputs[!file.exists(required_inputs)]
@@ -565,7 +565,7 @@ fig1 <- read.csv(
 
 required_fig1 <- c(
   "Pathway", "PathwayLabel", "PathwayShort",
-  "Modality", "Shift", "stage_change"
+  "Modality", "Shift", "stage_difference"
 )
 
 if (!all(required_fig1 %in% names(fig1))) {
@@ -576,8 +576,8 @@ if (
   nrow(fig1) != 40L ||
   length(unique(fig1$Pathway)) != 10L ||
   !setequal(unique(fig1$Modality), c("RNA", "Protein")) ||
-  !setequal(unique(fig1$Shift), c("NCI to MCI", "MCI to AD")) ||
-  any(!is.finite(fig1$stage_change))
+  !setequal(unique(fig1$Shift), c("NCI versus MCI", "MCI versus AD")) ||
+  any(!is.finite(fig1$stage_difference))
 ) {
   stop("Current Fig1B side-by-side structure changed.")
 }
@@ -588,7 +588,7 @@ fig1_reporting <- data.frame(
   pathway_short = fig1$PathwayShort,
   modality = fig1$Modality,
   shift = fig1$Shift,
-  effect = fig1$stage_change,
+  effect = fig1$stage_difference,
   effect_label = (
     "Within-modality change in mean standardized pathway score"
   ),
@@ -692,7 +692,7 @@ if (
 }
 
 null_tbl <- read.csv(
-  "outputs/reviewer_revisions/corrected_cognition_production_validation/corrected_figure5_null_summary.csv",
+  "outputs/main_figures/tables/main_fig5_matched_null_specificity/Fig5_null_summary_with_cognition.csv",
   stringsAsFactors = FALSE,
   check.names = FALSE
 )
@@ -729,7 +729,7 @@ multiplicity_policy <- data.frame(
     "Conventional_stage_DE"
   ),
   multiplicity_family = c(
-    "Figure 1B side-by-side modality-specific stage changes",
+    "Figure 1B side-by-side modality-specific cross-sectional differences",
     "3 prespecified network cognition outcomes",
     "2 primary Hsp pathway regional interaction tests",
     "2 stage contrasts within each score type",
@@ -772,7 +772,7 @@ final_status <- data.frame(
     "Regional_Braak_continuous_gene_interaction",
     "Regional_Braak_categorical_gene_interaction",
     "Regional_Hsp_pathway_interaction",
-    "APOE_late_stage_clients",
+    "APOE_ad_vs_mci_clients",
     "APOE_Braak_clients",
     "APOE_CERAD_clients",
     "Alternative_mechanism_markers",

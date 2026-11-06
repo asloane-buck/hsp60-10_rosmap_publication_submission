@@ -97,7 +97,7 @@ sf4_get_input <- function(candidate_names, required = TRUE, label = "input") {
 sf4_validate_null_tbl <- function(tbl, label) {
   required_cols <- c(
     "gene",
-    "protein_late_decline_magnitude",
+    "protein_lower_abundance_magnitude",
     "inverse_braak_magnitude"
   )
   
@@ -463,13 +463,13 @@ sf4_make_distribution_plot <- function(plot_tbl, value_col, title, subtitle, yla
 sf4_make_scatter_plot <- function(plot_tbl) {
   scatter_tbl <- plot_tbl |>
     dplyr::filter(
-      is.finite(.data$protein_late_decline_magnitude),
+      is.finite(.data$protein_lower_abundance_magnitude),
       is.finite(.data$inverse_braak_beta_cerad_adjusted)
     )
 
   rho <- tryCatch(
     stats::cor(
-      scatter_tbl$protein_late_decline_magnitude,
+      scatter_tbl$protein_lower_abundance_magnitude,
       scatter_tbl$inverse_braak_beta_cerad_adjusted,
       method = "spearman",
       use = "complete.obs"
@@ -480,7 +480,7 @@ sf4_make_scatter_plot <- function(plot_tbl) {
   ggplot2::ggplot(
     scatter_tbl,
     ggplot2::aes(
-      x = .data$protein_late_decline_magnitude,
+      x = .data$protein_lower_abundance_magnitude,
       y = .data$inverse_braak_beta_cerad_adjusted
     )
   ) +
@@ -505,7 +505,7 @@ sf4_make_scatter_plot <- function(plot_tbl) {
       hjust = 1.03,
       vjust = 1.1,
       label = paste0("n = ", nrow(scatter_tbl), "; Spearman rho = ", signif(rho, 3),
-        "\nP = ", formatC(stats::cor.test(scatter_tbl$protein_late_decline_magnitude,
+        "\nP = ", formatC(stats::cor.test(scatter_tbl$protein_lower_abundance_magnitude,
           scatter_tbl$inverse_braak_beta_cerad_adjusted, method = "spearman", exact = FALSE)$p.value,
           format = "e", digits = 2)),
       size = 3.2,
@@ -558,7 +558,7 @@ make_supfig4_pathology_model_robustness <- function(inputs) {
   if (frozen) {
     frozen_path <- file.path(audits_dir, "SuppFig4_plotted_gene_level_values.csv")
     plot_tbl <- readr::read_csv(frozen_path, show_col_types = FALSE)
-    required <- c("gene", "group", "protein_late_decline_magnitude",
+    required <- c("gene", "group", "protein_lower_abundance_magnitude",
       "inverse_braak_beta_adjusted", "inverse_braak_beta_cerad_adjusted")
     if (!all(required %in% names(plot_tbl)) || nrow(plot_tbl) != 915 ||
         sum(plot_tbl$group == "Hsp60/10 clients") != 306 ||
@@ -673,7 +673,7 @@ make_supfig4_pathology_model_robustness <- function(inputs) {
       median_inverse_braak = stats::median(.data$inverse_braak_beta_adjusted, na.rm = TRUE),
       median_adjusted_inverse_beta = stats::median(.data$inverse_braak_beta_adjusted, na.rm = TRUE),
       median_cerad_adjusted_inverse_beta = stats::median(.data$inverse_braak_beta_cerad_adjusted, na.rm = TRUE),
-      median_late_decline = stats::median(.data$protein_late_decline_magnitude, na.rm = TRUE),
+      median_lower_abundance = stats::median(.data$protein_lower_abundance_magnitude, na.rm = TRUE),
       .groups = "drop"
     )
 
@@ -690,9 +690,9 @@ make_supfig4_pathology_model_robustness <- function(inputs) {
   panel_paths <- c(
     save_panel_set(panel_a, "SuppFig4A_covariate_adjusted_braak_distribution", output_dir = panels_dir),
     save_panel_set(panel_b, "SuppFig4B_cerad_adjusted_braak_distribution", output_dir = panels_dir),
-    save_panel_set(panel_c, "SuppFig4C_late_decline_vs_cerad_adjusted_braak", output_dir = panels_dir)
+    save_panel_set(panel_c, "SuppFig4C_lower_abundance_vs_cerad_adjusted_braak", output_dir = panels_dir)
   )
-  sf4_spearman_result <- stats::cor.test(plot_tbl$protein_late_decline_magnitude,
+  sf4_spearman_result <- stats::cor.test(plot_tbl$protein_lower_abundance_magnitude,
     plot_tbl$inverse_braak_beta_cerad_adjusted, method = "spearman", exact = FALSE)
   # Compute outside tibble's column mask: the output column `test` must not
   # shadow the correlation-result object during evaluation.

@@ -1,5 +1,5 @@
 Supplementary Figure 4 run summary
-generated at: 2026-10-03 16:11:47 MDT
+generated at: 2026-11-06 12:35:50 MST
 figure: pathology-model robustness of Hsp60/10 client vulnerability
 primary adjusted model: protein_z ~ braak_z + age_z + sex + pmi_z + TMT batch
 CERAD sensitivity model: protein_z ~ braak_z + cerad_z + age_z + sex + pmi_z + TMT batch

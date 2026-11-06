@@ -132,7 +132,7 @@ sens_cfg <- list(
   n_perm = sens_int("SENSITIVITY_N_PERM", 1000),
   n_perm_check1 = sens_int("SENSITIVITY_N_PERM_CHECK1", sens_int("SENSITIVITY_N_PERM", 1000)),
   n_perm_check2 = sens_int("SENSITIVITY_N_PERM_CHECK2", sens_int("SENSITIVITY_N_PERM", 1000)),
-  top_n_late_decline = sens_int("SENSITIVITY_TOP_N_LATE_DECLINE", 40),
+  top_n_lower_abundance = sens_int("SENSITIVITY_TOP_N_LOWER_ABUNDANCE", 40),
   min_selected_genes = sens_int("SENSITIVITY_MIN_SELECTED_GENES", 8),
   min_clients_per_module = sens_int("SENSITIVITY_MIN_CLIENTS_PER_MODULE", 3),
   min_nonclients_per_module = sens_int("SENSITIVITY_MIN_NONCLIENTS_PER_MODULE", 3),
@@ -560,9 +560,9 @@ client_metrics <- all_hsp60_10_client_tbl |>
     gene = as.character(gene),
     display_gene = as.character(display_gene),
     functional_class = as.character(functional_class),
-    protein_late_effect = safe_num2(protein_late_effect),
-    protein_late_decline_magnitude = safe_num2(protein_late_decline_magnitude),
-    late_decline_percentile = safe_num2(late_decline_percentile),
+    protein_ad_minus_mci_effect = safe_num2(protein_ad_minus_mci_effect),
+    protein_lower_abundance_magnitude = safe_num2(protein_lower_abundance_magnitude),
+    lower_abundance_percentile = safe_num2(lower_abundance_percentile),
     hub_mean_abs_cor = safe_num2(hub_mean_abs_cor),
     hub_degree = safe_num2(hub_degree),
     centrality_percentile = safe_num2(centrality_percentile),
@@ -687,33 +687,33 @@ make_cor_mat <- function(mat, method = sens_cfg$corr_method) {
 
 select_check1_sets <- function(client_metrics) {
   cm <- client_metrics |>
-    dplyr::filter(is.finite(protein_late_decline_magnitude), gene %in% rownames(prot_mat)) |>
-    dplyr::arrange(dplyr::desc(protein_late_decline_magnitude))
+    dplyr::filter(is.finite(protein_lower_abundance_magnitude), gene %in% rownames(prot_mat)) |>
+    dplyr::arrange(dplyr::desc(protein_lower_abundance_magnitude))
 
-  n_top <- min(sens_cfg$top_n_late_decline, nrow(cm))
-  top_late_decline <- cm |>
+  n_top <- min(sens_cfg$top_n_lower_abundance, nrow(cm))
+  top_lower_abundance <- cm |>
     dplyr::slice_head(n = n_top) |>
-    dplyr::mutate(selection = "top_late_decline_clients")
+    dplyr::mutate(selection = "top_lower_abundance_clients")
 
   high_both <- cm |>
-    dplyr::filter(late_decline_percentile >= 75, centrality_percentile >= 75)
+    dplyr::filter(lower_abundance_percentile >= 75, centrality_percentile >= 75)
 
   if (nrow(high_both) >= sens_cfg$min_selected_genes) {
-    late_decline_central <- high_both |>
-      dplyr::arrange(dplyr::desc(late_decline_percentile + centrality_percentile)) |>
-      dplyr::mutate(selection = "late_decline_top_quartile_and_centrality_top_quartile")
+    lower_abundance_central <- high_both |>
+      dplyr::arrange(dplyr::desc(lower_abundance_percentile + centrality_percentile)) |>
+      dplyr::mutate(selection = "lower_abundance_top_quartile_and_centrality_top_quartile")
   } else {
-    late_decline_central <- cm |>
+    lower_abundance_central <- cm |>
       dplyr::filter(is.finite(centrality_percentile)) |>
-      dplyr::mutate(rank_sum = late_decline_percentile + centrality_percentile) |>
+      dplyr::mutate(rank_sum = lower_abundance_percentile + centrality_percentile) |>
       dplyr::arrange(dplyr::desc(rank_sum)) |>
       dplyr::slice_head(n = n_top) |>
-      dplyr::mutate(selection = "top_combined_late_decline_and_centrality_rank")
+      dplyr::mutate(selection = "top_combined_lower_abundance_and_centrality_rank")
   }
 
   list(
-    top_late_decline_clients = top_late_decline,
-    late_decline_central_clients = late_decline_central
+    top_lower_abundance_clients = top_lower_abundance,
+    lower_abundance_central_clients = lower_abundance_central
   )
 }
 
@@ -853,7 +853,7 @@ run_check1 <- function() {
     dplyr::left_join(client_metrics, by = "gene")
 
   residual_centrality_tests <- tibble::tibble(
-    predictor = c("protein_late_decline_magnitude", "late_decline_percentile", "hub_mean_abs_cor", "centrality_percentile"),
+    predictor = c("protein_lower_abundance_magnitude", "lower_abundance_percentile", "hub_mean_abs_cor", "centrality_percentile"),
     outcome = "residual_mean_abs_r_to_other_clients"
   ) |>
     dplyr::mutate(
@@ -904,19 +904,19 @@ run_check1 <- function() {
 
   if (isTRUE(sens_cfg$save_plots)) {
     p_resid <- residual_degree |>
-      dplyr::filter(is.finite(protein_late_decline_magnitude), is.finite(residual_mean_abs_r_to_other_clients)) |>
-      ggplot2::ggplot(ggplot2::aes(x = protein_late_decline_magnitude, y = residual_mean_abs_r_to_other_clients)) +
+      dplyr::filter(is.finite(protein_lower_abundance_magnitude), is.finite(residual_mean_abs_r_to_other_clients)) |>
+      ggplot2::ggplot(ggplot2::aes(x = protein_lower_abundance_magnitude, y = residual_mean_abs_r_to_other_clients)) +
       ggplot2::geom_point(alpha = 0.75) +
       ggplot2::geom_smooth(method = "lm", se = TRUE, linewidth = 0.7) +
       ggplot2::labs(
-        title = "Late-stage decline versus stage-residualized co-movement",
-        x = "Protein late-stage decline magnitude",
+        title = "AD-versus-MCI lower abundance versus stage-residualized co-movement",
+        x = "Protein AD-versus-MCI lower abundance magnitude",
         y = "Mean absolute residual correlation to other clients"
       ) +
       ggplot2::theme_classic(base_size = 10)
 
     ggplot2::ggsave(
-      file.path(sens_cfg$output_dir, "check1_late_decline_vs_stage_residualized_comovement.pdf"),
+      file.path(sens_cfg$output_dir, "check1_lower_abundance_vs_stage_residualized_comovement.pdf"),
       p_resid,
       width = 5.5,
       height = 4.0,
@@ -1046,7 +1046,7 @@ run_check2 <- function() {
     dplyr::transmute(
       gene = as.character(gene),
       is_client = as.logical(is_hsp60_10_client),
-      protein_late_decline_magnitude = safe_num2(protein_late_decline_magnitude),
+      protein_lower_abundance_magnitude = safe_num2(protein_lower_abundance_magnitude),
       inverse_braak_magnitude = safe_num2(inverse_braak_magnitude),
       pathology_vulnerability_score = safe_num2(pathology_vulnerability_score),
       matching_abundance = safe_num2(matching_abundance),
@@ -1083,7 +1083,7 @@ run_check2 <- function() {
   eligible <- metrics_for_function |>
     dplyr::filter(functional_module %in% eligible_modules)
 
-  metric_cols <- c("protein_late_decline_magnitude", "inverse_braak_magnitude", "pathology_vulnerability_score")
+  metric_cols <- c("protein_lower_abundance_magnitude", "inverse_braak_magnitude", "pathology_vulnerability_score")
 
   direct_tests <- purrr::map_dfr(metric_cols, function(metric_col) {
     eligible |>
@@ -1160,20 +1160,20 @@ run_check2 <- function() {
 
   if (isTRUE(sens_cfg$save_plots)) {
     p_module <- direct_tests |>
-      dplyr::filter(metric == "protein_late_decline_magnitude") |>
+      dplyr::filter(metric == "protein_lower_abundance_magnitude") |>
       dplyr::mutate(functional_module = forcats::fct_reorder(functional_module, delta_median_client_minus_nonclient)) |>
       ggplot2::ggplot(ggplot2::aes(x = delta_median_client_minus_nonclient, y = functional_module)) +
       ggplot2::geom_vline(xintercept = 0, linewidth = 0.4) +
       ggplot2::geom_point(size = 2) +
       ggplot2::labs(
-        title = "Client decline within matched mitochondrial functional modules",
-        x = "Median late-stage decline magnitude: client minus non-client",
+        title = "Client lower abundance within matched mitochondrial functional modules",
+        x = "Median AD-versus-MCI lower abundance magnitude: client minus non-client",
         y = NULL
       ) +
       ggplot2::theme_classic(base_size = 10)
 
     ggplot2::ggsave(
-      file.path(sens_cfg$output_dir, "check2_function_matched_late_decline_effects.pdf"),
+      file.path(sens_cfg$output_dir, "check2_function_matched_lower_abundance_effects.pdf"),
       p_module,
       width = 6.5,
       height = max(3.5, 0.35 * max(1, length(eligible_modules))),
@@ -1217,10 +1217,10 @@ interpretation <- c(
   "",
   "CHECK 1: stage-residualized / within-stage Hsp60/10 client co-movement",
   "Positive result:",
-  "  Selected strongly late-declining clients retain higher residual co-movement than matched client sets after disease stage is regressed out, and/or within individual disease stages.",
+  "  Clients with the greatest AD-versus-MCI lower-abundance magnitude retain higher residual co-movement than matched client sets after disease stage is regressed out, and/or within individual disease stages.",
   "  This supports wording that the vulnerable subset is coordinated beyond a simple shared stage effect.",
   "Negative result:",
-  "  The late-stage decline result remains intact, but centrality should be framed as a contextual feature of disease-responsive clients rather than independent evidence for a tightly coordinated subnetwork.",
+  "  The AD-versus-MCI lower abundance result remains intact, but centrality should be framed as a contextual feature of disease-responsive clients rather than independent evidence for a tightly coordinated subnetwork.",
   "",
   "CHECK 2: function-matched client vs non-client mitochondrial vulnerability",
   "Positive result:",
@@ -1293,7 +1293,7 @@ provenance <- c(
     "within_stage_nulls: ",
     sens_cfg$run_within_stage_nulls
   ),
-  "late_decline_metric: protein_late_decline_magnitude"
+  "lower_abundance_metric: protein_lower_abundance_magnitude"
 )
 
 writeLines(

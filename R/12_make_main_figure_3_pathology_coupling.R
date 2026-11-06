@@ -208,7 +208,7 @@ require_columns(
   c(
     "gene",
     "detected_in_protein",
-    "protein_late_decline_magnitude",
+    "protein_lower_abundance_magnitude",
     "braak_pathology_aligned_beta",
     "cerad_pathology_aligned_beta"
   ),
@@ -224,10 +224,10 @@ fig3_tbl <- all_hsp60_10_client_tbl %>%
 
     ## AD-versus-MCI lower-abundance magnitude:
     ## more positive = greater lower abundance in AD relative to MCI.
-    late_decline_value =
+    lower_abundance_value =
       suppressWarnings(
         as.numeric(
-          protein_late_decline_magnitude
+          protein_lower_abundance_magnitude
         )
       ),
 
@@ -256,23 +256,23 @@ fig3_tbl <- all_hsp60_10_client_tbl %>%
   ) %>%
   filter(
     detected_in_protein == TRUE,
-    is.finite(late_decline_value),
+    is.finite(lower_abundance_value),
     is.finite(braak_aligned_beta),
     is.finite(cerad_aligned_beta)
   ) %>%
   arrange(
-    desc(late_decline_value)
+    desc(lower_abundance_value)
   ) %>%
   mutate(
-    late_decline_rank =
+    lower_abundance_rank =
       row_number(),
 
     n_detected_clients =
       n(),
 
-    late_decline_group =
+    lower_abundance_group =
       if_else(
-        late_decline_rank <=
+        lower_abundance_rank <=
           ceiling(
             0.25 *
               n_detected_clients
@@ -281,9 +281,9 @@ fig3_tbl <- all_hsp60_10_client_tbl %>%
         "Other detected Hsp60/10 clients"
       ),
 
-    late_decline_group =
+    lower_abundance_group =
       factor(
-        late_decline_group,
+        lower_abundance_group,
         levels = c(
           "Top-quartile lower abundance",
           "Other detected Hsp60/10 clients"
@@ -302,7 +302,7 @@ print(dim(fig3_tbl))
 cat("\nFigure 3 lower-abundance group counts:\n")
 print(
   table(
-    fig3_tbl$late_decline_group
+    fig3_tbl$lower_abundance_group
   )
 )
 
@@ -416,32 +416,32 @@ pathology_axis_stats <- pathology_pair_tbl %>%
 ## Lower abundance vs Braak
 ############################################################
 
-late_decline_braak_tbl <- fig3_tbl %>%
+lower_abundance_braak_tbl <- fig3_tbl %>%
   filter(
-    is.finite(late_decline_value),
+    is.finite(lower_abundance_value),
     is.finite(braak_aligned_beta)
   )
 
-late_decline_braak_cor <- suppressWarnings(
+lower_abundance_braak_cor <- suppressWarnings(
   cor.test(
-    late_decline_braak_tbl$late_decline_value,
-    late_decline_braak_tbl$braak_aligned_beta,
+    lower_abundance_braak_tbl$lower_abundance_value,
+    lower_abundance_braak_tbl$braak_aligned_beta,
     method = "spearman",
     exact = FALSE
   )
 )
 
-late_decline_braak_stats <- tibble(
+lower_abundance_braak_stats <- tibble(
   n_genes =
-    nrow(late_decline_braak_tbl),
+    nrow(lower_abundance_braak_tbl),
 
   spearman_rho =
     unname(
-      late_decline_braak_cor$estimate
+      lower_abundance_braak_cor$estimate
     ),
 
   p_value =
-    late_decline_braak_cor$p.value,
+    lower_abundance_braak_cor$p.value,
 
   p_label =
     p_to_label(p_value),
@@ -454,32 +454,32 @@ late_decline_braak_stats <- tibble(
 ## Lower abundance vs CERAD
 ############################################################
 
-late_decline_cerad_tbl <- fig3_tbl %>%
+lower_abundance_cerad_tbl <- fig3_tbl %>%
   filter(
-    is.finite(late_decline_value),
+    is.finite(lower_abundance_value),
     is.finite(cerad_aligned_beta)
   )
 
-late_decline_cerad_cor <- suppressWarnings(
+lower_abundance_cerad_cor <- suppressWarnings(
   cor.test(
-    late_decline_cerad_tbl$late_decline_value,
-    late_decline_cerad_tbl$cerad_aligned_beta,
+    lower_abundance_cerad_tbl$lower_abundance_value,
+    lower_abundance_cerad_tbl$cerad_aligned_beta,
     method = "spearman",
     exact = FALSE
   )
 )
 
-late_decline_cerad_stats <- tibble(
+lower_abundance_cerad_stats <- tibble(
   n_genes =
-    nrow(late_decline_cerad_tbl),
+    nrow(lower_abundance_cerad_tbl),
 
   spearman_rho =
     unname(
-      late_decline_cerad_cor$estimate
+      lower_abundance_cerad_cor$estimate
     ),
 
   p_value =
-    late_decline_cerad_cor$p.value,
+    lower_abundance_cerad_cor$p.value,
 
   p_label =
     p_to_label(p_value),
@@ -496,20 +496,20 @@ braak_group_stats <- fig3_tbl %>%
   summarise(
     n_top =
       sum(
-        late_decline_group ==
+        lower_abundance_group ==
           "Top-quartile lower abundance"
       ),
 
     n_other =
       sum(
-        late_decline_group ==
+        lower_abundance_group ==
           "Other detected Hsp60/10 clients"
       ),
 
     median_top =
       median(
         braak_aligned_beta[
-          late_decline_group ==
+          lower_abundance_group ==
             "Top-quartile lower abundance"
         ],
         na.rm = TRUE
@@ -518,7 +518,7 @@ braak_group_stats <- fig3_tbl %>%
     median_other =
       median(
         braak_aligned_beta[
-          late_decline_group ==
+          lower_abundance_group ==
             "Other detected Hsp60/10 clients"
         ],
         na.rm = TRUE
@@ -527,11 +527,11 @@ braak_group_stats <- fig3_tbl %>%
     p_value =
       safe_wilcox_unpaired(
         braak_aligned_beta[
-          late_decline_group ==
+          lower_abundance_group ==
             "Top-quartile lower abundance"
         ],
         braak_aligned_beta[
-          late_decline_group ==
+          lower_abundance_group ==
             "Other detected Hsp60/10 clients"
         ]
       ),
@@ -547,20 +547,20 @@ cerad_group_stats <- fig3_tbl %>%
   summarise(
     n_top =
       sum(
-        late_decline_group ==
+        lower_abundance_group ==
           "Top-quartile lower abundance"
       ),
 
     n_other =
       sum(
-        late_decline_group ==
+        lower_abundance_group ==
           "Other detected Hsp60/10 clients"
       ),
 
     median_top =
       median(
         cerad_aligned_beta[
-          late_decline_group ==
+          lower_abundance_group ==
             "Top-quartile lower abundance"
         ],
         na.rm = TRUE
@@ -569,7 +569,7 @@ cerad_group_stats <- fig3_tbl %>%
     median_other =
       median(
         cerad_aligned_beta[
-          late_decline_group ==
+          lower_abundance_group ==
             "Other detected Hsp60/10 clients"
         ],
         na.rm = TRUE
@@ -578,11 +578,11 @@ cerad_group_stats <- fig3_tbl %>%
     p_value =
       safe_wilcox_unpaired(
         cerad_aligned_beta[
-          late_decline_group ==
+          lower_abundance_group ==
             "Top-quartile lower abundance"
         ],
         cerad_aligned_beta[
-          late_decline_group ==
+          lower_abundance_group ==
             "Other detected Hsp60/10 clients"
         ]
       ),
@@ -601,28 +601,28 @@ fig3_stats_tbl <- bind_rows(
         "paired_signed_braak_vs_cerad"
     ),
 
-  late_decline_braak_stats %>%
+  lower_abundance_braak_stats %>%
     mutate(
       test =
-        "late_decline_vs_signed_braak_spearman"
+        "lower_abundance_vs_signed_braak_spearman"
     ),
 
-  late_decline_cerad_stats %>%
+  lower_abundance_cerad_stats %>%
     mutate(
       test =
-        "late_decline_vs_signed_cerad_spearman"
+        "lower_abundance_vs_signed_cerad_spearman"
     ),
 
   braak_group_stats %>%
     mutate(
       test =
-        "signed_braak_top_late_decline_vs_other"
+        "signed_braak_top_lower_abundance_vs_other"
     ),
 
   cerad_group_stats %>%
     mutate(
       test =
-        "signed_cerad_top_late_decline_vs_other"
+        "signed_cerad_top_lower_abundance_vs_other"
     )
 )
 
@@ -632,13 +632,13 @@ write_fig3_all_table(
 )
 
 write_fig3_all_table(
-  late_decline_braak_stats,
-  "Fig3B_late_decline_vs_signed_braak_correlation_stats"
+  lower_abundance_braak_stats,
+  "Fig3B_lower_abundance_vs_signed_braak_correlation_stats"
 )
 
 write_fig3_all_table(
-  late_decline_cerad_stats,
-  "Fig3C_late_decline_vs_signed_cerad_correlation_stats"
+  lower_abundance_cerad_stats,
+  "Fig3C_lower_abundance_vs_signed_cerad_correlation_stats"
 )
 
 write_fig3_all_table(
@@ -664,13 +664,13 @@ print(
 
 cat("\n===== LOWER ABUNDANCE VS BRAAK =====\n")
 print(
-  late_decline_braak_stats,
+  lower_abundance_braak_stats,
   width = Inf
 )
 
 cat("\n===== LOWER ABUNDANCE VS CERAD =====\n")
 print(
-  late_decline_cerad_stats,
+  lower_abundance_cerad_stats,
   width = Inf
 )
 
@@ -690,7 +690,7 @@ print(
 ## 4. Labels, colors, and shared pathology scale
 ############################################################
 
-late_decline_colors <- c(
+lower_abundance_colors <- c(
   "Top-quartile lower abundance" =
     "#9E4A4A",
 
@@ -746,7 +746,7 @@ pathology_y_limits <- c(
 panelA_long <- fig3_tbl %>%
   select(
     gene,
-    late_decline_group,
+    lower_abundance_group,
     braak_aligned_beta,
     cerad_aligned_beta
   ) %>%
@@ -817,7 +817,7 @@ pA <- ggplot(
   ) +
   geom_point(
     aes(
-      fill = late_decline_group
+      fill = lower_abundance_group
     ),
     position =
       position_jitter(
@@ -845,7 +845,7 @@ pA <- ggplot(
   ) +
   scale_fill_manual(
     values =
-      late_decline_colors,
+      lower_abundance_colors,
     name =
       "Lower-abundance group",
     labels = c(
@@ -883,19 +883,19 @@ pA <- ggplot(
 cor_label_B <- paste0(
   "Spearman rho = ",
   signif(
-    late_decline_braak_stats$spearman_rho,
+    lower_abundance_braak_stats$spearman_rho,
     2
   ),
   "\n",
-  late_decline_braak_stats$p_label,
+  lower_abundance_braak_stats$p_label,
   "\nn = ",
-  late_decline_braak_stats$n_genes
+  lower_abundance_braak_stats$n_genes
 )
 
 pB <- ggplot(
-  late_decline_braak_tbl,
+  lower_abundance_braak_tbl,
   aes(
-    x = late_decline_value,
+    x = lower_abundance_value,
     y = braak_aligned_beta
   )
 ) +
@@ -916,7 +916,7 @@ pB <- ggplot(
   geom_point(
     aes(
       fill =
-        late_decline_group
+        lower_abundance_group
     ),
     shape = 21,
     color = "grey35",
@@ -929,7 +929,7 @@ pB <- ggplot(
       fig3_label_tbl,
     aes(
       x =
-        late_decline_value,
+        lower_abundance_value,
       y =
         braak_aligned_beta,
       label =
@@ -961,7 +961,7 @@ pB <- ggplot(
   ) +
   scale_fill_manual(
     values =
-      late_decline_colors,
+      lower_abundance_colors,
     guide = "none"
   ) +
   scale_x_continuous(
@@ -1003,19 +1003,19 @@ pB <- ggplot(
 cor_label_C <- paste0(
   "Spearman rho = ",
   signif(
-    late_decline_cerad_stats$spearman_rho,
+    lower_abundance_cerad_stats$spearman_rho,
     2
   ),
   "\n",
-  late_decline_cerad_stats$p_label,
+  lower_abundance_cerad_stats$p_label,
   "\nn = ",
-  late_decline_cerad_stats$n_genes
+  lower_abundance_cerad_stats$n_genes
 )
 
 pC <- ggplot(
-  late_decline_cerad_tbl,
+  lower_abundance_cerad_tbl,
   aes(
-    x = late_decline_value,
+    x = lower_abundance_value,
     y = cerad_aligned_beta
   )
 ) +
@@ -1036,7 +1036,7 @@ pC <- ggplot(
   geom_point(
     aes(
       fill =
-        late_decline_group
+        lower_abundance_group
     ),
     shape = 21,
     color = "grey35",
@@ -1049,7 +1049,7 @@ pC <- ggplot(
       fig3_label_tbl,
     aes(
       x =
-        late_decline_value,
+        lower_abundance_value,
       y =
         cerad_aligned_beta,
       label =
@@ -1081,7 +1081,7 @@ pC <- ggplot(
   ) +
   scale_fill_manual(
     values =
-      late_decline_colors,
+      lower_abundance_colors,
     guide = "none"
   ) +
   scale_x_continuous(
@@ -1103,7 +1103,7 @@ pC <- ggplot(
       "C. AD-versus-MCI lower abundance is associated with CERAD/amyloid-aligned protein loss",
 
     subtitle =
-      "Because lower CERAD scores indicate worse pathology, positive beta is the pathology-aligned decline direction.",
+      "Because lower CERAD scores indicate worse pathology, positive beta is the pathology-aligned lower-abundance direction.",
 
     x =
       "AD-versus-MCI lower-abundance magnitude",

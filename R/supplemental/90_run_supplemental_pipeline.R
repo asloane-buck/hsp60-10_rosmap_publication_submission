@@ -99,7 +99,7 @@ production_cognition_tbl <- readr::read_csv(
 required_null_cols <- c(
   "gene",
   "is_hsp60_10_client",
-  "protein_late_decline_magnitude",
+  "protein_lower_abundance_magnitude",
   "braak_pathology_magnitude",
   "cerad_pathology_magnitude",
   "joint_pathology_magnitude",

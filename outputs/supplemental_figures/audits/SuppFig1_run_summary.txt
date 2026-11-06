@@ -1,5 +1,5 @@
 Supplementary Figure 1 run summary
-generated at: 2026-10-03 16:11:18 MDT
+generated at: 2026-11-06 12:35:20 MST
 source inventory: Bie et al. Hsp60/10 client inventory
 original reported inventory size: 323
 analyzed size after gene-symbol harmonization: 321
@@ -13,6 +13,6 @@ stage column used for RNA: clinical_stage
 stage column used for protein: clinical_stage
 covariate columns detected for RNA: age=age, sex=sex, RIN=rin, PMI=pmi, Braak=braak, CERAD=cerad
 covariate columns detected for protein: age=age_death, sex=msex, RIN=not available, PMI=pmi, Braak=braak, CERAD=cerad
-mitochondrial background source: data/supplemental_inputs/Broad_MitoCarta_non_Hsp60_10.csv (880 genes after gene-symbol harmonization)
+mitochondrial background source: /Users/ashlynsloane/Buck Institute 25-26/ROSMAP Analysis March 26/hsp60_10_rosmap_publication_ready_repo/data/supplemental_inputs/Broad_MitoCarta_non_Hsp60_10.csv (880 genes after gene-symbol harmonization)
 panels generated: A Analysis workflow; B Client detection across RNA and proteomics; C Samples by diagnosis/stage; D Covariate availability; E Protein detection-rate categories
 panels skipped: none

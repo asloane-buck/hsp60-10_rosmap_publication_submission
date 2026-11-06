@@ -1,6 +1,23 @@
 options(stringsAsFactors = FALSE)
 
-base <- "/Users/ashlynsloane/Buck Institute 25-26/ROSMAP Analysis March 26/Brain Region Specificity"
+base <- Sys.getenv("ROSMAP_REGIONAL_BASE", unset = "")
+
+if (!nzchar(base)) {
+  stop(
+    "ROSMAP_REGIONAL_BASE is not set. Configure it in .reproducibility.env.",
+    call. = FALSE
+  )
+}
+
+base <- path.expand(base)
+
+if (!dir.exists(base)) {
+  stop(
+    "ROSMAP_REGIONAL_BASE does not exist: ",
+    base,
+    call. = FALSE
+  )
+}
 
 outdir <- "outputs/reviewer_revisions/regional_braak_fix/benchmark"
 dir.create(outdir, recursive = TRUE, showWarnings = FALSE)

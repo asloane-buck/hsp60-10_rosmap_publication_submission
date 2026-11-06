@@ -69,17 +69,17 @@ broad_group_matches_upstream <- all(
     )
 )
 
-late_row <- null_summary |>
-  dplyr::filter(.data$metric == "protein_late_decline_magnitude")
+lower_abundance_row <- null_summary |>
+  dplyr::filter(.data$metric == "protein_lower_abundance_magnitude")
 
 fig5_metrics <- as.character(figure_tbl$metric)
 
-priority_late_fraction <- as.numeric(priority_tbl$late_decline_percentile)
-if (any(abs(priority_late_fraction[is.finite(priority_late_fraction)]) > 1)) {
-  priority_late_fraction <- priority_late_fraction / 100
+priority_lower_abundance_fraction <- as.numeric(priority_tbl$lower_abundance_percentile)
+if (any(abs(priority_lower_abundance_fraction[is.finite(priority_lower_abundance_fraction)]) > 1)) {
+  priority_lower_abundance_fraction <- priority_lower_abundance_fraction / 100
 }
 
-fig6_source <- priority_late_fraction[
+fig6_source <- priority_lower_abundance_fraction[
   match(fig6_tbl$gene, priority_tbl$gene)
 ]
 
@@ -148,17 +148,17 @@ checks <- dplyr::bind_rows(
     nrow(null_results) == 10000
   ),
   check_one(
-    "Figure 5 includes corrected late-decline metric",
-    "protein_late_decline_magnitude" %in% fig5_metrics,
+    "Figure 5 includes corrected lower-abundance metric",
+    "protein_lower_abundance_magnitude" %in% fig5_metrics,
     TRUE,
-    "protein_late_decline_magnitude" %in% fig5_metrics
+    "protein_lower_abundance_magnitude" %in% fig5_metrics
   ),
   check_one(
-    "Figure 5 observed late decline preserved",
-    round(late_row$observed, 4),
+    "Figure 5 observed lower-abundance magnitude preserved",
+    round(lower_abundance_row$observed, 4),
     "0.0230 +/- 0.005",
-    nrow(late_row) == 1 &&
-      abs(late_row$observed - 0.0230) <= 0.005
+    nrow(lower_abundance_row) == 1 &&
+      abs(lower_abundance_row$observed - 0.0230) <= 0.005
   ),
   check_one(
     "Figure 5 old collapse source identifier absent",
@@ -173,14 +173,14 @@ checks <- dplyr::bind_rows(
     nrow(fig6_tbl) == 306
   ),
   check_one(
-    "Figure 6 late-decline percentile reproduces priority table",
+    "Figure 6 lower-abundance percentile reproduces priority table",
     max(
-      abs(fig6_tbl$late_decline_pct - fig6_source),
+      abs(fig6_tbl$lower_abundance_pct - fig6_source),
       na.rm = TRUE
     ),
     "<1e-12",
     max(
-      abs(fig6_tbl$late_decline_pct - fig6_source),
+      abs(fig6_tbl$lower_abundance_pct - fig6_source),
       na.rm = TRUE
     ) < 1e-12
   ),

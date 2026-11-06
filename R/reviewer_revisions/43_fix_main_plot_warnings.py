@@ -56,14 +56,14 @@ s = p.read_text()
 s = replace_once(
     s,
     '''  geom_point(
-    aes(fill = late_decline_group),
+    aes(fill = lower_abundance_group),
     shape = 21,
     size = 1.85,
     color = "grey35",
     linewidth = 0.18
   ) +''',
     '''  geom_point(
-    aes(fill = late_decline_group),
+    aes(fill = lower_abundance_group),
     shape = 21,
     size = 1.85,
     color = "grey35",
@@ -78,8 +78,8 @@ s = replace_once(
     aes(
       x = 1,
       xend = 2,
-      y = late_effect_difference_ymax + late_effect_difference_yrange * 0.26,
-      yend = late_effect_difference_ymax + late_effect_difference_yrange * 0.26
+      y = ad_minus_mci_effect_difference_ymax + ad_minus_mci_effect_difference_yrange * 0.26,
+      yend = ad_minus_mci_effect_difference_ymax + ad_minus_mci_effect_difference_yrange * 0.26
     ),
     inherit.aes = FALSE,
     color = "black",
@@ -88,8 +88,8 @@ s = replace_once(
   geom_text(
     aes(
       x = 1.5,
-      y = late_effect_difference_ymax + late_effect_difference_yrange * 0.48,
-      label = paste0(late_effect_difference_stats_tbl$star, "\\n", late_effect_difference_stats_tbl$p_label)
+      y = ad_minus_mci_effect_difference_ymax + ad_minus_mci_effect_difference_yrange * 0.48,
+      label = paste0(ad_minus_mci_effect_difference_stats_tbl$star, "\\n", ad_minus_mci_effect_difference_stats_tbl$p_label)
     ),
     inherit.aes = FALSE,
     size = 2.8,
@@ -100,19 +100,19 @@ s = replace_once(
     "segment",
     x = 1,
     xend = 2,
-    y = late_effect_difference_ymax + late_effect_difference_yrange * 0.26,
-    yend = late_effect_difference_ymax + late_effect_difference_yrange * 0.26,
+    y = ad_minus_mci_effect_difference_ymax + ad_minus_mci_effect_difference_yrange * 0.26,
+    yend = ad_minus_mci_effect_difference_ymax + ad_minus_mci_effect_difference_yrange * 0.26,
     color = "black",
     linewidth = 0.45
   ) +
   annotate(
     "text",
     x = 1.5,
-    y = late_effect_difference_ymax + late_effect_difference_yrange * 0.48,
+    y = ad_minus_mci_effect_difference_ymax + ad_minus_mci_effect_difference_yrange * 0.48,
     label = paste0(
-      late_effect_difference_stats_tbl$star,
+      ad_minus_mci_effect_difference_stats_tbl$star,
       "\\n",
-      late_effect_difference_stats_tbl$p_label
+      ad_minus_mci_effect_difference_stats_tbl$p_label
     ),
     size = 2.8,
     fontface = "bold",
@@ -223,8 +223,8 @@ s = p.read_text()
 
 s = replace_once(
     s,
-    'title = "B. Late-decline–Braak target landscape"',
-    'title = "B. Late-decline-Braak target landscape"',
+    'title = "B. Lower-abundance–Braak target landscape"',
+    'title = "B. Lower-abundance-Braak target landscape"',
     "Figure 6 Unicode en dash"
 )
 

@@ -1,8 +1,8 @@
 pdf_name,width_mm,height_mm,file_size_MB,dimension_method,font_embedding_status,pass_fail
 Supplementary_Figure_1_cohort_detection.pdf,169.6861111111111,138.9944444444444,0.006220817565917969,pdfinfo,font embedding warning: emb=NA/no,PASS
 Supplementary_Figure_2_matched_individual_sensitivity.pdf,169.6861111111111,84.66666666666667,0.0068302154541015625,pdfinfo,font embedding warning: emb=NA/no,PASS
-Supplementary_Figure_3_mitochondrial_specificity.pdf,169.6861111111111,139.7,0.0072269439697265625,pdfinfo,font embedding warning: emb=NA/no,PASS
-Supplementary_Figure_4_pathology_model_robustness.pdf,169.6861111111111,144.99166666666667,0.15804100036621094,pdfinfo,font embedding warning: emb=NA/no,PASS
+Supplementary_Figure_3_mitochondrial_specificity.pdf,169.6861111111111,139.7,0.007227897644042969,pdfinfo,font embedding warning: emb=NA/no,PASS
+Supplementary_Figure_4_pathology_model_robustness.pdf,169.6861111111111,144.99166666666667,0.1580371856689453,pdfinfo,font embedding warning: emb=NA/no,PASS
 Supplementary_Figure_5_msbb_cross_cohort_validation.pdf,169.6861111111111,118.8861111111111,0.1286020278930664,pdfinfo,font embedding warning: emb=NA/no,PASS
 Supplementary_Figure_6_regional_proteomics_validation.pdf,169.6861111111111,139.7,0.03810596466064453,pdfinfo,font embedding warning: emb=NA/no,PASS
 Supplementary_Figure_7_conventional_differential.pdf,169.6861111111111,89.95833333333333,0.005349159240722656,pdfinfo,font embedding warning: emb=NA/no,PASS

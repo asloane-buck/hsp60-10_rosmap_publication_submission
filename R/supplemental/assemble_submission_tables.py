@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Assemble final Tables 1–12 from frozen Tables 1–11 and marker annotations.
+"""Assemble final Tables 1–13 from frozen Tables 1–11, marker annotations, and complementary-direction sensitivity.
 
 No models are fitted and no numerical results are recalculated. The input
 workbook must contain the reviewed Tables 1–11 and may already contain the two
@@ -18,6 +18,7 @@ CORE = ['ST1_Client_inventory', 'ST2_Pathway_coverage', 'ST3_Fig5_null_input',
         'ST7_Sensitivity_checks', 'ST8_Demographics_APOE', 'ST9_Conventional_DE_DA',
         'ST10_Pathology_models', 'ST11_Network_cognition']
 ANNOTATIONS = ['S12_Marker_annotations', 'S12_GO_annotations']
+TABLE13 = ['ST13_Complementary_direction']
 INTERNAL = {'Source_notes', 'S12_Definitions'}
 M = 'http://schemas.openxmlformats.org/spreadsheetml/2006/main'
 
@@ -47,6 +48,8 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--existing', required=True, type=Path)
     parser.add_argument('--table12', required=True, type=Path)
+    parser.add_argument('--table13-dir', required=True, type=Path)
+    parser.add_argument('--conventional-clients', required=True, type=Path)
     parser.add_argument('--output', required=True, type=Path)
     args = parser.parse_args()
     if args.output.exists() or args.output.resolve() in {args.existing.resolve(), args.table12.resolve()}:
@@ -62,11 +65,42 @@ def main():
             base = directory / 'tables_1_11.xlsx'
             invoke('clean_submission_workbook', ['--input', args.existing, '--output', base], remove)
         appended = directory / 'tables_with_annotations.xlsx'
-        invoke('add_supplementary_table_12', ['--existing', base, '--table12', args.table12, '--output', appended])
-        invoke('clean_submission_workbook', ['--input', appended, '--output', args.output])
-    if sheets(args.output) != CORE + ANNOTATIONS:
+        invoke(
+            'add_supplementary_table_12',
+            [
+                '--existing', base,
+                '--table12', args.table12,
+                '--output', appended,
+            ],
+        )
+
+        cleaned = directory / 'tables_1_12.xlsx'
+        invoke(
+            'clean_submission_workbook',
+            [
+                '--input', appended,
+                '--output', cleaned,
+            ],
+        )
+
+        invoke(
+            'add_supplementary_table_13',
+            [
+                '--existing', cleaned,
+                '--sensitivity-dir', args.table13_dir,
+                '--conventional-clients',
+                args.conventional_clients,
+                '--output', args.output,
+            ],
+        )
+
+    if sheets(args.output) != CORE + ANNOTATIONS + TABLE13:
         raise ValueError('Unexpected submission workbook sheet order.')
-    print('Verified: final workbook contains Tables 1–12 and no internal-note sheets.')
+
+    print(
+        'Verified: final workbook contains Tables 1–13 '
+        'and no internal-note sheets.'
+    )
 
 
 if __name__ == '__main__':

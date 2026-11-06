@@ -209,10 +209,10 @@ if (!identical(as.integer(effective_stage_counts), c(148L, 86L, 83L))) {
 }
 
 ############################################################
-## Late-stage AD-MCI effects
+## AD-versus-MCI effects
 ############################################################
 
-fit_late_stage <- function(mat, stage_meta, genes, model_name) {
+fit_ad_vs_mci <- function(mat, stage_meta, genes, model_name) {
   purrr::map_dfr(genes, function(g) {
     samples <- intersect(stage_meta$sample_id, colnames(mat))
     meta2 <- stage_meta[
@@ -267,7 +267,7 @@ fit_late_stage <- function(mat, stage_meta, genes, model_name) {
     dplyr::group_by(.data$model) |>
     dplyr::mutate(
       fdr = stats::p.adjust(.data$p_value, method = "BH"),
-      late_decline_magnitude = dplyr::case_when(
+      lower_abundance_magnitude = dplyr::case_when(
         !is.finite(.data$effect) ~ NA_real_,
         .data$effect < 0 ~ abs(.data$effect),
         TRUE ~ 0
@@ -276,17 +276,17 @@ fit_late_stage <- function(mat, stage_meta, genes, model_name) {
     dplyr::ungroup()
 }
 
-late_results <- dplyr::bind_rows(
-  fit_late_stage(
+ad_vs_mci_results <- dplyr::bind_rows(
+  fit_ad_vs_mci(
     prot_mat, stage_meta_full, hsp_genes, "full_original"
   ),
-  fit_late_stage(
+  fit_ad_vs_mci(
     prot_adj_subset_control,
     stage_meta_apoe,
     hsp_genes,
     "APOE_complete_original_covariates"
   ),
-  fit_late_stage(
+  fit_ad_vs_mci(
     prot_adj_subset_apoe,
     stage_meta_apoe,
     hsp_genes,
@@ -401,7 +401,7 @@ fit_pathology_augmented <- function(
     dplyr::mutate(
       fdr = stats::p.adjust(.data$p_value, method = "BH"),
 
-      ## Pathology-aligned protein-decline magnitude.
+      ## Pathology-aligned lower-abundance magnitude.
       ##
       ## Braak: higher score = worse pathology, so a negative beta
       ## indicates lower protein abundance with worse pathology.
@@ -568,13 +568,13 @@ production_validation <- dplyr::bind_rows(
 )
 
 ############################################################
-## Derived late-decline/Braak vulnerability
+## Derived lower-abundance/Braak vulnerability
 ############################################################
 
 build_vulnerability <- function(model_name) {
-  late_results |>
+  ad_vs_mci_results |>
     dplyr::filter(.data$model == model_name) |>
-    dplyr::select(gene, late_effect = effect, late_decline_magnitude) |>
+    dplyr::select(gene, ad_minus_mci_effect = effect, lower_abundance_magnitude) |>
     dplyr::inner_join(
       braak_results |>
         dplyr::filter(.data$model == model_name) |>
@@ -586,10 +586,10 @@ build_vulnerability <- function(model_name) {
       by = "gene"
     ) |>
     dplyr::mutate(
-      late_decline_percentile = percentile01(.data$late_decline_magnitude),
+      lower_abundance_percentile = percentile01(.data$lower_abundance_magnitude),
       inverse_braak_percentile = percentile01(.data$inverse_braak_magnitude),
       pathology_vulnerability_score = sqrt(
-        .data$late_decline_percentile *
+        .data$lower_abundance_percentile *
           .data$inverse_braak_percentile
       ),
       model = model_name
@@ -685,7 +685,7 @@ compare_effect_models <- function(tbl, endpoint_name) {
   )
 }
 
-late_compare <- compare_effect_models(late_results, "Late_AD_minus_MCI")
+late_compare <- compare_effect_models(ad_vs_mci_results, "Late_AD_minus_MCI")
 braak_compare <- compare_effect_models(braak_results, "Braak")
 cerad_compare <- compare_effect_models(cerad_results, "CERAD")
 
@@ -710,7 +710,7 @@ vulnerability_paired <- vulnerability_results |>
   ) |>
   dplyr::select(
     gene,
-    late_no_APOE = late_decline_percentile,
+    ad_vs_mci_no_APOE = lower_abundance_percentile,
     braak_no_APOE = inverse_braak_percentile,
     vulnerability_no_APOE = pathology_vulnerability_score
   ) |>
@@ -719,29 +719,29 @@ vulnerability_paired <- vulnerability_results |>
       dplyr::filter(.data$model == "APOE_complete_plus_e4") |>
       dplyr::select(
         gene,
-        late_with_APOE = late_decline_percentile,
+        ad_vs_mci_with_APOE = lower_abundance_percentile,
         braak_with_APOE = inverse_braak_percentile,
         vulnerability_with_APOE = pathology_vulnerability_score
       ),
     by = "gene"
   ) |>
   dplyr::mutate(
-    late_topq_no_APOE = .data$late_no_APOE >= 75,
-    late_topq_with_APOE = .data$late_with_APOE >= 75,
+    late_topq_no_APOE = .data$ad_vs_mci_no_APOE >= 75,
+    late_topq_with_APOE = .data$ad_vs_mci_with_APOE >= 75,
     braak_topq_no_APOE = .data$braak_no_APOE >= 75,
     braak_topq_with_APOE = .data$braak_with_APOE >= 75
   )
 
 vulnerability_summary <- tibble::tibble(
   metric = c(
-    "late_decline_percentile",
+    "lower_abundance_percentile",
     "inverse_braak_percentile",
     "pathology_vulnerability_score"
   ),
   spearman = c(
     stats::cor(
-      vulnerability_paired$late_no_APOE,
-      vulnerability_paired$late_with_APOE,
+      vulnerability_paired$ad_vs_mci_no_APOE,
+      vulnerability_paired$ad_vs_mci_with_APOE,
       method = "spearman",
       use = "complete.obs"
     ),
@@ -760,8 +760,8 @@ vulnerability_summary <- tibble::tibble(
   ),
   pearson = c(
     stats::cor(
-      vulnerability_paired$late_no_APOE,
-      vulnerability_paired$late_with_APOE,
+      vulnerability_paired$ad_vs_mci_no_APOE,
+      vulnerability_paired$ad_vs_mci_with_APOE,
       method = "pearson",
       use = "complete.obs"
     ),
@@ -781,7 +781,7 @@ vulnerability_summary <- tibble::tibble(
 )
 
 topq_overlap <- tibble::tibble(
-  axis = c("late_decline", "inverse_braak"),
+  axis = c("lower_abundance", "inverse_braak"),
   n_topq_without_APOE = c(
     sum(vulnerability_paired$late_topq_no_APOE, na.rm = TRUE),
     sum(vulnerability_paired$braak_topq_no_APOE, na.rm = TRUE)
@@ -845,7 +845,7 @@ compare_full_to_subset <- function(tbl, endpoint_name) {
 }
 
 full_vs_subset_summary <- dplyr::bind_rows(
-  compare_full_to_subset(late_results, "Late_AD_minus_MCI"),
+  compare_full_to_subset(ad_vs_mci_results, "Late_AD_minus_MCI"),
   compare_full_to_subset(braak_results, "Braak"),
   compare_full_to_subset(cerad_results, "CERAD")
 )
@@ -883,7 +883,7 @@ cohort_audit <- tibble::tibble(
 
 outputs <- list(
   "APOE_sensitivity_cohort_audit.csv" = cohort_audit,
-  "APOE_sensitivity_late_stage_clients.csv" = late_results,
+  "APOE_sensitivity_ad_vs_mci_clients.csv" = ad_vs_mci_results,
   "APOE_sensitivity_Braak_clients.csv" = braak_results,
   "APOE_sensitivity_CERAD_clients.csv" = cerad_results,
   "APOE_sensitivity_production_model_validation.csv" =

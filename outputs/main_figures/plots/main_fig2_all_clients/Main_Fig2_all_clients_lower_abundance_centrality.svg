@@ -742,17 +742,17 @@
 <text x='883.26' y='438.04' text-anchor='middle' style='font-size: 8.80px; font-family: "Arial";' textLength='14.67px' lengthAdjust='spacingAndGlyphs'>250</text>
 <text x='1045.87' y='438.04' text-anchor='middle' style='font-size: 8.80px; font-family: "Arial";' textLength='14.67px' lengthAdjust='spacingAndGlyphs'>300</text>
 <text x='575.49' y='450.51' text-anchor='middle' style='font-size: 11.00px; font-weight: bold; font-family: "Arial";' textLength='203.69px' lengthAdjust='spacingAndGlyphs'>Rank among detected Hsp60/10 clients</text>
-<text transform='translate(23.32,276.70) rotate(-90)' text-anchor='middle' style='font-size: 11.00px; font-weight: bold; font-family: "Arial";' textLength='136.38px' lengthAdjust='spacingAndGlyphs'>Late-stage protein decline</text>
-<rect x='379.04' y='87.39' width='392.89' height='28.24' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<text x='384.52' y='105.09' style='font-size: 10.00px; font-weight: bold; font-family: "Arial";' textLength='89.47px' lengthAdjust='spacingAndGlyphs'>Late-decline group</text>
-<rect x='479.47' y='92.87' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<circle cx='488.11' cy='101.51' r='2.10' style='stroke-width: 0.26; stroke: #595959; fill: #B22222;' />
-<rect x='608.01' y='92.87' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
-<circle cx='616.65' cy='101.51' r='2.10' style='stroke-width: 0.26; stroke: #595959; fill: #B3B3B3;' />
-<text x='502.23' y='104.91' style='font-size: 9.50px; font-family: "Arial";' textLength='100.30px' lengthAdjust='spacingAndGlyphs'>Top-quartile late decline</text>
-<text x='630.77' y='104.91' style='font-size: 9.50px; font-family: "Arial";' textLength='135.69px' lengthAdjust='spacingAndGlyphs'>Other detected Hsp60/10 clients</text>
-<text x='50.42' y='79.81' style='font-size: 10.00px;fill: #595959; font-family: "Arial";' textLength='429.20px' lengthAdjust='spacingAndGlyphs'>All detected Hsp60/10 clients are ranked by late-stage protein decline; red marks the top quartile.</text>
-<text x='50.42' y='64.22' style='font-size: 14.00px; font-weight: bold; font-family: "Arial";' textLength='496.94px' lengthAdjust='spacingAndGlyphs'>A. Late-stage decline is heterogeneous across the Hsp60/10 client network</text>
+<text transform='translate(23.32,276.70) rotate(-90)' text-anchor='middle' style='font-size: 11.00px; font-weight: bold; font-family: "Arial";' textLength='231.09px' lengthAdjust='spacingAndGlyphs'>AD-versus-MCI lower-abundance magnitude</text>
+<rect x='353.29' y='87.39' width='444.39' height='28.24' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<text x='358.77' y='105.09' style='font-size: 10.00px; font-weight: bold; font-family: "Arial";' textLength='116.69px' lengthAdjust='spacingAndGlyphs'>Lower-abundance group</text>
+<rect x='480.94' y='92.87' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<circle cx='489.58' cy='101.51' r='2.10' style='stroke-width: 0.26; stroke: #595959; fill: #B22222;' />
+<rect x='633.76' y='92.87' width='17.28' height='17.28' style='stroke-width: 1.07; stroke: none; fill: #FFFFFF;' />
+<circle cx='642.40' cy='101.51' r='2.10' style='stroke-width: 0.26; stroke: #595959; fill: #B3B3B3;' />
+<text x='503.70' y='104.91' style='font-size: 9.50px; font-family: "Arial";' textLength='124.58px' lengthAdjust='spacingAndGlyphs'>Top-quartile lower abundance</text>
+<text x='656.52' y='104.91' style='font-size: 9.50px; font-family: "Arial";' textLength='135.69px' lengthAdjust='spacingAndGlyphs'>Other detected Hsp60/10 clients</text>
+<text x='50.42' y='79.81' style='font-size: 10.00px;fill: #595959; font-family: "Arial";' textLength='514.22px' lengthAdjust='spacingAndGlyphs'>All detected Hsp60/10 clients are ranked by AD-versus-MCI lower-abundance magnitude; red marks the top quartile.</text>
+<text x='50.42' y='64.22' style='font-size: 14.00px; font-weight: bold; font-family: "Arial";' textLength='592.86px' lengthAdjust='spacingAndGlyphs'>A. AD-versus-MCI lower abundance is heterogeneous across the Hsp60/10 client network</text>
 </g>
 <defs>
   <clipPath id='cpNTAuNDJ8MTEwMC41Nnw1MDUuOTV8Njk0Ljk4'>
@@ -1098,9 +1098,9 @@
 <text x='814.16' y='706.70' text-anchor='middle' style='font-size: 9.50px; font-family: "Arial";' textLength='53.31px' lengthAdjust='spacingAndGlyphs'>Other clients</text>
 <text x='814.16' y='716.96' text-anchor='middle' style='font-size: 9.50px; font-family: "Arial";' textLength='32.98px' lengthAdjust='spacingAndGlyphs'>(n=229)</text>
 <text transform='translate(23.32,600.46) rotate(-90)' text-anchor='middle' style='font-size: 11.00px; font-weight: bold; font-family: "Arial";' textLength='95.41px' lengthAdjust='spacingAndGlyphs'>Network centrality</text>
-<text x='50.42' y='498.36' style='font-size: 10.00px;fill: #595959; font-family: "Arial";' textLength='374.11px' lengthAdjust='spacingAndGlyphs'>Top-quartile late-declining clients occupy more central positions in the client network.</text>
+<text x='50.42' y='498.36' style='font-size: 10.00px;fill: #595959; font-family: "Arial";' textLength='391.91px' lengthAdjust='spacingAndGlyphs'>Top-quartile lower-abundance clients occupy more central positions in the client network.</text>
 <text x='50.42' y='482.78' style='font-size: 14.00px; font-weight: bold; font-family: "Arial";' textLength='139.22px' lengthAdjust='spacingAndGlyphs'>B. Network centrality</text>
-<text x='558.00' y='36.24' text-anchor='middle' style='font-size: 12.00px;fill: #595959; font-family: "Arial";' textLength='565.31px' lengthAdjust='spacingAndGlyphs'>Late-stage protein decline is heterogeneous; strongly late-declining clients show greater network centrality.</text>
+<text x='558.00' y='36.24' text-anchor='middle' style='font-size: 12.00px;fill: #595959; font-family: "Arial";' textLength='790.72px' lengthAdjust='spacingAndGlyphs'>AD-versus-MCI lower-abundance magnitude is heterogeneous; clients with the greatest lower-abundance magnitude show greater network centrality.</text>
 <text x='558.00' y='18.37' text-anchor='middle' style='font-size: 18.00px; font-weight: bold; font-family: "Arial";' textLength='596.42px' lengthAdjust='spacingAndGlyphs'>Hsp60/10 client vulnerability is selective across the full client network</text>
 </g>
 </g>

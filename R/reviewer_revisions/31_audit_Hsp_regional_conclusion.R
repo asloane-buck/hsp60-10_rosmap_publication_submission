@@ -1960,7 +1960,7 @@ cat(
 )
 
 cat(
-  "  interaction beta < 0 = Hsp score declines more strongly with increasing\n"
+  "  interaction beta < 0 = Hsp score has a more negative association with increasing\n"
 )
 
 cat(

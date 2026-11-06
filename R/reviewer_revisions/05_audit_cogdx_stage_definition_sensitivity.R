@@ -782,14 +782,14 @@ client_effect_comparison <- dplyr::inner_join(
   by = "gene"
 ) |>
   dplyr::mutate(
-    late_decline_pure = dplyr::case_when(
-      !is.finite(.data$late_shift__pure) ~ NA_real_,
-      .data$late_shift__pure < 0 ~ abs(.data$late_shift__pure),
+    lower_abundance_pure = dplyr::case_when(
+      !is.finite(.data$ad_minus_mci_shift__pure) ~ NA_real_,
+      .data$ad_minus_mci_shift__pure < 0 ~ abs(.data$ad_minus_mci_shift__pure),
       TRUE ~ 0
     ),
-    late_decline_broad = dplyr::case_when(
-      !is.finite(.data$late_shift__broad) ~ NA_real_,
-      .data$late_shift__broad < 0 ~ abs(.data$late_shift__broad),
+    lower_abundance_broad = dplyr::case_when(
+      !is.finite(.data$ad_minus_mci_shift__broad) ~ NA_real_,
+      .data$ad_minus_mci_shift__broad < 0 ~ abs(.data$ad_minus_mci_shift__broad),
       TRUE ~ 0
     )
   )
@@ -805,11 +805,11 @@ effect_concordance <- tibble::tibble(
     "Spearman rho early shift: pure vs broad",
     "Spearman rho late shift: pure vs broad",
     "Spearman rho total shift: pure vs broad",
-    "Spearman rho late decline magnitude: pure vs broad",
+    "Spearman rho AD-versus-MCI lower-abundance magnitude: pure vs broad",
     "Fraction negative late shift: pure",
     "Fraction negative late shift: broad",
-    "Mean late decline magnitude: pure",
-    "Mean late decline magnitude: broad"
+    "Mean AD-versus-MCI lower-abundance magnitude: pure",
+    "Mean AD-versus-MCI lower-abundance magnitude: broad"
   ),
   value = c(
     length(detected_clients),
@@ -818,31 +818,31 @@ effect_concordance <- tibble::tibble(
       client_effect_comparison$early_shift__broad
     ),
     safe_cor(
-      client_effect_comparison$late_shift__pure,
-      client_effect_comparison$late_shift__broad
+      client_effect_comparison$ad_minus_mci_shift__pure,
+      client_effect_comparison$ad_minus_mci_shift__broad
     ),
     safe_cor(
       client_effect_comparison$total_shift__pure,
       client_effect_comparison$total_shift__broad
     ),
     safe_cor(
-      client_effect_comparison$late_decline_pure,
-      client_effect_comparison$late_decline_broad
+      client_effect_comparison$lower_abundance_pure,
+      client_effect_comparison$lower_abundance_broad
     ),
     mean(
-      client_effect_comparison$late_shift__pure < 0,
+      client_effect_comparison$ad_minus_mci_shift__pure < 0,
       na.rm = TRUE
     ),
     mean(
-      client_effect_comparison$late_shift__broad < 0,
+      client_effect_comparison$ad_minus_mci_shift__broad < 0,
       na.rm = TRUE
     ),
     mean(
-      client_effect_comparison$late_decline_pure,
+      client_effect_comparison$lower_abundance_pure,
       na.rm = TRUE
     ),
     mean(
-      client_effect_comparison$late_decline_broad,
+      client_effect_comparison$lower_abundance_broad,
       na.rm = TRUE
     )
   )

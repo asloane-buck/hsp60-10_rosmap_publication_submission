@@ -1,4 +1,4 @@
-gene,null_late_effect,null_late_decline,source_late_effect,source_late_decline,abs_effect_difference,abs_decline_difference
+gene,null_ad_minus_mci_effect,null_lower_abundance,source_ad_minus_mci_effect,source_lower_abundance,abs_effect_difference,abs_lower_abundance_difference
 AARS2,-0.012436915112662691,0.012436915112662691,-0.012436915112662691,0.012436915112662691,0,0
 ABHD10,-0.008929026346386537,0.008929026346386537,-0.008929026346386537,0.008929026346386537,0,0
 ABHD11,-0.03630146236252458,0.03630146236252458,-0.03630146236252458,0.03630146236252458,0,0

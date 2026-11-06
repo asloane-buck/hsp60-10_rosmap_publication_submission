@@ -157,7 +157,7 @@ add(
     fig1sum$n_shifts == 2L &&
     fig1sum$unique_pathway_modality_shift_rows == 40L &&
     fig1sum$complete_10x2x2_design &&
-    fig1sum$all_stage_change_finite,
+    fig1sum$all_stage_difference_finite,
   if (nrow(fig1sum) == 1L) {
     paste0(
       "rows=", fig1sum$n_rows,

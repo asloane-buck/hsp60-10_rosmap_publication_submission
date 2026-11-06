@@ -63,3 +63,9 @@ outputs/**/**metadata_corrected**
 # Python cache files
 __pycache__/
 *.py[cod]
+
+# Local reproducibility-gate environment; contains machine-specific paths
+.reproducibility.env
+
+# Reproducible full Figure 5 cognition-null draws; aggregate summary is tracked.
+outputs/main_figures/tables/main_fig5_matched_null_specificity/Fig5_null_results_with_cognition.csv

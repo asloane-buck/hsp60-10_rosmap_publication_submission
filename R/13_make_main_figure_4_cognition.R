@@ -380,7 +380,7 @@ pA <- ggplot(diag_df, aes(x = cog_group, y = adjusted_hsp_score)) +
     clip = "off"
   ) +
   labs(
-    title = "A. Client network abundance declines with cognitive impairment",
+    title = "A. Client network abundance is lower with cognitive impairment",
     subtitle = "Adjusted Hsp60/10 score across final cognitive diagnosis",
     x = "Final cognitive diagnosis\nat death",
     y = "Adjusted Hsp60/10 client score"
@@ -1276,7 +1276,7 @@ fig4_integrated <- fig4_integrated +
   plot_layout(widths = c(1.34, 1.18), guides = "collect") +
   plot_annotation(
     title = "Hsp60/10 Client Network Abundance Tracks Cognitive Preservation",
-    subtitle = "Network-level decline is accompanied by cognition-prioritized mitochondrial client classes in ROSMAP",
+    subtitle = "Lower network abundance is accompanied by cognition-prioritized mitochondrial client classes in ROSMAP",
     theme = theme(
       plot.title = element_text(face = "bold", size = 17.0, hjust = 0.5),
       plot.subtitle = element_text(size = 10.6, hjust = 0.5, color = "grey35"),

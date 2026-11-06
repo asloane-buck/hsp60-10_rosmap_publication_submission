@@ -90,15 +90,16 @@ Its required inputs are in `outputs/reviewer_revisions/remaining_analysis_gates/
 - Main publication figures: `outputs/main_figures/plots/manuscript_ready_pdf/`.
 - Supplemental figure composites: `outputs/supplemental_figures/figures/`.
 - Supplemental figure audit tables: `outputs/supplemental_figures/audits/`.
-- Reconciled submission workbook: `supplementary_tables/Hsp60_10_Supplementary_Tables_REVISED.xlsx`.
+- Reviewed base workbook: `supplementary_tables/Hsp60_10_Supplementary_Tables_REVISED.xlsx`.
+- Final submission workbook: `supplementary_tables/Hsp60_10_Supplementary_Tables_SUBMISSION.xlsx`.
 
-The reconciled workbook contains Supplementary Tables 1–12. Historical exports and script backups are not substitutes for this workbook. Reviewer working outputs are ignored by Git by default; only individually reviewed aggregate results and provenance files should be selected for publication. Participant-level data and local input files remain excluded.
+The reconciled workbook contains Supplementary Tables 1–13. Historical exports and script backups are not substitutes for this workbook. Reviewer working outputs are ignored by Git by default; only individually reviewed aggregate results and provenance files should be selected for publication. Participant-level data and local input files remain excluded.
 
-Figure 5 cognition resampling uses 306 scored clients and 603 scored non-client mitochondrial proteins from 609 detected background proteins. The verified saved-score result has observed mean 4.972222, null mean 3.194182, observed/null ratio 1.556650, and one-sided add-one empirical P = 1/10,001 (10,000 draws; seed 1405). Main Figure 5 and supplemental Figure S3 have separately saved null draws; use each figure's own source tables when checking its reported values.
+Figure 5 cognition resampling uses 306 scored clients and 609 scored non-client mitochondrial proteins from 609 detected background proteins. The canonical production result has observed mean 4.972222, null mean 3.172081, observed/null ratio 1.567495, and one-sided add-one empirical P = 1/10,001 (10,000 draws; seed 1405). Main Figure 5 and supplemental Figure S3 have separately saved null draws; use each figure's own source tables when checking its reported values.
 
 ## Assemble the submission workbook
 
-The reviewed workbook is `supplementary_tables/Hsp60_10_Supplementary_Tables_REVISED.xlsx`. It contains 13 scientific worksheets: one each for Tables 1–11, plus `S12_Marker_annotations` and `S12_GO_annotations` for Table 12. Table 12 documents an exploratory 44-protein marker panel; functional and GO annotations support its interpretation, not historical prespecification. The annotation source is `supplementary_tables/Hsp60_10_Exploratory_Marker_Annotations.xlsx`.
+The reviewed base workbook is `supplementary_tables/Hsp60_10_Supplementary_Tables_REVISED.xlsx`. The assembly command below produces the final submission workbook, `supplementary_tables/Hsp60_10_Supplementary_Tables_SUBMISSION.xlsx`, which contains 14 scientific worksheets representing Supplementary Tables 1–13: one each for Tables 1–11, `S12_Marker_annotations` and `S12_GO_annotations` for Table 12, and `ST13_Complementary_direction` for Table 13. Table 12 documents an exploratory 44-protein marker panel; functional and GO annotations support its interpretation, not historical prespecification. The annotation source is `supplementary_tables/Hsp60_10_Exploratory_Marker_Annotations.xlsx`.
 
 To assemble a submission copy from the frozen Tables 1–11 and the saved annotation source, run from the repository root with Python 3:
 
@@ -106,10 +107,12 @@ To assemble a submission copy from the frozen Tables 1–11 and the saved annota
 python3 R/supplemental/assemble_submission_tables.py \
   --existing supplementary_tables/Hsp60_10_Supplementary_Tables_REVISED.xlsx \
   --table12 supplementary_tables/Hsp60_10_Exploratory_Marker_Annotations.xlsx \
+  --table13-dir outputs/reviewer_sensitivity/complementary_direction \
+  --conventional-clients outputs/supplemental_figures/tables/supplementary_figure_7_conventional_differential/Supplementary_Table_conventional_RNA_protein_clients.csv \
   --output supplementary_tables/Hsp60_10_Supplementary_Tables_SUBMISSION.xlsx
 ```
 
-The output filename must not already exist. The standard-library assembler preserves the retained scientific worksheet XML, appends Table 12 using `add_supplementary_table_12.py`, and removes internal-note worksheets using `clean_submission_workbook.py`. It does not fit models or recalculate results. Protein-source links and GO evidence remain in the scientific annotation sheets.
+The output filename must not already exist. The standard-library assembler preserves the retained scientific worksheet XML, appends Table 12 using `add_supplementary_table_12.py`, removes internal-note worksheets, appends Table 13 using `add_supplementary_table_13.py`, using `clean_submission_workbook.py`. It does not fit models or recalculate results. Protein-source links and GO evidence remain in the scientific annotation sheets.
 
 `20_build_revised_supplementary_tables.py` is a historical results-based builder with an APOE appendix named `ST12_APOE_sensitivity`; it is not the final submission-assembly entry point. Do not use that historical appendix as the manuscript's Table 12. The separately archived aggregate APOE effect summary is `outputs/reviewer_revisions/APOE_sensitivity/APOE_sensitivity_effect_summary.csv`.
 

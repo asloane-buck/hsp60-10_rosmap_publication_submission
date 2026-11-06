@@ -16,7 +16,7 @@ checks <- data.frame(
   check = c(
     "Supp Fig 4 Model 1 drop_na cleaned",
     "Supp Fig 4 Model 2 drop_na cleaned",
-    "Supp Fig 6 scalar ad-associated-decline case_when removed",
+    "Supp Fig 6 scalar ad-associated-lower-abundance case_when removed",
     "Supp Fig 6 Wilcoxon group select cleaned"
   ),
   passed = c(

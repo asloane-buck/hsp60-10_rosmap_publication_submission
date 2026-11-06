@@ -80,11 +80,11 @@ required_new_columns <- c(
   "protein_nci_mean",
   "protein_mci_mean",
   "protein_ad_mean",
-  "protein_early_effect",
-  "protein_late_effect",
-  "protein_total_effect",
-  "protein_late_decline_magnitude",
-  "late_decline_percentile",
+  "protein_mci_minus_nci_effect",
+  "protein_ad_minus_mci_effect",
+  "protein_ad_minus_nci_effect",
+  "protein_lower_abundance_magnitude",
+  "lower_abundance_percentile",
   "rna_nci_mean",
   "rna_mci_mean",
   "rna_ad_mean"
@@ -115,12 +115,12 @@ trajectory <- prot_scores |>
   )
 
 late_fraction_negative <- mean(
-  protein_client_rows$protein_late_effect < 0,
+  protein_client_rows$protein_ad_minus_mci_effect < 0,
   na.rm = TRUE
 )
 
-mean_late_decline <- mean(
-  protein_client_rows$protein_late_decline_magnitude,
+mean_lower_abundance <- mean(
+  protein_client_rows$protein_lower_abundance_magnitude,
   na.rm = TRUE
 )
 
@@ -246,10 +246,10 @@ checks <- dplyr::bind_rows(
     abs(late_fraction_negative - 0.794) <= 0.01
   ),
   record_check(
-    "Mean late-decline magnitude approximately audit-05 value",
-    round(mean_late_decline, 4),
+    "Mean lower-abundance magnitude approximately audit-05 value",
+    round(mean_lower_abundance, 4),
     "0.0230 +/- 0.005",
-    abs(mean_late_decline - 0.0230) <= 0.005
+    abs(mean_lower_abundance - 0.0230) <= 0.005
   )
 )
 

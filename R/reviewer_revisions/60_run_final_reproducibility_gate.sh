@@ -19,6 +19,118 @@ set -euo pipefail
 # It does NOT git add/commit/reset/restore/clean anything.
 # ============================================================
 
+# ------------------------------------------------------------
+# Local controlled-data configuration
+# ------------------------------------------------------------
+#
+# Machine-specific paths may be stored in .reproducibility.env.
+# That file is intentionally Git-ignored.
+#
+# The final gate must fail BEFORE running any expensive analysis
+# if a required controlled-data input is missing.
+
+LOCAL_ENV_FILE=".reproducibility.env"
+
+if [[ -f "$LOCAL_ENV_FILE" ]]; then
+  echo "Loading local reproducibility configuration: $LOCAL_ENV_FILE"
+  # shellcheck disable=SC1090
+  source "$LOCAL_ENV_FILE"
+fi
+
+preflight_failed=0
+
+require_env_file() {
+  local variable_name="$1"
+  local description="$2"
+  local value="${!variable_name:-}"
+
+  if [[ -z "$value" ]]; then
+    echo "ERROR: required environment variable is not set:"
+    echo "  $variable_name"
+    echo "  Required for: $description"
+    preflight_failed=1
+    return
+  fi
+
+  if [[ ! -f "$value" ]]; then
+    echo "ERROR: required file does not exist:"
+    echo "  $variable_name=$value"
+    echo "  Required for: $description"
+    preflight_failed=1
+    return
+  fi
+
+  echo "PASS: $variable_name"
+  echo "  $value"
+}
+
+require_env_dir() {
+  local variable_name="$1"
+  local description="$2"
+  local value="${!variable_name:-}"
+
+  if [[ -z "$value" ]]; then
+    echo "ERROR: required environment variable is not set:"
+    echo "  $variable_name"
+    echo "  Required for: $description"
+    preflight_failed=1
+    return
+  fi
+
+  if [[ ! -d "$value" ]]; then
+    echo "ERROR: required directory does not exist:"
+    echo "  $variable_name=$value"
+    echo "  Required for: $description"
+    preflight_failed=1
+    return
+  fi
+
+  echo "PASS: $variable_name"
+  echo "  $value"
+}
+
+echo
+echo "============================================================"
+echo "CONTROLLED-DATA PREFLIGHT"
+echo "============================================================"
+
+require_env_file \
+  "ROSMAP_RAW_COUNTS_FILE" \
+  "final conventional RNA differential analysis"
+
+require_env_dir \
+  "ROSMAP_REGIONAL_BASE" \
+  "formal regional interaction analyses"
+
+if [[ -n "${ROSMAP_REGIONAL_BASE:-}" ]]; then
+  regional_metadata="$ROSMAP_REGIONAL_BASE/Metadata/AMP-AD_DiverseCohorts_individual_metadata.csv"
+
+  if [[ ! -f "$regional_metadata" ]]; then
+    echo "ERROR: expected regional metadata file is missing:"
+    echo "  $regional_metadata"
+    preflight_failed=1
+  else
+    echo "PASS: regional AMP-AD metadata"
+    echo "  $regional_metadata"
+  fi
+fi
+
+if [[ "$preflight_failed" -ne 0 ]]; then
+  echo
+  echo "============================================================"
+  echo "CONTROLLED-DATA PREFLIGHT FAILED"
+  echo "No analysis phases were started."
+  echo
+  echo "Configure the missing paths in:"
+  echo "  .reproducibility.env"
+  echo "============================================================"
+  exit 1
+fi
+
+echo
+echo "CONTROLLED-DATA PREFLIGHT PASSED"
+echo
+
 required_root_files=(
   "R/90_run_main_pipeline.R"
   "R/supplemental/90_run_supplemental_pipeline.R"
@@ -216,6 +328,7 @@ run_phase \
 # ------------------------------------------------------------
 
 revision_scripts=(
+
   "R/reviewer_revisions/23_audit_conventional_stage_differential_warnings.R"
   "R/reviewer_revisions/24_run_conventional_stage_differential_FINAL.R"
   "R/reviewer_revisions/25_validate_conventional_stage_differential_FINAL.R"

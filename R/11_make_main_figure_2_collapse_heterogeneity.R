@@ -152,7 +152,7 @@ require_columns(
     "gene",
     "detected_in_protein",
     "detected_in_rna",
-    "protein_late_decline_magnitude",
+    "protein_lower_abundance_magnitude",
     "hub_mean_abs_cor"
   ),
   "Figure 2 source all-client table"
@@ -164,33 +164,33 @@ fig2_tbl <- all_hsp60_10_client_tbl %>%
     detected_in_protein = as.logical(detected_in_protein),
     detected_in_rna = as.logical(detected_in_rna),
     
-    late_decline_value = protein_late_decline_magnitude,
+    lower_abundance_value = protein_lower_abundance_magnitude,
     
     centrality_value = hub_mean_abs_cor
   ) %>%
   filter(
     detected_in_protein == TRUE,
-    is.finite(late_decline_value)
+    is.finite(lower_abundance_value)
   ) %>%
-  arrange(desc(late_decline_value)) %>%
+  arrange(desc(lower_abundance_value)) %>%
   mutate(
-    late_decline_rank = row_number(),
+    lower_abundance_rank = row_number(),
     n_detected_clients = n(),
 
     ## Top quartile among detected protein clients.
-    late_decline_group = if_else(
-      late_decline_rank <= ceiling(0.25 * n_detected_clients),
+    lower_abundance_group = if_else(
+      lower_abundance_rank <= ceiling(0.25 * n_detected_clients),
       "Top-quartile lower abundance",
       "Other detected Hsp60/10 clients"
     ),
 
-    late_decline_group = factor(
-      late_decline_group,
+    lower_abundance_group = factor(
+      lower_abundance_group,
       levels = c("Top-quartile lower abundance", "Other detected Hsp60/10 clients")
     ),
 
      label_gene = if_else(
-      late_decline_rank <= 10 |
+      lower_abundance_rank <= 10 |
         gene %in% c("SHMT2", "IDH3A", "TUFM", "ECHS1", "DLD", "DLAT", "LRPPRC"),
       gene,
       NA_character_
@@ -199,7 +199,7 @@ fig2_tbl <- all_hsp60_10_client_tbl %>%
 
 fig2_label_tbl <- fig2_tbl %>%
   filter(!is.na(label_gene)) %>%
-  arrange(late_decline_rank) %>%
+  arrange(lower_abundance_rank) %>%
   slice_head(n = 17) %>%
   mutate(
     repel_nudge_x = case_when(
@@ -234,12 +234,12 @@ fig2_label_tbl <- fig2_tbl %>%
 fig2_ranked_output_tbl <- fig2_tbl %>%
   select(
     gene,
-    late_decline_rank,
-    late_decline_group,
+    lower_abundance_rank,
+    lower_abundance_group,
     detected_in_protein,
     detected_in_rna,
-    protein_late_decline_magnitude,
-    late_decline_value,
+    protein_lower_abundance_magnitude,
+    lower_abundance_value,
     hub_mean_abs_cor,
     centrality_value,
     label_gene
@@ -250,12 +250,12 @@ write_fig2_all_table(
   "Fig2_all_clients_ranked_client_table"
 )
 
-late_decline_group_counts <- fig2_tbl %>%
-  count(late_decline_group, name = "n_clients")
+lower_abundance_group_counts <- fig2_tbl %>%
+  count(lower_abundance_group, name = "n_clients")
 
-write_fig2_all_table(late_decline_group_counts, "Fig2_all_clients_late_decline_group_counts")
+write_fig2_all_table(lower_abundance_group_counts, "Fig2_all_clients_lower_abundance_group_counts")
 
-print(late_decline_group_counts)
+print(lower_abundance_group_counts)
 
 ############################################################
 ## 3. Stats for Panels B and C
@@ -266,14 +266,14 @@ centrality_stats_tbl <- fig2_tbl %>%
   summarise(
     comparison = "Top-quartile lower abundance vs other detected clients",
     metric = "Network centrality",
-    n_top = sum(late_decline_group == "Top-quartile lower abundance"),
-    n_other = sum(late_decline_group == "Other detected Hsp60/10 clients"),
-    median_top = median(centrality_value[late_decline_group == "Top-quartile lower abundance"], na.rm = TRUE),
-    median_other = median(centrality_value[late_decline_group == "Other detected Hsp60/10 clients"], na.rm = TRUE),
+    n_top = sum(lower_abundance_group == "Top-quartile lower abundance"),
+    n_other = sum(lower_abundance_group == "Other detected Hsp60/10 clients"),
+    median_top = median(centrality_value[lower_abundance_group == "Top-quartile lower abundance"], na.rm = TRUE),
+    median_other = median(centrality_value[lower_abundance_group == "Other detected Hsp60/10 clients"], na.rm = TRUE),
     p_value = suppressWarnings(
       wilcox.test(
-        centrality_value[late_decline_group == "Top-quartile lower abundance"],
-        centrality_value[late_decline_group == "Other detected Hsp60/10 clients"],
+        centrality_value[lower_abundance_group == "Top-quartile lower abundance"],
+        centrality_value[lower_abundance_group == "Other detected Hsp60/10 clients"],
         exact = FALSE
       )$p.value
     ),
@@ -291,12 +291,12 @@ print(fig2_stats_tbl)
 ## 4. Plot colors
 ############################################################
 
-late_decline_colors <- c(
+lower_abundance_colors <- c(
   "Top-quartile lower abundance" = "#B22222",
   "Other detected Hsp60/10 clients" = "grey78"
 )
 
-late_decline_point_colors <- c(
+lower_abundance_point_colors <- c(
   "Top-quartile lower abundance" = "#B22222",
   "Other detected Hsp60/10 clients" = "grey70"
 )
@@ -307,13 +307,13 @@ late_decline_point_colors <- c(
 
 require_columns(
   fig2_tbl,
-  c("gene", "late_decline_rank", "late_decline_value", "late_decline_group", "label_gene"),
+  c("gene", "lower_abundance_rank", "lower_abundance_value", "lower_abundance_group", "label_gene"),
   "Figure 2 Panel A ranked table"
 )
 
 pA <- ggplot(
   fig2_tbl,
-  aes(x = late_decline_rank, y = late_decline_value)
+  aes(x = lower_abundance_rank, y = lower_abundance_value)
 ) +
   geom_hline(
     yintercept = 0,
@@ -323,17 +323,17 @@ pA <- ggplot(
   ) +
   geom_segment(
     aes(
-      xend = late_decline_rank,
+      xend = lower_abundance_rank,
       y = 0,
-      yend = late_decline_value,
-      color = late_decline_group
+      yend = lower_abundance_value,
+      color = lower_abundance_group
     ),
     linewidth = 0.28,
     alpha = 0.55,
     show.legend = FALSE
   ) +
   geom_point(
-    aes(fill = late_decline_group),
+    aes(fill = lower_abundance_group),
     shape = 21,
     size = 1.85,
     color = "grey35",
@@ -359,8 +359,8 @@ pA <- ggplot(
     max.time = 2,
     seed = 1
   ) +
-  scale_fill_manual(values = late_decline_point_colors, name = "Lower-abundance group") +
-  scale_color_manual(values = late_decline_point_colors, guide = "none") +
+  scale_fill_manual(values = lower_abundance_point_colors, name = "Lower-abundance group") +
+  scale_color_manual(values = lower_abundance_point_colors, guide = "none") +
   scale_x_continuous(
     breaks = scales::pretty_breaks(n = 8),
     expand = expansion(mult = c(0.01, 0.035))
@@ -394,25 +394,25 @@ pA <- ggplot(
 centrality_plot_tbl <- fig2_tbl %>%
   filter(is.finite(centrality_value)) %>%
   mutate(
-      late_decline_group_short = case_when(
-    late_decline_group == "Top-quartile lower abundance" ~ paste0("Top quartile\n(n=", sum(late_decline_group == "Top-quartile lower abundance"), ")"),
-    late_decline_group == "Other detected Hsp60/10 clients" ~ paste0("Other clients\n(n=", sum(late_decline_group == "Other detected Hsp60/10 clients"), ")")
+      lower_abundance_group_short = case_when(
+    lower_abundance_group == "Top-quartile lower abundance" ~ paste0("Top quartile\n(n=", sum(lower_abundance_group == "Top-quartile lower abundance"), ")"),
+    lower_abundance_group == "Other detected Hsp60/10 clients" ~ paste0("Other clients\n(n=", sum(lower_abundance_group == "Other detected Hsp60/10 clients"), ")")
   ),
-  late_decline_group_short = factor(
-    late_decline_group_short,
+  lower_abundance_group_short = factor(
+    lower_abundance_group_short,
     levels = c(
-      paste0("Top quartile\n(n=", sum(late_decline_group == "Top-quartile lower abundance"), ")"),
-      paste0("Other clients\n(n=", sum(late_decline_group == "Other detected Hsp60/10 clients"), ")")
+      paste0("Top quartile\n(n=", sum(lower_abundance_group == "Top-quartile lower abundance"), ")"),
+      paste0("Other clients\n(n=", sum(lower_abundance_group == "Other detected Hsp60/10 clients"), ")")
     )
 )
   )
 
 require_columns(
   centrality_plot_tbl,
-  c("late_decline_group_short", "centrality_value", "late_decline_group"),
+  c("lower_abundance_group_short", "centrality_value", "lower_abundance_group"),
   "Figure 2 Panel B centrality table"
 )
-require_values(centrality_plot_tbl, "late_decline_group", levels(fig2_tbl$late_decline_group), "Figure 2 Panel B")
+require_values(centrality_plot_tbl, "lower_abundance_group", levels(fig2_tbl$lower_abundance_group), "Figure 2 Panel B")
 
 centrality_ymax <- max(centrality_plot_tbl$centrality_value, na.rm = TRUE)
 centrality_yrange <- diff(range(centrality_plot_tbl$centrality_value, na.rm = TRUE))
@@ -420,7 +420,7 @@ if (!is.finite(centrality_yrange) || centrality_yrange == 0) centrality_yrange <
 
 pB <- ggplot(
   centrality_plot_tbl,
-  aes(x = late_decline_group_short, y = centrality_value, fill = late_decline_group)
+  aes(x = lower_abundance_group_short, y = centrality_value, fill = lower_abundance_group)
 ) +
   geom_boxplot(
     width = 0.52,
@@ -430,7 +430,7 @@ pB <- ggplot(
     linewidth = 0.45
   ) +
   geom_jitter(
-    aes(color = late_decline_group),
+    aes(color = lower_abundance_group),
     width = 0.13,
     size = 1.35,
     alpha = 0.45,
@@ -458,8 +458,8 @@ pB <- ggplot(
     fontface = "bold",
     lineheight = 0.95
   ) +
-  scale_fill_manual(values = late_decline_colors, guide = "none") +
-  scale_color_manual(values = late_decline_point_colors, guide = "none") +
+  scale_fill_manual(values = lower_abundance_colors, guide = "none") +
+  scale_color_manual(values = lower_abundance_point_colors, guide = "none") +
   scale_y_continuous(expand = expansion(mult = c(0.05, 0.70))) +
   labs(
     title = "B. Network centrality",
@@ -496,7 +496,7 @@ fig2_all_clients <- pA / pB +
 
 save_fig2_all_plot(
   fig2_all_clients,
-  "Main_Fig2_all_clients_late_decline_centrality",
+  "Main_Fig2_all_clients_lower_abundance_centrality",
   width = 15.5,
   height = 10.2
 )
@@ -518,16 +518,16 @@ fig2_metric_missing_genes <- fig2_tbl %>%
   select(
     any_of(c(
       "gene",
-      "late_decline_rank",
-      "late_decline_group",
+      "lower_abundance_rank",
+      "lower_abundance_group",
       "detected_in_protein",
       "detected_in_rna",
-      "protein_late_decline_magnitude",
+      "protein_lower_abundance_magnitude",
       "centrality_value",
       "hub_mean_abs_cor"
     ))
   ) %>%
-  arrange(late_decline_rank)
+  arrange(lower_abundance_rank)
 
 write_fig2_all_table(fig2_metric_missing_genes, "Fig2_all_clients_metric_missing_genes")
 print(fig2_metric_missing_genes, n = 50)
