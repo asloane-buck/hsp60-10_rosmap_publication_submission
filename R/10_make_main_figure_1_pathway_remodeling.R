@@ -751,7 +751,7 @@ pA <- ggplot(
   scale_x_discrete(expand = expansion(add = 0.30)) +
   scale_y_continuous(expand = expansion(mult = c(0.08, 0.52))) +
   labs(
-    title = "A. All-client pathway remodeling across AD stage",
+    title = "A. Standardized pathway abundance scores across diagnostic groups",
     subtitle = "Colored brackets show within-modality cross-sectional differences.",
     x = NULL,
     y = "Mean standardized pathway score"
@@ -819,10 +819,10 @@ pB <- ggplot() +
   labs(
     title = "B. RNA and protein cross-sectional differences",
     subtitle = paste0(
-      "Signed standardized pathway-score changes are shown separately ",
+      "Signed standardized pathway-score differences are shown separately ",
       "by modality; no cross-modal subtraction is used."
     ),
-    x = "Change in mean standardized pathway score",
+    x = "Difference in mean standardized pathway score",
     y = NULL
   ) +
   paper_theme_rebuilt(10.3) +
@@ -866,7 +866,7 @@ pB <- ggplot() +
 fig1_all_clients <- pA / pB +
   plot_layout(heights = c(1.48, 0.72)) +
   plot_annotation(
-    title = "All-client Hsp60/10 analysis reveals stage-dependent mitochondrial remodeling in AD",
+    title = "Cross-sectional mitochondrial pathway abundance differences across diagnostic groups",
     subtitle = "Hsp60/10 clients are evaluated against broad MitoCarta and non-overlapping mitochondrial/comparator gene sets.",
     theme = theme(
       plot.title = element_text(face = "bold", hjust = 0.5, size = 18),

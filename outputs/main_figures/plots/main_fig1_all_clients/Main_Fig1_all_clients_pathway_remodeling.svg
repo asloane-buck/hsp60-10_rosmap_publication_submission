@@ -706,7 +706,7 @@
 <text x='680.82' y='103.77' style='font-size: 8.40px; font-family: "Arial";' textLength='26.59px' lengthAdjust='spacingAndGlyphs'>Protein</text>
 <text x='735.15' y='103.77' style='font-size: 8.40px; font-family: "Arial";' textLength='17.72px' lengthAdjust='spacingAndGlyphs'>RNA</text>
 <text x='90.76' y='79.56' style='font-size: 10.00px;fill: #595959; font-family: "Arial";' textLength='294.39px' lengthAdjust='spacingAndGlyphs'>Colored brackets show within-modality cross-sectional differences.</text>
-<text x='90.76' y='64.22' style='font-size: 14.00px; font-weight: bold; font-family: "Arial";' textLength='328.72px' lengthAdjust='spacingAndGlyphs'>A. All-client pathway remodeling across AD stage</text>
+<text x='90.76' y='64.22' style='font-size: 14.00px; font-weight: bold; font-family: "Arial";' textLength='466.59px' lengthAdjust='spacingAndGlyphs'>A. Standardized pathway abundance scores across diagnostic groups</text>
 </g>
 <defs>
   <clipPath id='cpOTAuNzZ8Njc5LjExfDY3Ny45NXw4NjguNDY='>
@@ -854,7 +854,7 @@
 <polyline points='88.20,726.51 90.76,726.51 ' style='stroke-width: 1.00; stroke-linecap: butt;' />
 <polyline points='88.20,707.83 90.76,707.83 ' style='stroke-width: 1.00; stroke-linecap: butt;' />
 <polyline points='88.20,689.16 90.76,689.16 ' style='stroke-width: 1.00; stroke-linecap: butt;' />
-<text x='681.67' y='889.79' text-anchor='middle' style='font-size: 9.40px; font-weight: bold; font-family: "Arial";' textLength='200.83px' lengthAdjust='spacingAndGlyphs'>Change in mean standardized pathway score</text>
+<text x='681.67' y='889.79' text-anchor='middle' style='font-size: 9.40px; font-weight: bold; font-family: "Arial";' textLength='212.31px' lengthAdjust='spacingAndGlyphs'>Difference in mean standardized pathway score</text>
 <rect x='90.76' y='623.42' width='103.70' height='27.54' style='stroke-width: 1.00; stroke: none; fill: #FFFFFF;' />
 <rect x='95.89' y='628.55' width='17.28' height='17.28' style='stroke-width: 1.00; stroke: none; fill: #FFFFFF;' />
 <circle cx='104.53' cy='637.19' r='3.45' style='stroke-width: 1.13; stroke: none; fill: #1B4F9C;' />
@@ -862,10 +862,10 @@
 <polygon points='149.48,631.83 154.12,639.87 144.84,639.87 ' style='stroke-width: 1.13; stroke: none; fill: #8E1B1B;' />
 <text x='118.30' y='640.14' style='font-size: 8.24px; font-family: "Arial";' textLength='17.41px' lengthAdjust='spacingAndGlyphs'>RNA</text>
 <text x='163.25' y='640.14' style='font-size: 8.24px; font-family: "Arial";' textLength='26.08px' lengthAdjust='spacingAndGlyphs'>Protein</text>
-<text x='90.76' y='616.30' style='font-size: 9.50px;fill: #595959; font-family: "Arial";' textLength='487.77px' lengthAdjust='spacingAndGlyphs'>Signed standardized pathway-score changes are shown separately by modality; no cross-modal subtraction is used.</text>
+<text x='90.76' y='616.30' style='font-size: 9.50px;fill: #595959; font-family: "Arial";' textLength='498.14px' lengthAdjust='spacingAndGlyphs'>Signed standardized pathway-score differences are shown separately by modality; no cross-modal subtraction is used.</text>
 <text x='90.76' y='601.42' style='font-size: 14.00px; font-weight: bold; font-family: "Arial";' textLength='312.88px' lengthAdjust='spacingAndGlyphs'>B. RNA and protein cross-sectional differences</text>
 <text x='644.01' y='36.24' text-anchor='middle' style='font-size: 12.00px;fill: #595959; font-family: "Arial";' textLength='606.23px' lengthAdjust='spacingAndGlyphs'>Hsp60/10 clients are evaluated against broad MitoCarta and non-overlapping mitochondrial/comparator gene sets.</text>
-<text x='644.01' y='18.37' text-anchor='middle' style='font-size: 18.00px; font-weight: bold; font-family: "Arial";' textLength='729.75px' lengthAdjust='spacingAndGlyphs'>All-client Hsp60/10 analysis reveals stage-dependent mitochondrial remodeling in AD</text>
+<text x='644.01' y='18.37' text-anchor='middle' style='font-size: 18.00px; font-weight: bold; font-family: "Arial";' textLength='761.44px' lengthAdjust='spacingAndGlyphs'>Cross-sectional mitochondrial pathway abundance differences across diagnostic groups</text>
 </g>
 </g>
 </svg>
