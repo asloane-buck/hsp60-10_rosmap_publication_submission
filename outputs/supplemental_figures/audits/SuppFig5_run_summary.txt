@@ -1,10 +1,10 @@
 Supplementary Figure 5 run summary
-generated at: 2026-11-06 12:35:53 MST
+generated at: 2026-11-10 12:57:54 MST
 figure: external MSBB cross-cohort validation
 ROSMAP Hsp60/10 input: hsp_null_tbl
 ROSMAP background input: background_null_pool
-MSBB Braak input: MSBB combined file -> standardized Braak effects
-MSBB lower-abundance input: MSBB combined file -> standardized collapse
+MSBB Braak input: Frozen SuppFig5_cross_cohort_gene_values.csv
+MSBB lower-abundance input: Frozen SuppFig5_cross_cohort_gene_values.csv
 ROSMAP genes: 915
 MSBB matched genes: 858
 Cross-cohort genes: 858

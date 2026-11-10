@@ -1,5 +1,5 @@
 Supplementary Figure 1 run summary
-generated at: 2026-11-06 12:35:20 MST
+generated at: 2026-11-10 12:57:44 MST
 source inventory: Bie et al. Hsp60/10 client inventory
 original reported inventory size: 323
 analyzed size after gene-symbol harmonization: 321

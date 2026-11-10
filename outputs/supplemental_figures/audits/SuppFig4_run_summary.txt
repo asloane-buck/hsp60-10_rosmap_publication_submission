@@ -1,9 +1,9 @@
 Supplementary Figure 4 run summary
-generated at: 2026-11-06 12:35:50 MST
+generated at: 2026-11-10 12:57:51 MST
 figure: pathology-model robustness of Hsp60/10 client vulnerability
 primary adjusted model: protein_z ~ braak_z + age_z + sex + pmi_z + TMT batch
 CERAD sensitivity model: protein_z ~ braak_z + cerad_z + age_z + sex + pmi_z + TMT batch
-model source: prot_mat_raw
+model source: frozen SuppFig4_plotted_gene_level_values.csv
 Hsp60/10 genes plotted: 306
 background genes plotted: 609
 group summary:

@@ -1,8 +1,8 @@
 Corrected supplemental figure pipeline provenance
-generated_at: 2026-11-06 12:36:00 MST
+generated_at: 2026-11-10 12:58:02 MST
 project_dir: /Users/ashlynsloane/Buck Institute 25-26/ROSMAP Analysis March 26/hsp60_10_rosmap_publication_ready_repo
-git_branch: reviewer2-cross-sectional-terminology
-git_sha: 4cab0bb565a287ae27dff0db6b0b1bc548f19cbc
+git_branch: main
+git_sha: aa298134eb0b8bf48004dab2369b190b822fd792
 working_tree_dirty: TRUE
 production_null_input: /Users/ashlynsloane/Buck Institute 25-26/ROSMAP Analysis March 26/hsp60_10_rosmap_publication_ready_repo/outputs/main_figures/tables/figure5_null_input_COVARIATE_ADJUSTED.csv
 production_cognition_input: /Users/ashlynsloane/Buck Institute 25-26/ROSMAP Analysis March 26/hsp60_10_rosmap_publication_ready_repo/outputs/main_figures/tables/main_fig5_matched_null_specificity/Fig5_gene_universe_cognition_summary_by_gene.csv
