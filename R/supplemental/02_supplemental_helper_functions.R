@@ -147,7 +147,13 @@ save_plot_set <- function(plot, filename_base, width, height, output_dir) {
 
   if (is_final_supplemental_figure(filename_base, output_dir)) {
     final_size <- supplemental_final_export_size(filename_base)
-    plot <- supplemental_manuscript_cleanup(plot)
+    plot <- supplemental_manuscript_cleanup(
+      plot,
+      preserve_titles = identical(
+        filename_base,
+        "Supplementary_Figure_4_pathology_model_robustness"
+      )
+    )
     width <- final_size$width
     height <- final_size$height
     message(
@@ -559,23 +565,43 @@ write_skip_audit <- function(path, panel, reason) {
 }
 
 # Final composites only; panel exports retain their original working layout.
-supplemental_manuscript_cleanup <- function(plot) {
+supplemental_manuscript_cleanup <- function(plot, preserve_titles = FALSE) {
   cleanup <- ggplot2::theme(
-    plot.title = ggplot2::element_blank(),
+    plot.title = if (isTRUE(preserve_titles)) ggplot2::element_text() else ggplot2::element_blank(),
     plot.subtitle = ggplot2::element_blank(),
     plot.caption = ggplot2::element_blank(),
     plot.tag = ggplot2::element_text(face = "bold", size = 10, color = "black"),
     plot.tag.position = "topleft"
   )
+
   if (inherits(plot, "patchwork")) {
-    plot <- plot & ggplot2::labs(title = NULL, subtitle = NULL, caption = NULL)
+    if (!isTRUE(preserve_titles)) {
+      plot <- plot & ggplot2::labs(title = NULL, subtitle = NULL, caption = NULL)
+    } else {
+      plot <- plot & ggplot2::labs(subtitle = NULL, caption = NULL)
+    }
+
     plot <- plot & cleanup
+
     plot <- plot + patchwork::plot_annotation(
-      title = NULL, subtitle = NULL, caption = NULL,
-      theme = ggplot2::theme(plot.margin = ggplot2::margin(8, 10, 8, 10))
+      title = NULL,
+      subtitle = NULL,
+      caption = NULL,
+      theme = ggplot2::theme(
+        plot.margin = ggplot2::margin(8, 10, 8, 10)
+      )
     )
   } else {
-    plot <- plot + ggplot2::labs(title = NULL, subtitle = NULL, caption = NULL) + cleanup
+    if (!isTRUE(preserve_titles)) {
+      plot <- plot +
+        ggplot2::labs(title = NULL, subtitle = NULL, caption = NULL)
+    } else {
+      plot <- plot +
+        ggplot2::labs(subtitle = NULL, caption = NULL)
+    }
+
+    plot <- plot + cleanup
   }
+
   plot
 }

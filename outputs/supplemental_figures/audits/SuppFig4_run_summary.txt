@@ -1,11 +1,5 @@
 Supplementary Figure 4 run summary
-generated at: 2026-11-10 12:57:51 MST
-figure: pathology-model robustness of Hsp60/10 client vulnerability
-primary adjusted model: protein_z ~ braak_z + age_z + sex + pmi_z + TMT batch
-CERAD sensitivity model: protein_z ~ braak_z + cerad_z + age_z + sex + pmi_z + TMT batch
-model source: frozen SuppFig4_plotted_gene_level_values.csv
+generated at: 2026-11-11 15:31:52 MST
+figure: reciprocal Braak/CERAD pathology-model robustness
 Hsp60/10 genes plotted: 306
 background genes plotted: 609
-group summary:
-  - Non-client mitochondrial proteins: n=609, median inverse Braak=0.02939, median adjusted inverse beta=0.02939, median CERAD-adjusted inverse beta=0.007738
-  - Hsp60/10 clients: n=306, median inverse Braak=0.04689, median adjusted inverse beta=0.04689, median CERAD-adjusted inverse beta=0.02547
