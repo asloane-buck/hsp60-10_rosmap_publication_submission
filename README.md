@@ -136,7 +136,7 @@ This is a file-integrity check, not a new raw-data reproduction or model-validat
 
 The revised analysis code and reviewed submission workbook are maintained on `main` after the publication-branch merge. The GitHub revision history identifies the exact files in each commit.
 
-The current reviewer-revision release is `v2.2.0-reviewer-revision-round-3`, incorporating reciprocal Braak/CERAD pathology-adjustment analyses and the revised Supplementary Figure 4. The corresponding Zenodo version DOI is generated when this GitHub release is archived.
+The current Round 2.1 reviewer-revision update is `v2.1.1-reviewer-revision-round-2.1`, incorporating reciprocal Braak/CERAD pathology-adjustment analyses and the revised Supplementary Figure 4. The corresponding Zenodo version DOI is generated when this GitHub release is archived.
 
 The earlier `v2.0.0-reviewer-revisions` release remains archived in Zenodo at https://doi.org/10.5281/zenodo.23177576 (published October 6, 2026).
 
