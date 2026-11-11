@@ -77,6 +77,12 @@ Rscript R/reviewer_revisions/61_validate_final_reproducibility_gate.R
 
 The runner executes the main pipeline, publication figure export, 10,000-permutation sensitivity analysis, supplemental pipeline, and reviewer analysis/validation chain. It writes run records to `outputs/reviewer_revisions/final_reproducibility_run/`, including phase exit statuses, code provenance, scientific CSV checksums and session information. The separate validator checks the resulting run records. These records describe the run that produced them; subsequent changes to code or outputs require corresponding verification.
 
+The reciprocal pathology-adjustment robustness analysis used for Supplementary Figure 4 can be regenerated with:
+
+    Rscript R/reviewer_revisions/62_run_reciprocal_pathology_adjustment.R
+
+This analysis fits primary Braak and CERAD models together with reciprocal mutual-adjustment models across the canonical 306 Hsp60/10 clients and 609 non-client mitochondrial proteins.
+
 To validate existing remaining-analysis output tables without rerunning model fitting:
 
 ```bash
@@ -130,7 +136,9 @@ This is a file-integrity check, not a new raw-data reproduction or model-validat
 
 The revised analysis code and reviewed submission workbook are maintained on `main` after the publication-branch merge. The GitHub revision history identifies the exact files in each commit.
 
-The revised release, `v2.0.0-reviewer-revisions`, is archived in Zenodo at https://doi.org/10.5281/zenodo.23177576 (published October 6, 2026). This version archives the code and reviewed outputs supporting the revised manuscript.
+The current reviewer-revision release is `v2.2.0-reviewer-revision-round-3`, incorporating reciprocal Braak/CERAD pathology-adjustment analyses and the revised Supplementary Figure 4. The corresponding Zenodo version DOI is generated when this GitHub release is archived.
+
+The earlier `v2.0.0-reviewer-revisions` release remains archived in Zenodo at https://doi.org/10.5281/zenodo.23177576 (published October 6, 2026).
 
 The original June 2026 release, `v1.0.1-submission`, remains available at https://doi.org/10.5281/zenodo.20851582.
 
